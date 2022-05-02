@@ -5,7 +5,7 @@ Language Support:
 * English
 * Русский
 
-![Purpose of the system](https:// "Purpose of the system")
+![Purpose of the system](https://raw.githubusercontent.com/Evan1989/pialert/main/img/goal.jpg "Purpose of the system")
 
 ___
 
