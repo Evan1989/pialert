@@ -1,12 +1,12 @@
-# ✅ PiAlert codebase
+# ✅ PiAlert
 
 PiAlert is system for automating the work of SAP PI/PO support team via aggregation of alerts (CBMA messages).
-Language Support:
-* English
-* Русский
 
 ![Purpose of the system](https://raw.githubusercontent.com/Evan1989/pialert/main/img/goal.jpg "Purpose of the system")
 
+Language support:
+* English
+* Русский
 ___
 
 # 💻 Server requirements for PiAlert
@@ -42,11 +42,13 @@ ___
 
 ___
 
-# Requirements for SAP PI/PO
-1. Network access from SAP PI/PO to PiAlert (HTTP/HTTPS)
-2. Alert rule to generate alerts (CBMA) for all systems for the selected consumer.
-3. First ICO to send json messages generated in CBMA as configured from above:
-   1. JMS -> REST
-   2. Without mappings
-   3. Target End-point /src/api/cbma_alert_input.php
-4. Second ICO, which will be every 5 minutes call address /src/api/network_check.php?system=<SAP PI system name>. If there is no call, then PiAlert will notify the support team on Dashboard page) about network problems.
+# 🚧 Requirements for SAP PI/PO
+1. ⚠️Network access from SAP PI/PO to PiAlert (HTTP/HTTPS)
+2. Alert Rule to generate alerts (CBMA): add all Communication Components and choose name of new Consumer.
+3. Create ICO to send json messages generated in CBMA as configured from above:
+   1. JMS Sender (read queue for created Consumer) → Without mappings → REST Receiver
+   2. End-point /src/api/cbma_alert_input.php
+4. _(optional)_ Create ICO to check network problems between PiAlert and SAP PI/PO:
+   1. REST polling (every 5 minutes) → Dynamic Receiver Determination (ignore option) → Any Receiver (never called)
+   2. End-point /src/api/network_check.php?system=_SAP_PI_system_name_
+   4. If there is no call, then PiAlert will notify the support team on Dashboard page.
