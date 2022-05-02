@@ -1,0 +1,6 @@
+# Ignore files created by composer.
+/vendor
+/.idea
+/src/test.php
+/src/config.php
+.phpunit.result.cache

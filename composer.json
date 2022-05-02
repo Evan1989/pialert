@@ -1,0 +1,32 @@
+{
+  "name": "pialert/pialert",
+  "description": "Automate aggregation tools to standard alerts from SAP PI/PO (CBMA) for internal support team.",
+  "keywords": ["sap", "sap pi", "sap po", "cbma", "alerts", "support team"],
+  "homepage": "https://pialert.orpein.com",
+  "version": "1",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Ivan Shashurin",
+      "email": "evan1989@yandex.ru"
+    }
+  ],
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.0.0",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-simplexml": "*",
+    "ext-curl": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
+  "autoload": {
+    "psr-4": {
+      "EvanPiAlert\\": "src/",
+      "EvanPiAlert\\Test\\": "tests/"
+    }
+  }
+}

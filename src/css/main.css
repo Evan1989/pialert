@@ -1,0 +1,105 @@
+.company-logo {
+	color:white;
+	padding-right: 20px;
+}
+table .hide {
+	color: white;
+}
+
+
+.new-alert-count {
+	cursor: pointer;
+}
+.alert-group textarea {
+	min-width: 300px;
+	min-height: 88px;
+}
+.alert-group textarea:focus {
+	min-height: 300px;
+}
+.alert-group .alert-group-comment-html-div {
+	width: 300px;
+	height: 88px;
+	cursor: text;
+}
+
+.admin-users input {
+	min-width: 180px;
+}
+
+.block-by-block-system:disabled {
+	cursor: wait;
+	pointer-events: all;
+	color: #848484;
+}
+
+th.tablesorter-header {
+	background-image: url(/img/bg.png);
+	cursor: pointer;
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding-left: 20px;
+}
+th.sorter-false {
+	cursor: default;
+	background-image: none;
+}
+.tablesorter thead tr:hover {
+	background-color: inherit;
+}
+
+th.tablesorter-headerAsc {
+	background-image: url(/img/desc.png);
+}
+
+th.tablesorter-headerDesc {
+	background-image: url(/img/asc.png);
+}
+
+
+tr.not-important {
+	background-color: #eeeeee;
+	color: #999;
+}
+tr.important {
+	background-color: #eeeeee;
+	color: #999;
+}
+
+main {
+	margin-top: 70px;
+}
+nav.fixed-top {
+	background-color: #4e73df;
+	background-image: linear-gradient(180deg,#4e73df 10%,#224abe 100%);
+}
+nav.fixed-top .nav-item {
+	padding-right: .5rem;
+}
+
+/* https://codepen.io/sosuke/pen/Pjoqqp */
+.nav-item .icon {
+	filter: invert(100%) sepia(0%) saturate(556%) hue-rotate(186deg) brightness(87%) contrast(99%);
+}
+
+.nav-item.active .icon,
+.nav-item.dropdown .dropdown-item.active .icon,
+.btn-primary .icon {
+	filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(323deg) brightness(103%) contrast(101%);
+}
+
+.nav-item.dropdown .dropdown-item .icon {
+	filter: invert(11%) sepia(26%) saturate(290%) hue-rotate(169deg) brightness(93%) contrast(91%);
+}
+
+.table tr:first-child td,
+.table tr.no-border td {
+	border-top: none;
+}
+
+.table thead th {
+	vertical-align: top;
+}
+.center {
+	text-align: center;
+}

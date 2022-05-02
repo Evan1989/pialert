@@ -1,0 +1,12 @@
+<?php
+
+date_default_timezone_set("Europe/Moscow");
+setlocale(LC_ALL, 'ru_RU.UTF-8');
+			
+const SERVER_HOST = "https://example.com/";
+
+// App database
+const DB_HOST = "localhost";
+const DB_NAME = "";
+const DB_LOGIN = "";
+const DB_PASSWORD = "";
