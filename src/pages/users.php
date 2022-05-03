@@ -25,6 +25,7 @@ if ( isset($_GET['user']) ) {
     switch ($_GET['user']) {
         case 'create':
             $user = new User();
+            $user->language = $authorizationAdmin->getUser()->language;
             $user->saveToDatabase();
             break;
         case 'block':
