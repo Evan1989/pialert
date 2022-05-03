@@ -2,6 +2,7 @@
 
 require_once(__DIR__."/../autoload.php");
 
+use EvanPiAlert\Util\AlertAnalytics;
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\Calendar;
 use EvanPiAlert\Util\DB;
@@ -142,9 +143,7 @@ if ( $support_online ) {
 	            <span class='badge bg-success' data-toggle='tooltip' data-placement='top' title='".Text::dashboardSupportOnline()."'>support online</span>
             </div>";
 }
-echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='tooltip' data-placement='top' title='".Text::dashboardNoConnectToPiSystem()."'>
-	            <span class='badge bg-danger'>no new alerts</span>
-            </div>
+echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='tooltip' data-placement='top' title='".Text::dashboardNoConnectToPiSystem()."'><span class='badge bg-danger mx-1'>no new alerts</span></div>
             <div class='float-end new-alert-count d-none' data-toggle='tooltip' data-placement='top' title='".Text::dashboardTitleToTopBillCounter()."'>
 	            <span class='count'>0</span>
 	            <span class='bell-fill'>".$page->getIcon('bell-fill')."</span>
@@ -245,29 +244,34 @@ echo "              <tr>
         </div>
     </div>";
 
-$additionalScript = "<script type='text/javascript'>
-        $(document).ready(function() {
-            initJavascriptForDashboard();";
+$noConnectPiSystems = array();
 // Проверка сетевой доступности SAP PI через частоту вызова сервиса /api/network_check.php
 $checks = Settings::get(Settings::SYSTEMS_NETWORK_CHECK);
 $checks = json_decode($checks, true);
 foreach ($globalLastAlert as $system => $timeFromLastAlert) {
     if ( empty($checks[$system]) || time() - strtotime($checks[$system]) > 600 ) {
-        $additionalScript .= "showNoAlertWarningBadge('".$system."');";
+        $noConnectPiSystems[$system] = 1;
     }
 }
-/*
 // Проверка сетевой доступности SAP PI через статистический анализ
-$hour = date("H");
-$day = date("N")-1;
-$alertAnalytics = new AlertAnalytics();
-foreach ($globalLastAlert as $system => $timeFromLastAlert) {
-    // если нет алертов (уже в 3 раза больше времени, чем обычно), наверно отвалился сценарий отправки из SAP PI
-    if ( $timeFromLastAlert > 3 * $alertAnalytics->getAverageAlertInterval($system, $day, $hour) ) {
-        $additionalScript .= "showNoAlertWarningBadge('".$system."');";
+if ( Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) > 0) {
+    $hour = date("H");
+    $day = date("N") - 1;
+    $alertAnalytics = new AlertAnalytics();
+    foreach ($globalLastAlert as $system => $timeFromLastAlert) {
+        // если нет алертов (уже в N раз больше времени, чем обычно), наверно отвалился сценарий отправки из SAP PI
+        if ($timeFromLastAlert > Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) * $alertAnalytics->getAverageAlertInterval($system, $day, $hour)) {
+            $noConnectPiSystems[$system] = 1;
+        }
     }
 }
-*/
+
+$additionalScript = "<script type='text/javascript'>
+        $(document).ready(function() {
+            initJavascriptForDashboard();";
+foreach ($noConnectPiSystems as $system => $temp) {
+    $additionalScript .= "showNoAlertWarningBadge('" . $system . "');";
+}
 $additionalScript .= "})
     </script>";
 echo $page->getPageFooter( $additionalScript );

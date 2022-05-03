@@ -138,7 +138,8 @@ INSERT INTO `settings` (`id`, `grp`, `code`, `value`, `type`) VALUES
 (3, 'COMPANY', 'LINK TO SUPPORT RULES', '', 'url'),
 (4, 'SYSTEMS', 'SYSTEMS NAMES', '{\"af.pip.pip-db1\":\"PIP\",\r\n\"af.pop.pop-db1\":\"POP\"}', 'textarea'),
 (5, NULL, 'DATABASE VERSION', '1.0', 'number'),
-(6, NULL, 'SYSTEMS NETWORK CHECK', '{}', 'textarea');
+(6, NULL, 'SYSTEMS NETWORK CHECK', '{}', 'textarea'),
+(7, 'SYSTEMS', 'AVERAGE ALERT INTERVAL RATIO', '0', 'number');
 
 -- --------------------------------------------------------
 

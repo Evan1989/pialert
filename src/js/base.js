@@ -382,11 +382,10 @@ let showNoAlertWarningBadge_count = 0;
 // noinspection JSUnusedGlobalSymbols
 function showNoAlertWarningBadge(system) {
     showNoAlertWarningBadge_count++;
-    console.log(showNoAlertWarningBadge_count);
     if ( showNoAlertWarningBadge_count === 1 ) {
         $('.no-alert-warning').removeClass('d-none').children('span').html(system);
     } else {
-        $('.no-alert-warning span').clone().html(system).appendTo('.no-alert-warning');
+        $('.no-alert-warning span').first().clone().html(system).appendTo('.no-alert-warning');
     }
 }
 ///////////////////////////////////////////////
