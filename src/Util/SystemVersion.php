@@ -46,7 +46,7 @@ class SystemVersion {
     }
 
     public static function getGithubVersion() : string|false {
-        $ch = curl_init(GITHUB_RAW_LINK.'/master/composer.json');
+        $ch = curl_init(GITHUB_RAW_LINK.'/main/composer.json');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);

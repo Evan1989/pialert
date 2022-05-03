@@ -136,7 +136,7 @@ echo "<div class='row'>";
 if ( SystemVersion::isFinishInstallNeeded() ) {
     $addButton = "<a href='install.php' class='btn btn-success'>".Text::settingsInstallButton()."</a>";
 } elseif ( SystemVersion::isUpgradeNeeded() ) {
-    $addButton = "<a href='".GITHUB_PROJECT_LINK."/archive/master.tar.gz' class='btn btn-success'>Download from Github</a>";
+    $addButton = "<a href='".GITHUB_PROJECT_LINK."/archive/main.tar.gz' class='btn btn-success'>Download from Github</a>";
 } else {
     $addButton = '';
 }
