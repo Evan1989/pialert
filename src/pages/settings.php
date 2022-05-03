@@ -4,6 +4,7 @@ use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\SystemVersion;
 use EvanPiAlert\Util\Text;
 use JetBrains\PhpStorm\Pure;
 
@@ -132,16 +133,24 @@ function getSettingGroup($groupCode, $description): string {
 
 echo "<div class='row'>";
 
-if ( Settings::VERSION != Settings::get(Settings::DATABASE_VERSION) ) {
+if ( SystemVersion::isFinishInstallNeeded() ) {
     $addButton = "<a href='install.php' class='btn btn-success'>".Text::settingsInstallButton()."</a>";
+} elseif ( SystemVersion::isUpgradeNeeded() ) {
+    $addButton = "<a href='".GITHUB_PROJECT_LINK."/archive/master.tar.gz' class='btn btn-success'>Download from Github</a>";
 } else {
     $addButton = '';
 }
-echo getSmallSettingGroup(Text::settingsCommonSettings().' PiAlert', array(
+
+$systemFields = array(
     array(Text::settingsHostname(), SERVER_HOST, 'blocked'),
-    array(Text::settingsCodeVersion(), Settings::VERSION, 'blocked'),
-    array(Text::settingsDataBaseVersion(), Settings::get(Settings::DATABASE_VERSION), 'blocked')
-), $addButton);
+    array(Text::settingsCodeVersion(), SystemVersion::getCodeVersion(), 'blocked'),
+    array(Text::settingsDataBaseVersion(), SystemVersion::getDatabaseVersion(), 'blocked'),
+);
+$githubVersion = SystemVersion::getGithubVersion();
+if ( $githubVersion !== false ) {
+    $systemFields[] = array(Text::settingsGithubVersion(), SystemVersion::getGithubVersion(), 'blocked');
+}
+echo getSmallSettingGroup(Text::settingsCommonSettings().' PiAlert', $systemFields, $addButton);
 foreach (Settings::getSettingGroups() as $code => $description) {
     echo getSettingGroup($code, $description);
 }

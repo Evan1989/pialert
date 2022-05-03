@@ -79,6 +79,7 @@ $texts = array(
     'settingsHostname' => 'System host',
     'settingsCodeVersion' => 'Code version',
     'settingsDataBaseVersion' => 'Database version',
+    'settingsGithubVersion' => 'Github version',
     'settingsGroupCompany' => 'Company settings',
     'settingsGroupSystem' => 'Systems settings',
     'settingsGroupOther' => 'Other settings',

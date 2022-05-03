@@ -11,6 +11,9 @@ const ONE_WEEK = 7 * ONE_DAY;
 const ONE_MONTH = 30.5 * ONE_DAY;
 const ONE_YEAR = 365 * ONE_DAY;
 
+const GITHUB_PROJECT_LINK = "https://github.com/Evan1989/pialert";
+const GITHUB_RAW_LINK = "https://raw.githubusercontent.com/Evan1989/pialert";
+
 ////////////////////////////////////////
 //           Общие функции            //
 ////////////////////////////////////////

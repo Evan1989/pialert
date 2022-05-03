@@ -73,6 +73,7 @@ namespace EvanPiAlert\Util;
  * @method static string settingsHostname()
  * @method static string settingsCodeVersion()
  * @method static string settingsDataBaseVersion()
+ * @method static string settingsGithubVersion()
  * @method static string settingsGroupCompany()
  * @method static string settingsGroupSystem()
  * @method static string settingsGroupOther()

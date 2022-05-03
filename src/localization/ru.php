@@ -74,11 +74,12 @@ $texts = array(
 
     'settingsUpdateSuccess' => 'Настройки обновлены.',
     'settingsUpdateFail' => 'Не удалось сохранить одну из настроек!',
-    'settingsInstallButton' => 'Установщик',
+    'settingsInstallButton' => 'Обновление',
     'settingsCommonSettings' => 'Общие параметры',
     'settingsHostname' => 'Хост системы',
     'settingsCodeVersion' => 'Версия кода',
     'settingsDataBaseVersion' => 'Версия базы данных',
+    'settingsGithubVersion' => 'Версия на Github',
     'settingsGroupCompany' => 'Данные компании',
     'settingsGroupSystem' => 'Данные о системах',
     'settingsGroupOther' => 'Прочие параметры',

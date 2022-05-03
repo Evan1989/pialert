@@ -10,10 +10,14 @@ class GeoIP {
         $ch = curl_init('http://ip-api.com/json/'.$userIP);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
-        $res = curl_exec($ch);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+        $result = curl_exec($ch);
         curl_close($ch);
-        $result = json_decode($res, true);
-        return $result['countryCode']??'en';
+        if ( $result === false ) {
+            return 'en';
+        }
+        $result = json_decode($result);
+        return $result->countryCode??'en';
     }
 
 }

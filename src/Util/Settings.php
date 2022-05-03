@@ -9,10 +9,6 @@ use PDOException;
  */
 class Settings {
 
-    // 2022-04-26
-    const VERSION = 1; // int, значение меняется разработчиком системы при написании кода
-    const DATABASE_VERSION = 'DATABASE VERSION'; // int, значение меняется скриптом обновления бд из папки /src/install
-
     const COMPANY_NAME = 'COMPANY NAME';
     const LINK_TO_SUPPORT_RULES = 'LINK TO SUPPORT RULES';
 
@@ -20,6 +16,8 @@ class Settings {
     const SYSTEMS_NETWORK_CHECK = 'SYSTEMS NETWORK CHECK';
 
     const CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
+
+    const DATABASE_VERSION = 'DATABASE VERSION';
 
     private static ?Settings $_instance = null;
     private array $cache = array();

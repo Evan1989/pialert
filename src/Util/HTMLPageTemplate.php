@@ -32,9 +32,9 @@ class HTMLPageTemplate {
         <meta charset='utf-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png'>
-        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC' crossorigin='anonymous''>
-        <link rel='stylesheet' href='/src/css/main.css?v26' type='text/css' />
-        <script src='https://code.jquery.com/jquery-3.6.0.min.js' integrity='sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=' crossorigin='anonymous'></script>
+        <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v26' rel='stylesheet' type='text/css'>
+        <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
         $this->getPagesMenu().
@@ -53,10 +53,10 @@ class HTMLPageTemplate {
         $text .= "</div>
             </main>
         </div>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.9.1/jquery.tablesorter.min.js' integrity='sha512-mWSVYmb/NacNAK7kGkdlVNE4OZbJsSUw8LiJSgGOxkb4chglRnVfqrukfVd9Q2EOWxFp4NfbqE3nDQMxszCCvw==' crossorigin='anonymous' referrerpolicy='no-referrer'></script>
-        <script src='https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js' integrity='sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p'' crossorigin='anonymous'></script>
-        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js' integrity='sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF' crossorigin='anonymous'></script>
-        <script src='https://cdn.jsdelivr.net/npm/chart.js@3.4.1/dist/chart.min.js' crossorigin='anonymous'></script>
+        <script src='/src/js/jquery.tablesorter.min.js'></script>
+        <script src='/src/js/popper.min.js'></script>
+        <script src='/src/js/bootstrap.min.js'></script>
+        <script src='/src/js/chart.min.js'></script>
         <script src='/src/js/base.js?v=30'></script>".
         $additionalJavaScript.
     "</body>

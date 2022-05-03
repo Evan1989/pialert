@@ -40,6 +40,9 @@ class Calendar {
         }
         /** @noinspection HttpUrlsUsage */
         $xml = simplexml_load_file("http://xmlcalendar.ru/data/ru/".$year."/calendar.xml");
+        if ( $xml === false) {
+            return;
+        }
         $holidaysData = json_decode(json_encode($xml), true);
         foreach ($holidaysData['days']['day'] as $day) {
             $date = $day['@attributes']['d'];
