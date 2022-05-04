@@ -133,10 +133,8 @@ function getSettingGroup($groupCode, $description): string {
 
 echo "<div class='row'>";
 
-if ( SystemVersion::isFinishInstallNeeded() ) {
+if ( SystemVersion::isFinishInstallNeeded() || SystemVersion::isUpgradeNeeded() ) {
     $addButton = "<a href='install.php' class='btn btn-success'>".Text::settingsInstallButton()."</a>";
-} elseif ( SystemVersion::isUpgradeNeeded() ) {
-    $addButton = "<a href='".GITHUB_PROJECT_LINK."/archive/main.tar.gz' class='btn btn-success'>Download from Github</a>";
 } else {
     $addButton = '';
 }

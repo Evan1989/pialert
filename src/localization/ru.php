@@ -154,6 +154,11 @@ $texts = array(
     'installUpdateBody' => 'Версия PHP кода системы: '.Text::REPLACE_PATTERN.'
         <br>
         Необходимо обновить версию структур базы данных до того же уровня.',
+    'installUpgradeBody' => '1. Скачайте архив с <a href="'.Text::REPLACE_PATTERN.'" target="_blank">'.Text::REPLACE_PATTERN.'</a>
+        <br>
+        2. Распакуйте файлы в папку PiAlert с заменой сущетсвующих
+        <br>
+        3. Перезагрузите страницу',
     'installUpdateSuccess' => 'Таблицы базы данных успешно обновлены до версии '.Text::REPLACE_PATTERN,
     'installFinish' => 'Система корректно развернута',
     'installTrySystem' => 'Попробовать PiAlert',

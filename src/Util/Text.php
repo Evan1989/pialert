@@ -139,6 +139,7 @@ namespace EvanPiAlert\Util;
  * @method static string installStep2Success()
  * @method static string installUpdateHeader()
  * @method static string installUpdateBody($arg1)
+ * @method static string installUpgradeBody($arg1, $arg2)
  * @method static string installUpdateSuccess($arg)
  * @method static string installFinish()
  * @method static string installTrySystem()

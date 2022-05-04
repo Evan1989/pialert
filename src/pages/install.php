@@ -87,12 +87,22 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
     }
     echo "  </div>
 	    </div>";
+} elseif ( SystemVersion::isUpgradeNeeded() ) {
+    $link = GITHUB_PROJECT_LINK."/archive/main.tar.gz";
+    echo "<div class='card mb-4 shadow'>
+	        <div class='card-header'>".Text::installUpdateHeader()."</div>
+            <div class='card-body overflow-auto'>
+                ".Text::installUpgradeBody($link, $link)."
+                <br><br>
+                <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>
+            </div>
+	    </div>";
 } else {
     echo "<div class='alert alert-success' role='alert'>
-                ".Text::installFinish()."
-                <br><br>
-                <a href='/' class='btn btn-primary'>".Text::installTrySystem()."</a>
-        </div>";
+            ".Text::installFinish()."
+            <br><br>
+            <a href='/' class='btn btn-primary'>".Text::installTrySystem()."</a>
+    </div>";
 }
 
 echo $page->getPageFooter();
