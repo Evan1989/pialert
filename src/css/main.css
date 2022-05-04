@@ -22,6 +22,15 @@ table .hide {
 	height: 88px;
 	cursor: text;
 }
+.alert-group .alert-group-comment-html-div::-webkit-scrollbar {
+	width: 3px;
+}
+.alert-group .alert-group-comment-html-div::-webkit-scrollbar-track {
+	background-color: #F1F1F1;
+}
+.alert-group .alert-group-comment-html-div::-webkit-scrollbar-thumb {
+	background-color: #C1C1C1;
+}
 
 .admin-users input {
 	min-width: 180px;

@@ -64,7 +64,7 @@ class HTMLChart {
                 $data2[$i] = ($data2[$i]??0) + ($avgCounts[$weekDay*24+$i]??0);
             }
             for ($i = 0; $i < AlertAnalytics::HOUR_IN_WEEK; $i++) {
-                $data3[$i % 24] = ($data3[$i% 24]??0) + ($avgCounts[$i]??0);
+                $data3[$i % 24] = ($data3[$i % 24]??0) + ($avgCounts[$i]??0);
             }
         }
         for ($i = 0; $i < 24; $i++) {
@@ -72,7 +72,7 @@ class HTMLChart {
                 $data1[$i] = $data1[$i]??0;
             }
             $data2[$i] = round10($data2[$i]??0) ;
-            $data3[$i] = round10($data3[$i]??0 / 7 ) ;
+            $data3[$i] = round10(($data3[$i]??0) / 7 ) ;
         }
         $data = array(
             Text::today().' ('.date('Y-m-d').')' => $data1,
