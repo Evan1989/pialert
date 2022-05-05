@@ -76,7 +76,7 @@ $page = new HTMLPageTemplate($authorizationAdmin);
     }
 
     if ( isset($_GET['unionAlertGroup']) ) {
-        echo getUnionAlertGroupForm($authorizationAdmin, (int) $_GET['unionAlertGroup']);
+        echo getUnionAlertGroupForm($page, $authorizationAdmin, (int) $_GET['unionAlertGroup']);
         exit();
     }
 

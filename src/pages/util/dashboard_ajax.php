@@ -123,7 +123,7 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $grou
     return $result;
 }
 
-function getUnionAlertGroupForm(AuthorizationAdmin $authorizationAdmin, int $group_id) : string {
+function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $authorizationAdmin, int $group_id) : string {
     $alertGroup = new PiAlertGroup($group_id);
     $variants = AlertAggregationUtil::getMaybeSimilarAlertGroup($alertGroup);
     $result = "<table class='table table-sm table-hover'>
@@ -146,7 +146,6 @@ function getUnionAlertGroupForm(AuthorizationAdmin $authorizationAdmin, int $gro
                     </tr>";
     foreach ($variants as $mask => $altAlertGroup) {
         /** @var PiAlertGroup $altAlertGroup */
-        /** @var HTMLPageTemplate $page */
         $result .= "<tr>
                         <td class='bg-".$altAlertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($altAlertGroup->status)."</td>
                         <td>".nl2br($altAlertGroup->comment)."</td>
