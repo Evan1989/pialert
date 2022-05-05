@@ -4,7 +4,7 @@ require_once(__DIR__."/../autoload.php");
 
 use EvanPiAlert\Util\AlertAnalytics;
 use EvanPiAlert\Util\AuthorizationAdmin;
-use EvanPiAlert\Util\Calendar;
+use EvanPiAlert\Util\CalendarRussia;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\essence\User;
@@ -110,7 +110,7 @@ $page = new HTMLPageTemplate($authorizationAdmin);
 echo $page->getPageHeader(Text::dashboardPageHeader());
 
 $today = date("Y-m-d"); // сегодня
-$calendar = new Calendar();
+$calendar = new CalendarRussia();
 $last_work_day = time()-ONE_DAY;
 while ($calendar->isWorkingDay( date("Y-m-d", $last_work_day) ) == false) {
     $last_work_day = $last_work_day-ONE_DAY;

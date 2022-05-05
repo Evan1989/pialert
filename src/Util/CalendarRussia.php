@@ -3,7 +3,7 @@
 
 namespace EvanPiAlert\Util;
 
-class Calendar {
+class CalendarRussia {
 
     // нет значения - рабочий день
     // 1 - праздничный день
