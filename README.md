@@ -28,6 +28,7 @@ Language support:
 5. Enter system settings into /src/pages/settings.php
 6. Create the required users in /src/pages/users.php
 7. Grant new users rights via /src/pages/rights.php
+8. _(optional)_ For the semi-automatic PiAlert upgrade system to work, need permissions to write into / (under php user)
 
 # 👷 Installation steps (RU)
 1. Скачать систему PiAlert
@@ -39,6 +40,7 @@ Language support:
 5. Вбить параметры системы в /src/pages/settings.php
 6. Завести необходимых пользователей в /src/pages/users.php
 7. Предоставить новым пользователям права через /src/pages/rights.php
+8. _(необязательно)_ Для работы полуавтоматического обновления PiAlert, нужны права на запись в / (под пользователем php)
 
 # 🚧 Requirements in SAP PI/PO
 1. ⚠️Network access from SAP PI/PO to PiAlert (HTTP/HTTPS)
