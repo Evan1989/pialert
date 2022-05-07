@@ -2,6 +2,7 @@
 
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\SelfUpdateCode;
 use EvanPiAlert\Util\SystemVersion;
 use EvanPiAlert\Util\Text;
 
@@ -89,13 +90,32 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
 	    </div>";
 } elseif ( SystemVersion::isUpgradeNeeded() ) {
     $link = GITHUB_PROJECT_LINK."/archive/main.tar.gz";
+    $autoUpdater = new SelfUpdateCode();
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installUpdateHeader()."</div>
-            <div class='card-body overflow-auto'>
-                ".Text::installUpgradeBody($link, $link)."
-                <br><br>
-                <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>
-            </div>
+            <div class='card-body overflow-auto'>";
+    if ( isset($_GET['update'] ) ) {
+        $result = $autoUpdater->execute();
+        if ( $result === true ) {
+            echo Text::installAutoUpgradeSuccess().
+                "<br><br>
+                <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>";
+        } else {
+            echo Text::installAutoUpgradeFail($result).
+                Text::installUpgradeBody($link, $link).
+                "<br><br>
+                <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>";
+        }
+    } else {
+        if ($autoUpdater->checkPrepareSteps()) {
+            echo Text::installAutoUpgradeBody();
+        } else {
+            echo Text::installUpgradeBody($link, $link);
+        }
+        echo "  <br><br>
+                <a href='install.php?update=1' class='btn btn-primary'>".Text::installNextStep()."</a>";
+    }
+    echo "  </div>
 	    </div>";
 } else {
     echo "<div class='alert alert-success' role='alert'>
