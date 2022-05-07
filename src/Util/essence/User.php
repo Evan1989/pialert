@@ -64,8 +64,13 @@ class User {
         }
     }
 
+    /**
+     * Если пользователя не было более указанного количества секунд, то считаем, что он offline
+     */
+    const ONLINE_SECOND_LIMIT = 300;
+
     public function isOnline() : bool {
-        return $this->getIntervalFromLastAction() < 300;
+        return $this->getIntervalFromLastAction() < self::ONLINE_SECOND_LIMIT;
     }
     public function getIntervalFromLastAction() : int {
         return time() - strtotime($this->online);
@@ -89,8 +94,28 @@ class User {
     }
 
     public function setUserOnlineNow() : void {
+        $this->saveOnlineToStatistic();
         $query = DB::prepare("UPDATE users SET online = NOW() WHERE user_id = ?");
         $query->execute(array( $this->user_id ));
+    }
+
+    protected function saveOnlineToStatistic() : void {
+        $date = date("Y-m-d");
+        if ( empty($this->online) || mb_strpos($this->online, $date) === false ) {
+            // В прошлый раз онлайн был не сегодня
+            $query = DB::prepare("INSERT INTO user_statistic_online (user_id, date, seconds) VALUES (?, ?, ?)");
+            $query->execute(array( $this->user_id, $date, 10 ));
+        } else {
+            // Мы сегодня уже заходили
+            $query = DB::prepare("UPDATE user_statistic_online SET seconds = seconds + ? WHERE user_id = ? AND date = ?");
+            $interval = $this->getIntervalFromLastAction();
+            if ( $interval > 10 * self::ONLINE_SECOND_LIMIT ) {
+                $interval = 10;
+            } elseif ( $interval > self::ONLINE_SECOND_LIMIT ) {
+                $interval = self::ONLINE_SECOND_LIMIT;
+            }
+            $query->execute(array( $interval, $this->user_id, $date ));
+        }
     }
 
 

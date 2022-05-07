@@ -1,11 +1,6 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
-
---
--- База данных: `alert_db`
---
-
 -- --------------------------------------------------------
 
 --
@@ -362,4 +357,5 @@ ALTER TABLE `user_rights`
 --
 ALTER TABLE `user_tokens`
   ADD CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE;
+
 COMMIT;
