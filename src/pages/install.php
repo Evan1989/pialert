@@ -102,6 +102,7 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
                 <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>";
         } else {
             echo Text::installAutoUpgradeFail($result).
+                "<br>".
                 Text::installUpgradeBody($link, $link).
                 "<br><br>
                 <a href='install.php' class='btn btn-primary'>".Text::installNextStep()."</a>";

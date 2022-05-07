@@ -161,7 +161,7 @@ $texts = array(
         3. Перезагрузите страницу',
     'installAutoUpgradeBody' => 'Система попробует автоматически скачать новую версию кода с Github и установить её на сервер.',
     'installAutoUpgradeSuccess' => 'Исходный код системы успешно обновлен.',
-    'installAutoUpgradeFail' => 'В ходе обновления возникли ошибки: <pre>'.Text::REPLACE_PATTERN.'</pre> Вы можете обновить систему в ручном режиме:',
+    'installAutoUpgradeFail' => '⚠️В ходе обновления возникли ошибки: <pre>'.Text::REPLACE_PATTERN.'</pre> Вы можете обновить систему в ручном режиме:',
     'installUpdateSuccess' => 'Таблицы базы данных успешно обновлены до версии '.Text::REPLACE_PATTERN,
     'installFinish' => 'Система корректно развернута',
     'installTrySystem' => 'Попробовать PiAlert',

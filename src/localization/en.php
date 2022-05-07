@@ -161,7 +161,7 @@ $texts = array(
         3. Reload this page',
     'installAutoUpgradeBody' => 'The system will automatically try to download a new version of the code from Github and install it on the server.',
     'installAutoUpgradeSuccess' => 'System source code updated successfully.',
-    'installAutoUpgradeFail' => 'There were errors during the upgrade: <pre>'.Text::REPLACE_PATTERN.'</pre> You can update the system manually:',
+    'installAutoUpgradeFail' => '⚠️There were errors during the upgrade: <pre>'.Text::REPLACE_PATTERN.'</pre> You can update the system manually:',
     'installUpdateSuccess' => 'Database structures successfully upgraded to version '.Text::REPLACE_PATTERN,
     'installFinish' => 'Installation complete successfully',
     'installTrySystem' => 'Try PiAlert',
