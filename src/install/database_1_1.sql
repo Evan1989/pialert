@@ -1,6 +1,12 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
+INSERT INTO `pages` (`menu_id`, `number`, `group_icon`, `group_caption`, `page_icon`, `page_caption`, `url`) VALUES
+(8, '73', 'cloud', 'menuGroupAnalytics', 'calendar', 'menuOnline', '/src/pages/online.php');
+
+INSERT INTO `user_rights` (`user_id`, `menu_id`) VALUES
+(1, 8);
+
 --
 -- Структура таблицы `user_statistic_online`
 --
@@ -21,7 +27,8 @@ CREATE TABLE `user_statistic_online` (
 --
 ALTER TABLE `user_statistic_online`
     ADD PRIMARY KEY (`id`),
-    ADD KEY `user_id` (`user_id`,`date`) USING BTREE;
+    ADD KEY `user_id` (`user_id`) USING BTREE,
+    ADD KEY `date` (`date`) USING BTREE;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

@@ -59,6 +59,7 @@ $texts = array(
     'menuReports' => 'Отчеты',
     'menuRules' => 'Регламент поддержки',
     'menuProfile' => 'Профиль',
+    'menuOnline' => 'Поддержка online',
 
     'usersPageHeader' => 'Все пользователи',
     'usersAddUserSuccess' => 'Для пользователя '.Text::REPLACE_PATTERN.' создана ссылка для входа: '.Text::REPLACE_PATTERN,
@@ -223,4 +224,7 @@ $texts = array(
             В ответ приходит HTTP 200 и пустой json.
         </p>",
 
+    'onlinePageHeader' => 'Статистика работы сотрудников',
+    'onlineModeUsually' => 'Обычно',
+    'onlineModeThisWeek' => 'Последняя неделя',
 );
