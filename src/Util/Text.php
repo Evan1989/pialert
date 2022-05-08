@@ -57,6 +57,7 @@ namespace EvanPiAlert\Util;
  * @method static string menuReports()
  * @method static string menuRules()
  * @method static string menuProfile()
+ * @method static string menuOnline()
  * @method static string profilePageHeader()
  * @method static string profileLanguage()
  * @method static string profileChangePassword()
@@ -146,6 +147,9 @@ namespace EvanPiAlert\Util;
  * @method static string installUpdateSuccess($arg)
  * @method static string installFinish()
  * @method static string installTrySystem()
+ * @method static string onlinePageHeader()
+ * @method static string onlineModeUsually()
+ * @method static string onlineModeThisWeek()
  **/
 class Text {
 

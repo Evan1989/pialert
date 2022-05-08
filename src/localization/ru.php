@@ -59,6 +59,7 @@ $texts = array(
     'menuReports' => 'Отчеты',
     'menuRules' => 'Регламент поддержки',
     'menuProfile' => 'Профиль',
+    'menuOnline' => 'Поддержка online',
 
     'usersPageHeader' => 'Все пользователи',
     'usersAddUserSuccess' => 'Для пользователя '.Text::REPLACE_PATTERN.' создана ссылка для входа: '.Text::REPLACE_PATTERN,
@@ -161,7 +162,7 @@ $texts = array(
         3. Перезагрузите страницу',
     'installAutoUpgradeBody' => 'Система попробует автоматически скачать новую версию кода с Github и установить её на сервер.',
     'installAutoUpgradeSuccess' => 'Исходный код системы успешно обновлен.',
-    'installAutoUpgradeFail' => '⚠️В ходе обновления возникли ошибки: <pre>'.Text::REPLACE_PATTERN.'</pre> Вы можете обновить систему в ручном режиме:',
+    'installAutoUpgradeFail' => '⚠️Входе обновления возникли ошибки: <pre>'.Text::REPLACE_PATTERN.'</pre> Вы можете обновить систему в ручном режиме:',
     'installUpdateSuccess' => 'Таблицы базы данных успешно обновлены до версии '.Text::REPLACE_PATTERN,
     'installFinish' => 'Система корректно развернута',
     'installTrySystem' => 'Попробовать PiAlert',
@@ -223,4 +224,7 @@ $texts = array(
             В ответ приходит HTTP 200 и пустой json.
         </p>",
 
+    'onlinePageHeader' => 'Статистика работы сотрудников',
+    'onlineModeUsually' => 'Обычно',
+    'onlineModeThisWeek' => 'Последняя неделя',
 );

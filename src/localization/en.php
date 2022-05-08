@@ -59,6 +59,7 @@ $texts = array(
     'menuReports' => 'Reports',
     'menuRules' => 'Support rules',
     'menuProfile' => 'Profile',
+    'menuOnline' => 'Support online',
 
     'usersPageHeader' => 'All users',
     'usersAddUserSuccess' => 'For user '.Text::REPLACE_PATTERN.' created login link: '.Text::REPLACE_PATTERN,
@@ -222,4 +223,8 @@ $texts = array(
         <p>
             The response is HTTP 200 and empty json.
         </p>",
+
+    'onlinePageHeader' => 'Support online statistic',
+    'onlineModeUsually' => 'Usually',
+    'onlineModeThisWeek' => 'Last week',
 );
