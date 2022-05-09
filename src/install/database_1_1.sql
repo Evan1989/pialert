@@ -31,6 +31,12 @@ ALTER TABLE `user_statistic_online`
     ADD KEY `date` (`date`) USING BTREE;
 
 --
+-- AUTO_INCREMENT для таблицы `user_statistic_online`
+--
+ALTER TABLE `user_statistic_online`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
 -- Ограничения внешнего ключа сохраненных таблиц
 --
 
