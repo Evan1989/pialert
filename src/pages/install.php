@@ -1,16 +1,30 @@
 <?php
 
+use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\HTMLPageTemplate;
 use EvanPiAlert\Util\SelfUpdateCode;
 use EvanPiAlert\Util\SystemVersion;
 use EvanPiAlert\Util\Text;
 
+//////////////////////////////////////////////////
+// Шаг 1. Только скачали код, нужны библиотеки  //
+//////////////////////////////////////////////////
+if ( !is_file(__DIR__."/../../vendor/autoload.php") ) {
+    echo "You need to install Development dependencies. Use command in console:
+         <pre>composer install</pre>
+         <a href='install.php'>Next step</a>";
+    exit();
+}
+
 require_once(__DIR__."/../autoload.php");
 
 $page = new HTMLPageTemplate();
 echo $page->getPageHeader(Text::installPageHeader());
 
+//////////////////////////////////////////////////
+//   Шаг 2. Базовые настройки в config.php      //
+//////////////////////////////////////////////////
 if ( is_file(__DIR__ . "/../config.php") === false ) {
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installStep1Header()."</div>
@@ -25,6 +39,9 @@ if ( is_file(__DIR__ . "/../config.php") === false ) {
     exit();
 }
 
+//////////////////////////////////////////////////
+//   Шаг 3. Первичная установка Базы данных     //
+//////////////////////////////////////////////////
 function executeScriptInDataBase(int $mainVersion, int $minorVersion, bool $skipNotFoundVersions = false) : bool|string {
     $file = __DIR__.'/../install/database_'.$mainVersion.'_'.$minorVersion.'.sql';
     if ( is_file($file) === false ) {
@@ -62,8 +79,15 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
                 <a href='install.php?create=1' class='btn btn-primary'>".Text::installNextStep()."</a>";
     }
     echo "   </div>
-	    </div>";
-} elseif ( SystemVersion::isFinishInstallNeeded() ) {
+	    </div>".
+        $page->getPageFooter();
+    exit();
+}
+
+//////////////////////////////////////////////////
+//   Шаг 4. Обновление версии базы данных       //
+//////////////////////////////////////////////////
+if ( SystemVersion::isFinishInstallNeeded() ) {
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installUpdateHeader()."</div>
             <div class='card-body overflow-auto'>";
@@ -87,8 +111,19 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
                 <a href='install.php?update=1' class='btn btn-primary'>".Text::installNextStep()."</a>";
     }
     echo "  </div>
-	    </div>";
-} elseif ( SystemVersion::isUpgradeNeeded() ) {
+	    </div>".
+        $page->getPageFooter();
+    exit();
+}
+
+// Дальнейшие шаги доступны только, если есть права на это
+$authorizationAdmin = new AuthorizationAdmin();
+$authorizationAdmin->ifNotAccessGoErrorPage('/src/pages/settings.php');
+
+//////////////////////////////////////////////////
+//   Шаг 5. Обновление версии всей системы      //
+//////////////////////////////////////////////////
+if ( SystemVersion::isUpgradeNeeded() ) {
     $link = GITHUB_PROJECT_LINK."/archive/main.tar.gz";
     $autoUpdater = new SelfUpdateCode();
     echo "<div class='card mb-4 shadow'>
@@ -117,13 +152,17 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
                 <a href='install.php?update=1' class='btn btn-primary'>".Text::installNextStep()."</a>";
     }
     echo "  </div>
-	    </div>";
-} else {
-    echo "<div class='alert alert-success' role='alert'>
-            ".Text::installFinish()."
-            <br><br>
-            <a href='/' class='btn btn-primary'>".Text::installTrySystem()."</a>
-    </div>";
+	    </div>".
+        $page->getPageFooter();
+    exit();
 }
 
-echo $page->getPageFooter();
+//////////////////////////////////////////////////
+//         Нечего обновлять - все ок            //
+//////////////////////////////////////////////////
+echo "<div class='alert alert-success' role='alert'>
+        ".Text::installFinish()."
+        <br><br>
+        <a href='/' class='btn btn-primary'>".Text::installTrySystem()."</a>
+    </div>".
+    $page->getPageFooter();

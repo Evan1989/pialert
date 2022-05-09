@@ -142,7 +142,7 @@ if ( SystemVersion::isFinishInstallNeeded() || SystemVersion::isUpgradeNeeded() 
 $systemFields = array(
     array(Text::settingsHostname(), SERVER_HOST, 'blocked'),
     array(Text::settingsCodeVersion(), SystemVersion::getCodeVersion(), 'blocked'),
-    array(Text::settingsDataBaseVersion(), SystemVersion::getDatabaseVersion(), 'blocked'),
+    array(Text::settingsDataBaseVersion(), SystemVersion::getDatabaseVersion().'.*', 'blocked'),
 );
 $githubVersion = SystemVersion::getGithubVersion();
 if ( $githubVersion !== false ) {
