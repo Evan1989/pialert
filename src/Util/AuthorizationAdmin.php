@@ -129,11 +129,14 @@ class AuthorizationAdmin {
         return -1;
     }
 
-	public function ifNotAccessGoErrorPage(): bool {
+	public function ifNotAccessGoErrorPage(string $url = ''): bool {
 		if ( !empty($_GET['logout']) ) {
 			$this->logout();
 		}
-		if ( $this->checkAccess( $_SERVER['PHP_SELF'] ) ) {
+        if ( empty($url) ) {
+            $url = $_SERVER['PHP_SELF'];
+        }
+		if ( $this->checkAccess( $url ) ) {
 			return true;
 		}
 		switch ($this->last_error) {
