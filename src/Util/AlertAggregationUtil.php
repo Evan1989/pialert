@@ -81,13 +81,14 @@ class AlertAggregationUtil {
         if ( is_null($alertGroupTarget->user_id) ) {
             $alertGroupTarget->user_id = $alertGroupFrom->user_id;
         }
-
         $unionMask = TextAnalysisUtil::getMaskFromTexts($alertGroupFrom->errTextMask, $alertGroupTarget->errTextMask);
         if ( is_null($unionMask) ) {
             return false;
         }
         $alertGroupTarget->errTextMask = $unionMask;
-
+        if ( $alertGroupTarget->status == PiAlertGroup::CLOSE ) {
+            $alertGroupTarget->status = PiAlertGroup::REOPEN;
+        }
         $alertGroupTarget->firstAlert = min($alertGroupTarget->firstAlert, $alertGroupFrom->firstAlert);
         $alertGroupTarget->lastAlert = max($alertGroupTarget->lastAlert, $alertGroupFrom->lastAlert);
         $alertGroupTarget->lastUserAction = max($alertGroupTarget->lastUserAction, $alertGroupFrom->lastUserAction);
