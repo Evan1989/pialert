@@ -171,7 +171,7 @@ function getUnionAlertGroupResult(int $group_id_from, int $group_id_to) : string
             return Text::dashboardUnionSuccess()."
                     <br>
                     <br>
-                    <a href='javascript:location.reload()' class='btn btn-primary btn-sm'>".Text::reloadPage()."</a>";
+                    <a href='javascript:dashboardPageReload()' class='btn btn-primary btn-sm'>".Text::reloadPage()."</a>";
         }
         return "<div class='badge bg-danger'>".Text::dashboardUnionFail()."</div>";
     }

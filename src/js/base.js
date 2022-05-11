@@ -220,9 +220,12 @@ function initJavascriptForDashboard() {
         }
     });
     setTimeout(function(){
-        let search = $('#mainTableSearch').val()
-        location.href = 'dashboard.php?search='+search;
+        dashboardPageReload();
     }, 300000);
+}
+function dashboardPageReload() {
+    let search = $('#mainTableSearch').val()
+    location.href = 'dashboard.php?search='+search;
 }
 function addAjaxFunctionForInputInAlertGroupTable(field) {
     field.change(function(){
