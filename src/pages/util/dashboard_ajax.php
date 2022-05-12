@@ -42,7 +42,7 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
                 break;
             case 'comment':
                 if ( !is_null($value) ) {
-                    $alertGroup->comment = str_replace("<", "&lt;", $value);
+                    $alertGroup->setComment($value);
                 }
                 $result = getComment($alertGroup);
                 break;
@@ -139,7 +139,7 @@ function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $auth
                 <tbody>
                     <tr>
                         <td class='bg-".$alertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($alertGroup->status)."</td>
-                        <td>".nl2br($alertGroup->comment)."</td>
+                        <td>".$alertGroup->getHTMLComment()."</td>
                         <td>".$alertGroup->getHTMLErrorTextMask()."</td>
                         <td>-</td>
                         <td>".Text::dashboardUnionGroupButtonStep2()."</td>
@@ -148,7 +148,7 @@ function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $auth
         /** @var PiAlertGroup $altAlertGroup */
         $result .= "<tr>
                         <td class='bg-".$altAlertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($altAlertGroup->status)."</td>
-                        <td>".nl2br($altAlertGroup->comment)."</td>
+                        <td>".$altAlertGroup->getHTMLComment()."</td>
                         <td>".$altAlertGroup->getHTMLErrorTextMask()."</td>
                         <td>".str_replace('*', "<span class='text-danger'>*</span>", $mask)."</td>
                         <td>

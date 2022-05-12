@@ -31,6 +31,7 @@ $texts = array(
     'reloadPage' => 'Обновить страницу',
     'complete' => 'Готово',
     'back' => 'Назад',
+    'or' => 'или',
 
     'statusNew' => 'Новое',
     'statusIgnore' => 'Игнор',
@@ -60,6 +61,7 @@ $texts = array(
     'menuRules' => 'Регламент поддержки',
     'menuProfile' => 'Профиль',
     'menuOnline' => 'Поддержка online',
+    'menuMassAlerts' => 'Массовые инциденты',
 
     'usersPageHeader' => 'Все пользователи',
     'usersAddUserSuccess' => 'Для пользователя '.Text::REPLACE_PATTERN.' создана ссылка для входа: '.Text::REPLACE_PATTERN,
@@ -227,4 +229,12 @@ $texts = array(
     'onlinePageHeader' => 'Статистика работы сотрудников',
     'onlineModeUsually' => 'Обычно',
     'onlineModeThisWeek' => 'Последняя неделя',
+
+    'massAlertsPageHeader' => 'Работа с массовыми инцидентами',
+    'massAlertsSearchBlockHeader' => 'Поиск массовых алертов',
+    'massAlertsFoundedBlockHeader' => 'Массовое редактирование найденных алертов',
+    'massAlertsFoundedCount' => 'Найдено записей',
+    'massAlertsReplace' => 'Заменить',
+    'massAlertsRemoveIcon' => 'Убрать значок',
+
 );

@@ -31,6 +31,7 @@ $texts = array(
     'reloadPage' => 'Reload page',
     'complete' => 'Complete',
     'back' => 'Back',
+    'or' => 'or',
 
     'statusNew' => 'New',
     'statusIgnore' => 'Ignore',
@@ -60,6 +61,7 @@ $texts = array(
     'menuRules' => 'Support rules',
     'menuProfile' => 'Profile',
     'menuOnline' => 'Support online',
+    'menuMassAlerts' => 'Mass Incidents',
 
     'usersPageHeader' => 'All users',
     'usersAddUserSuccess' => 'For user '.Text::REPLACE_PATTERN.' created login link: '.Text::REPLACE_PATTERN,
@@ -227,4 +229,11 @@ $texts = array(
     'onlinePageHeader' => 'Support online statistic',
     'onlineModeUsually' => 'Usually',
     'onlineModeThisWeek' => 'Last week',
+
+    'massAlertsPageHeader' => 'Dashboard for mass incidents',
+    'massAlertsSearchBlockHeader' => 'Search for mass incidents',
+    'massAlertsFoundedBlockHeader' => 'Bulk editing of found incidents',
+    'massAlertsFoundedCount' => 'Records found',
+    'massAlertsReplace' => 'Replace',
+    'massAlertsRemoveIcon' => 'Remove icon',
 );

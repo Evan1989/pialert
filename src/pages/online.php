@@ -36,7 +36,7 @@ if ( $mode == 'thisWeek' ) {
 
 $userOnlineStatistic = array();
 while ($row = $query->fetch()) {
-    $weekCount =1 + floor((strtotime($row['max_date']) - strtotime($row['min_date']))/ONE_WEEK);
+    $weekCount = 1 + floor((strtotime($row['max_date']) - strtotime($row['min_date']))/ONE_WEEK);
     $userOnlineStatistic[$row['user_id']][$row['week_day']] = round($row['seconds'] / $weekCount);
 }
 
@@ -57,7 +57,7 @@ for ($i = 0; $i < 7; $i++) {
 echo "               <tr>
                     </thead> 
                     <tbody>";
-$query = DB::prepare("SELECT * FROM users");
+$query = DB::prepare("SELECT * FROM users ORDER BY FIO");
 $query->execute(array());
 while ($row = $query->fetch()) {
     $user = new User($row);

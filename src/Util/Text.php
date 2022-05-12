@@ -32,6 +32,7 @@ namespace EvanPiAlert\Util;
  * @method static string reloadPage()
  * @method static string complete()
  * @method static string back()
+ * @method static string or()
  * @method static string statusNew()
  * @method static string statusIgnore()
  * @method static string statusManual()
@@ -58,6 +59,7 @@ namespace EvanPiAlert\Util;
  * @method static string menuRules()
  * @method static string menuProfile()
  * @method static string menuOnline()
+ * @method static string menuMassAlerts()
  * @method static string profilePageHeader()
  * @method static string profileLanguage()
  * @method static string profileChangePassword()
@@ -150,6 +152,12 @@ namespace EvanPiAlert\Util;
  * @method static string onlinePageHeader()
  * @method static string onlineModeUsually()
  * @method static string onlineModeThisWeek()
+ * @method static string massAlertsPageHeader()
+ * @method static string massAlertsSearchBlockHeader()
+ * @method static string massAlertsFoundedBlockHeader()
+ * @method static string massAlertsFoundedCount()
+ * @method static string massAlertsReplace()
+ * @method static string massAlertsRemoveIcon()
  **/
 class Text {
 
