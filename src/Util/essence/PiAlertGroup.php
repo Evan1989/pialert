@@ -174,6 +174,10 @@ class PiAlertGroup {
         return 0;
     }
 
+    public function setComment(string $comment) : void {
+        $this->comment = str_replace("<", "&lt;", $comment);
+    }
+
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @param int|null $timeLimit

@@ -129,7 +129,7 @@ echo "          </tbody>
         <div class='card-footer'>
             <form action='' method='POST'>
                 <div class='mb-3'>
-                    <input class='form-control' type='text' name='newUser' maxlength='100' value='' placeholder='".Text::user()."' data-placement='top' data-toggle='tooltip' title='".Text::surnameName()." or e-mail' required>
+                    <input class='form-control' type='text' name='newUser' maxlength='100' value='' placeholder='".Text::user()."' data-placement='top' data-toggle='tooltip' title='".Text::surnameName()." ".Text::or()." e-mail' required>
                 </div>
                 <input class='btn btn-primary' type='submit' value='".Text::addUser()."'>
             </form>    

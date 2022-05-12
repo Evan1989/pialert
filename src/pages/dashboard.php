@@ -228,7 +228,7 @@ foreach ($legend as $status => $text ) {
                    </tr>";
 }
 echo "              <tr>
-                        <td>".$page->getIcon('bell-fill')." или ".$page->getIcon('bell')."</td>
+                        <td>".$page->getIcon('bell-fill')." ".Text::or()." ".$page->getIcon('bell')."</td>
                         <td>".Text::dashboardLegendActualAlert()."</td>
                     </tr>
                 </tbody>
