@@ -249,7 +249,8 @@ $noConnectPiSystems = array();
 $checks = Settings::get(Settings::SYSTEMS_NETWORK_CHECK);
 $checks = json_decode($checks, true);
 foreach ($globalLastAlert as $system => $timeFromLastAlert) {
-    if ( empty($checks[$system]) || time() - strtotime($checks[$system]) > 600 ) {
+    // Проверяем только если от этой системы хотя бы раз приходил ping
+    if ( !empty($checks[$system]) && time() - strtotime($checks[$system]) > 600 ) {
         $noConnectPiSystems[$system] = 1;
     }
 }
