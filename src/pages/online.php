@@ -16,27 +16,35 @@ $authorizationAdmin->ifNotAccessGoErrorPage();
 $page = new HTMLPageTemplate($authorizationAdmin);
 echo $page->getPageHeader(Text::onlinePageHeader());
 
+
+$mode = $_GET['mode']??'';
+$todayWeekDay = date("N")-1; // от 0 до 6
+if ( $mode == 'thisWeek' ) {
+    $startWeekDay = $todayWeekDay; // от 0 до 6
+    $startWeekDay = ($startWeekDay + 1) % 7; // сместим так, чтобы показать за последние 6 дней + сегодня
+    $weekCount = 1;
+} else {
+    $mode = 'usually';
+    $startWeekDay = 0;
+    $weekCount = 4;
+    $query = DB::prepare("SELECT min(date) as min_date FROM user_statistic_online WHERE date > NOW() - INTERVAL ? WEEK");
+    $query->execute(array( $weekCount ));
+    if ($row = $query->fetch()) {
+        $weekCount = 1 + floor((time() - strtotime($row['min_date']))/ONE_WEEK);
+    } else {
+        $weekCount = 1;
+    }
+}
+
+$userOnlineStatistic = array();
 $query = DB::prepare("
-    SELECT user_id, WEEKDAY(date) as week_day, sum(seconds) as seconds, MIN(date) as min_date, MAX(date) as max_date
+    SELECT user_id, WEEKDAY(date) as week_day, sum(seconds) as seconds
     FROM user_statistic_online
     WHERE date > NOW() - INTERVAL ? WEEK
     GROUP by user_id, week_day
 ");
-
-$mode = $_GET['mode']??'';
-if ( $mode == 'thisWeek' ) {
-    $startWeekDay = date("N")-1; // от 0 до 6
-    $startWeekDay = ($startWeekDay + 1) % 7; // сместим так, чтобы показать за последние 6 дней + сегодня
-    $query->execute(array(1));
-} else {
-    $mode = 'usually';
-    $startWeekDay = 0;
-    $query->execute(array(4));
-}
-
-$userOnlineStatistic = array();
+$query->execute(array( $weekCount ));
 while ($row = $query->fetch()) {
-    $weekCount = 1 + floor((strtotime($row['max_date']) - strtotime($row['min_date']))/ONE_WEEK);
     $userOnlineStatistic[$row['user_id']][$row['week_day']] = round($row['seconds'] / $weekCount);
 }
 
@@ -52,7 +60,11 @@ echo "<div class='card mb-4 shadow'>
                       <tr>
                           <th>Сотрудник</th>";
 for ($i = 0; $i < 7; $i++) {
-    echo "                <th>".mb_convert_case(Text::dayNameArray()[ ($i+$startWeekDay)%7 + 1], MB_CASE_TITLE )."</th>";
+    $title = mb_convert_case(Text::dayNameArray()[ ($i+$startWeekDay)%7 + 1], MB_CASE_TITLE );
+    if ( $mode == 'thisWeek' && $i == 6 || $mode != 'thisWeek' && $i == $todayWeekDay ) {
+        $title .= '='.Text::today();
+    }
+    echo "                <th>".$title."</th>";
 }
 echo "               <tr>
                     </thead> 
