@@ -45,7 +45,12 @@ $query = DB::prepare("
 ");
 $query->execute(array( $weekCount ));
 while ($row = $query->fetch()) {
-    $userOnlineStatistic[$row['user_id']][$row['week_day']] = round($row['seconds'] / $weekCount);
+    if ( $weekCount <= 1 ) {
+        $countForAvgCalc = $weekCount;
+    } else {
+        $countForAvgCalc = $weekCount - ($row['week_day']>$todayWeekDay?1:0);
+    }
+    $userOnlineStatistic[$row['user_id']][$row['week_day']] = round($row['seconds'] / $countForAvgCalc);
 }
 
 echo "<div class='card mb-4 shadow'>
