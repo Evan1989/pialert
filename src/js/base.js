@@ -168,7 +168,7 @@ function initJavascriptForUsers() {
         $.ajax({
             type: 'POST',
             url: 'users.php',
-            data: 'field='+id+'&value='+value,
+            data: {'field':id, 'value':value},
             'success': function(data) {
                 $('#'+id).prop('disabled', false);
                 console.log(data);
@@ -266,7 +266,7 @@ function updateInputFieldInAlertGroupTable(field) {
     $.ajax({
         type: 'POST',
         url: 'dashboard.php',
-        data: 'element='+id,
+        data: {'element':id},
         'success': function(data) {
             field.replaceWith(data);
             addAjaxFunctionForInputInAlertGroupTable($('#'+id));
@@ -281,7 +281,7 @@ function changeInputFieldInAlertGroupTable(field) {
     $.ajax({
         type: 'POST',
         url: 'dashboard.php',
-        data: 'element='+id+'&value='+field.val(),
+        data: {'element':id, 'value':field.val()},
         'success': function(data) {
             field.replaceWith(data);
             let updatedField = $('#'+id)
