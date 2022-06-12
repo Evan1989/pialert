@@ -6,7 +6,10 @@ use EvanPiAlert\Util\DB;
 require_once(__DIR__."/../autoload.php");
 
 $authorizationAdmin = new AuthorizationAdmin();
-$authorizationAdmin->login();
+if ( !$authorizationAdmin->login() ) {
+    $authorizationAdmin->showAuthorizationPage();
+    exit();
+}
 $query = DB::prepare("
     SELECT *
     FROM

@@ -9,6 +9,13 @@ $(document).ready(function() {
         });
         executeSearchFilter(mainTableSearch);
     }
+
+    $('#auth-token').each(function(){
+        if ( $(this).val() ) {
+            $('#auth-form').submit();
+        }
+    })
+
 });
 function executeSearchFilter(input) {
     let value = input.val().toLowerCase();
