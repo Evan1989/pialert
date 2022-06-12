@@ -57,7 +57,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=33'></script>".
+        <script src='/src/js/base.js?v=34'></script>".
         $additionalJavaScript.
     "</body>
 </html>";

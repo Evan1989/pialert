@@ -139,15 +139,13 @@ if ( SystemVersion::isFinishInstallNeeded() || SystemVersion::isUpgradeNeeded() 
     $addButton = '';
 }
 
+$githubVersion = SystemVersion::getGithubVersion();
 $systemFields = array(
     array(Text::settingsHostname(), SERVER_HOST, 'blocked'),
     array(Text::settingsCodeVersion(), SystemVersion::getCodeVersion(), 'blocked'),
     array(Text::settingsDataBaseVersion(), SystemVersion::getDatabaseVersion().'.*', 'blocked'),
+    array(Text::settingsGithubVersion(), $githubVersion?:GITHUB_PROJECT_LINK, 'blocked')
 );
-$githubVersion = SystemVersion::getGithubVersion();
-if ( $githubVersion !== false ) {
-    $systemFields[] = array(Text::settingsGithubVersion(), SystemVersion::getGithubVersion(), 'blocked');
-}
 echo getSmallSettingGroup(Text::settingsCommonSettings().' PiAlert', $systemFields, $addButton);
 foreach (Settings::getSettingGroups() as $code => $description) {
     echo getSettingGroup($code, $description);
