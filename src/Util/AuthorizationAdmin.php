@@ -58,7 +58,7 @@ class AuthorizationAdmin {
 			$this->deleteToken( $_COOKIE['auth_token'] );
 		}
 		setcookie( "auth_token", "", time(), "/" );
-        Header("Location: ".str_replace("logout=".$_GET['logout'], "", $_SERVER['REQUEST_URI']));
+        Header("Location: ".str_replace("logout=", "", $_SERVER['REQUEST_URI']));
         exit();
 	}
 
@@ -70,24 +70,14 @@ class AuthorizationAdmin {
 	    if ( $this->logged ) {
 	        return true;
         }
-        // Если в URL напрямую указан токен
-        if ( !empty($_GET['token']) ) {
-            // проверим токен
-            $user_id = $this->checkToken( $_GET['token'] );
-            if ( $user_id > 0 ) {
-                // Похоже мы заново проходим авторизацию. Если есть старая сессия, удалим ее
-                if ( !empty($_COOKIE['auth_token']) ) {
-                    $this->deleteToken( $_COOKIE['auth_token'] );
-                }
-                $this->deleteToken( $_GET['token'] );
-                $this->tryToStartSession($user_id, true);
-            }
-            Header("Location: ".str_replace("token=".$_GET['token'], "", $_SERVER['REQUEST_URI']));
-            exit();
-        }
         // Если мы логинимся прямо сейчас через форму
         if ( !empty($_POST) ) {
-            $user_id = $this->loginByEmailAndPassword( $_POST['email']??'', $_POST['password']??'' );
+            if ( isset($_POST['token']) ) {
+                $user_id = $this->checkToken( $_GET['token'] );
+                $this->deleteToken( $_GET['token'] );
+            } else {
+                $user_id = $this->loginByEmailAndPassword($_POST['email'] ?? '', $_POST['password'] ?? '');
+            }
             if ( $this->tryToStartSession($user_id, true) ) {
                 Header("Location: " . $_SERVER['REQUEST_URI']);
                 exit();
@@ -141,27 +131,38 @@ class AuthorizationAdmin {
 		}
 		switch ($this->last_error) {
             case 401:
-                $page = new HTMLPageTemplate();
-                echo $page->getPageHeader(Text::authorizationPageTitle()).
-                    "<div class='card mb-4 shadow'>
-	                    <div class='card-header'>".Text::authorizationPageHeader()."</div>
-                        <div class='card-body d-flex align-items-center justify-content-center'>
-                            <form action='' method='POST' class='col-md-3'>
-                                <input type='email' name='email' placeholder='E-mail' class='form-control mb-1' required>
-                                <input type='password' name='password' placeholder='Password' class='form-control mb-1' required>
-                                <input type='submit' value='Login' class='form-control btn btn-primary'>
-                            </form>
-                        </div>
-                    </div>".
-                    $page->getPageFooter();
+                $this->showAuthorizationPage();
                 break;
             case 403:
                 echo Text::authorization403Error();
+                http_response_code( 403 );
                 break;
         }
-		http_response_code( $this->last_error );
 		exit();
 	}
+
+    public function showAuthorizationPage(): void {
+        $page = new HTMLPageTemplate();
+        echo $page->getPageHeader(Text::authorizationPageTitle()).
+            "<div class='card mb-4 shadow'>
+	                    <div class='card-header'>".Text::authorizationPageHeader()."</div>
+                        <div class='card-body d-flex align-items-center justify-content-center'>
+                            <form action='' method='POST' class='col-md-3' id='auth-form'>";
+        if ( empty($_GET['token']) ) {
+            // Вход по логину и паролю
+            echo "      <input type='email' name='email' placeholder='E-mail' class='form-control mb-1' required>
+                        <input type='password' name='password' placeholder='Password' class='form-control mb-1' required>";
+        } else {
+            // Если в URL напрямую указан токен (одноразовая ссылка)
+            echo "      <input type='text' name='token' placeholder='Login token' class='form-control mb-1' value=\"".htmlspecialchars($_GET['token'])."\" required id='auth-token'>";
+        }
+        echo "          <input type='submit' value='Login' class='form-control btn btn-primary'>
+                            </form>
+                        </div>
+                    </div>".
+            $page->getPageFooter();
+        http_response_code( 401 );
+    }
 
     public function checkAccessToMenu(int $menu_id) : bool {
         $query = DB::prepare("SELECT url FROM pages  WHERE menu_id = ? ");
@@ -231,6 +232,9 @@ class AuthorizationAdmin {
 	private function startSession( User $user, bool $updateToken ) : void {
         $this->setUser($user);
 		if ( $updateToken ) {
+            if ( !empty($_COOKIE['auth_token']) ) {
+                $this->deleteToken( $_COOKIE['auth_token'] );
+            }
 			setcookie( "auth_token", $this->getTokenForUser($user->user_id), time() + ONE_MONTH, "/" );
 		}
 	}
@@ -239,7 +243,7 @@ class AuthorizationAdmin {
 		return mb_substr(md5(microtime().$user_id), 0, 20);
 	}
 
-	public function getTokenForUser( $user_id, $try = 10 ): bool|string {
+	public function getTokenForUser( $user_id, $try = 20 ): bool|string {
 		if ( $try < 0 ) {
 			return false;
 		}
