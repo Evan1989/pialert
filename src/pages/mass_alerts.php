@@ -28,6 +28,8 @@ if ( $system && $errorText ) {
     $status = $_POST['status']??null;
     if ( $status == PiAlertGroup::getStatusName(PiAlertGroup::CLOSE) ) {
         $status = PiAlertGroup::CLOSE;
+    } elseif ( $status == PiAlertGroup::getStatusName(PiAlertGroup::IGNORE) ) {
+        $status = PiAlertGroup::IGNORE;
     } else {
         $status = PiAlertGroup::WAIT;
     }
@@ -41,7 +43,11 @@ if ( $system && $errorText ) {
             AND status != ?
         order by last_alert desc
     ");
-    $query->execute(array('%'.$system.'%', '%'.$system.'%', '%'.$errorText.'%', PiAlertGroup::CLOSE));
+    $systemForSearch = '%'.str_replace('*', '%',$system).'%';
+    $errorTextForSearch = '%'.str_replace('*', '%',$errorText).'%';
+    var_dump($systemForSearch);
+    var_dump($errorTextForSearch);
+    $query->execute(array($systemForSearch, $systemForSearch, $errorTextForSearch, PiAlertGroup::CLOSE));
     while ($row = $query->fetch()) {
         $alertGroup = new PiAlertGroup($row);
         if ( isset($_POST['comment']) ) {
@@ -94,7 +100,7 @@ echo "<div class='card mb-4 shadow'>
                     </div>
                     <label class='col-sm-6'>
                         <i>
-                            Channel stopped by administrative task
+                            Channel stopped by administrative task. Channel Name: *_JDBC_Receiver
                             <br>
                             Cannot establish connection
                             <br>
@@ -141,6 +147,7 @@ if ( $groupCount > 1 ) {
                             <label class='col-form-label col-sm-4'>".Text::massAlertsReplace()." ".Text::status().":</label>
                             <div class='col-sm-8'>
                                <input class='btn btn-".PiAlertGroup::statusColor(PiAlertGroup::CLOSE, true)."' type='submit' name='status' value='".Text::statusClose()."'>
+                                <input class='btn btn-".PiAlertGroup::statusColor(PiAlertGroup::IGNORE, true)."' type='submit' name='status' value='".Text::statusIgnore()."'>
                                 <input class='btn btn-".PiAlertGroup::statusColor(PiAlertGroup::WAIT, true)."' type='submit' name='status' value='".Text::statusWait()."'>
                             </div>
                         </div>
