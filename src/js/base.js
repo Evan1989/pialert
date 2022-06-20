@@ -283,20 +283,23 @@ function updateInputFieldInAlertGroupTable(field) {
 function changeInputFieldInAlertGroupTable(field) {
     field.prop('disabled', true);
     let id = field.attr('id');
-    let needUpdateStatusField = field.hasClass('alert-group-user-select');
-    let needUpdateUserField = field.hasClass('alert-group-status-select');
+    let value = field.val();
+    let userFieldUpdated = field.hasClass('alert-group-user-select');
+    let statusFieldUpdated = field.hasClass('alert-group-status-select');
     $.ajax({
         type: 'POST',
         url: 'dashboard.php',
-        data: {'element':id, 'value':field.val()},
+        data: {'element':id, 'value':value},
         'success': function(data) {
             field.replaceWith(data);
             let updatedField = $('#'+id)
-            if ( needUpdateStatusField === true ) {
+            if ( userFieldUpdated === true ) {
                 updateInputFieldInAlertGroupTable(updatedField.parent().parent().find('.alert-group-status-select'));
             }
-            if ( needUpdateUserField === true ) {
+            if ( statusFieldUpdated === true ) {
                 updateInputFieldInAlertGroupTable(updatedField.parent().parent().find('.alert-group-user-select'));
+                let temp = id.split('_');
+                checkAlertGroupAsComplete(temp[1]);
             }
             addAjaxFunctionForInputInAlertGroupTable(updatedField);
         }
