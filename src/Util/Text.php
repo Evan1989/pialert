@@ -66,6 +66,7 @@ namespace EvanPiAlert\Util;
  * @method static string profileNewPassword()
  * @method static string profilePasswordChangeSuccess()
  * @method static string profilePasswordChangeFail()
+ * @method static string profileTotalOnline()
  * @method static string usersPageHeader()
  * @method static string usersAddUserSuccess($arg1, $arg2)
  * @method static string usersLastActionTime($arg1)

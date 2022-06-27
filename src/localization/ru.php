@@ -74,6 +74,7 @@ $texts = array(
     'profileNewPassword' => 'Новый пароль',
     'profilePasswordChangeSuccess' => 'Пароль обновлен',
     'profilePasswordChangeFail' => 'Не удалось обновить пароль!',
+    'profileTotalOnline' => 'Проведено в системе',
 
     'settingsUpdateSuccess' => 'Настройки обновлены.',
     'settingsUpdateFail' => 'Не удалось сохранить одну из настроек!',
