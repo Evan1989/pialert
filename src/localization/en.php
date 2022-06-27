@@ -47,7 +47,7 @@ $texts = array(
     'hoursArray' => array('hour', 'hours', 'hours'),
     'minutesArray' => array('minute', 'minutes', 'minutes'),
     'secondsArray' => array('second', 'seconds', 'seconds'),
-    'immediately' => 'immediately',
+    'immediately' => 'less then a second',
 
     'menuGroupSettings' => 'Settings',
     'menuGroupAnalytics' => 'Analytics',
@@ -74,6 +74,7 @@ $texts = array(
     'profileNewPassword' => 'New password',
     'profilePasswordChangeSuccess' => 'Password change successfully',
     'profilePasswordChangeFail' => 'Password change failed!',
+    'profileTotalOnline' => 'Total online',
 
     'settingsUpdateSuccess' => 'Settings updated.',
     'settingsUpdateFail' => 'Settings update failed!',

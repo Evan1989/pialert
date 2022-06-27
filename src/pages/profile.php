@@ -44,6 +44,17 @@ function showLanguageForm(?string $userLanguage) : string {
     return "<select class='form-control-plaintext profile-change-language'>".$result."</select>";
 }
 
+$query = DB::prepare("
+    SELECT sum(seconds) as seconds
+    FROM user_statistic_online
+    WHERE user_id = ?
+");
+$query->execute(array( $user->user_id ));
+$secondsOnline = 0;
+if ($row = $query->fetch()) {
+    $secondsOnline = $row['seconds'];
+}
+
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>".Text::profilePageHeader()."</div>
         <div class='card-body overflow-auto'>
@@ -70,8 +81,12 @@ echo "<div class='card mb-4 shadow'>
                         <td>".$user->email."</td>
                     </tr>
                     <tr>
-                        <td>".Text::alertCount()."</td>
+                        <td>".Text::statisticAlertGroupCount()."</td>
                         <td>".$alertGroupCount.($alertGroupCount>0?" <a href='/src/pages/dashboard.php?search=".urlencode($user->getCaption())."'>".$page->getIcon('eye')."</a>":'')."</td>
+                    </tr>
+                    <tr>
+                        <td>".Text::profileTotalOnline()."</td>
+                        <td>".($secondsOnline>ONE_DAY?getIntervalRoundLength($secondsOnline, 'hour').' ≈ ':'').getIntervalRoundLength($secondsOnline)."</td>
                     </tr>
                     <tr>
                         <td>".Text::profileChangePassword()."</td>

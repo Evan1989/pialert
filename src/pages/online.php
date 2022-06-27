@@ -71,7 +71,8 @@ for ($i = 0; $i < 7; $i++) {
     }
     echo "                <th>".$title."</th>";
 }
-echo "               <tr>
+echo "                    <th>".Text::chartsAverageDay()."</th>
+                      <tr>
                     </thead> 
                     <tbody>";
 $query = DB::prepare("SELECT * FROM users ORDER BY FIO");
@@ -83,6 +84,7 @@ while ($row = $query->fetch()) {
     }
     echo "<tr>
             <td>".$user->getHTMLCaption()."</td>";
+    $sumSeconds = 0;
     for ($i = 0; $i < 7; $i++) {
         $secondsOnline = $userOnlineStatistic[$user->user_id][($i+$startWeekDay)%7]??0;
         $online = min(100, round($secondsOnline/ (8 * 36) )); // 8 часов = 100%
@@ -101,7 +103,9 @@ while ($row = $query->fetch()) {
                     <div class='progress-bar ".$color."' style='width:".$online."%' role='progressbar' aria-valuenow='".$online."' aria-valuemin='0' aria-valuemax='100'></div>
                 </div>
             </td>";
+        $sumSeconds += $secondsOnline;
     }
+    echo "  <td>".getIntervalRoundLength( round($sumSeconds/7) )."</td>";
     echo "</tr>";
 }
 echo "            </tbody>
