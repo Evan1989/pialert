@@ -310,6 +310,7 @@ function loadAlertGroupFullInfo(group_id) {
     $.get( 'dashboard.php?loadAlertGroupFullInfo='+group_id, function( data ) {
         $('#modal_alertsForGroup .modal-body').html( data );
         $('#modal_alertsForGroup').modal('show');
+        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols
@@ -320,7 +321,7 @@ function loadAlertsForGroup(group_id) {
         $('.tablesorter.alert-table').tablesorter( {
             headers: {}
         });
-        $('[data-toggle=\"tooltip\"]').tooltip();
+        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols
@@ -364,6 +365,7 @@ function unionAlertGroup(group_id) {
     $.get( 'dashboard.php?unionAlertGroup='+group_id, function( data ) {
         $('#modal_alertsForGroup .modal-body').html( data );
         $('#modal_alertsForGroup').modal('show');
+        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols

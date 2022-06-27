@@ -57,14 +57,14 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=35'></script>".
+        <script src='/src/js/base.js?v=36'></script>".
         $additionalJavaScript.
     "</body>
 </html>";
         return $text;
     }
 
-    public function getIcon(string $iconName, int $size = 16): string {
+    public static function getIcon(string $iconName, int $size = 16): string {
         return "<img src='/img/icons/".$iconName.".svg' width='".$size."' height='".$size."' alt='' class='icon d-lg-none d-xl-inline'>";
     }
 

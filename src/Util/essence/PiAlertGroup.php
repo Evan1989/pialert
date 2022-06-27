@@ -3,6 +3,7 @@
 namespace EvanPiAlert\Util\essence;
 
 use EvanPiAlert\Util\DB;
+use EvanPiAlert\Util\HTMLPageTemplate;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
 use PDOStatement;
@@ -61,6 +62,8 @@ class PiAlertGroup {
     public ?string $lastUserAction = '';
     public int $maybe_need_union = 0;
 
+    protected ?bool $hasGenericException = null;
+
     public function __construct(array|int|null $inputData = null) {
         if ( is_array($inputData) ) {
             $this->loadFromRow($inputData);
@@ -111,15 +114,25 @@ class PiAlertGroup {
     }
 
     public function getStatusColor(?int $user_id = null) :string {
-        return self::statusColor($this->status, $user_id > 0 && $this->user_id == $user_id, $this->lastAlert > $this->lastUserAction);
+        if ( is_null($this->hasGenericException) ) {
+            $this->getHTMLErrorTextMask();
+        }
+        return self::statusColor($this->status,
+            $user_id > 0 && $this->user_id == $user_id,
+            $this->lastAlert > $this->lastUserAction,
+            $this->hasGenericException
+        );
     }
 
-    public static function statusColor(string $status, bool $taskOfCurrentUser = false, bool $hasNewAlert = true) :string {
+    public static function statusColor(string $status, bool $taskOfCurrentUser = false, bool $hasNewAlert = true, bool $hasGenericException = false) :string {
         if ( $status == PiAlertGroup::WAIT && $taskOfCurrentUser ) {
             return PiAlertGroup::STATUS_COLORS[PiAlertGroup::MANUAL];
         }
         if ( $status == PiAlertGroup::MANUAL && !$hasNewAlert ) {
             return PiAlertGroup::STATUS_COLORS[PiAlertGroup::IGNORE];
+        }
+        if ( ($status == PiAlertGroup::NEW || $status == PiAlertGroup::REOPEN) && $hasGenericException ) {
+            return PiAlertGroup::STATUS_COLORS[PiAlertGroup::MANUAL];
         }
         return PiAlertGroup::STATUS_COLORS[$status];
     }
@@ -151,9 +164,16 @@ class PiAlertGroup {
             ($this->interface?:$this->channel);
     }
 
+
+    protected ?string $_HTMLErrorTextMask = null;
     public function getHTMLErrorTextMask() :string {
-        $text = replaceLinksWithATag($this->errTextMask);
-        return str_replace('*', "<span class='text-danger'>*</span>", nl2br($text));
+        if ( is_null($this->_HTMLErrorTextMask) ) {
+            $text = replaceLinksWithATag($this->errTextMask);
+            $text = preg_replace('~(GenericException|generic Exception)~iu', '\\1 <span data-toggle="tooltip" data-placement="top" title="'.Text::genericExceptionTitle().'">'.HTMLPageTemplate::getIcon('question-fill').'</span>', $text, -1, $count);
+            $this->hasGenericException = $count > 0;
+            $this->_HTMLErrorTextMask = str_replace('*', "<span class='text-danger'>*</span>", nl2br($text));
+        }
+        return $this->_HTMLErrorTextMask;
     }
 
     public function getHTMLComment() :string {
