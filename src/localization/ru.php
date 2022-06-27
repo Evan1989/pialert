@@ -237,4 +237,6 @@ $texts = array(
     'massAlertsReplace' => 'Заменить',
     'massAlertsRemoveIcon' => 'Убрать значок',
 
+    'genericExceptionTitle' => 'Ошибка типа Genetic Exception как правило не требует реакции. Обычно приходит одновременно с другим алертом, содержащим больше информации (message_id и т.д.)',
+
 );

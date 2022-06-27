@@ -158,6 +158,7 @@ namespace EvanPiAlert\Util;
  * @method static string massAlertsFoundedCount()
  * @method static string massAlertsReplace()
  * @method static string massAlertsRemoveIcon()
+ * @method static string genericExceptionTitle()
  **/
 class Text {
 

@@ -236,4 +236,7 @@ $texts = array(
     'massAlertsFoundedCount' => 'Records found',
     'massAlertsReplace' => 'Replace',
     'massAlertsRemoveIcon' => 'Remove icon',
+
+    'genericExceptionTitle' => 'An error of type Genetic Exception does not require a reaction usually. Is occurs simultaneously with other alert containing more information (message_id, etc.) generally.',
+
 );
