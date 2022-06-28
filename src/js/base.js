@@ -404,3 +404,17 @@ function showNoAlertWarningBadge(system) {
     }
 }
 ///////////////////////////////////////////////
+
+
+
+
+
+
+//////////////      Online     ////////////////
+function initJavascriptForOnline() {
+    $('.tablesorter').tablesorter( {
+        textExtraction: _getValue,
+        sortList: [[0, 0]]
+    });
+}
+///////////////////////////////////////////////
