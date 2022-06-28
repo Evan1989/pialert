@@ -238,6 +238,6 @@ $texts = array(
     'massAlertsReplace' => 'Заменить',
     'massAlertsRemoveIcon' => 'Убрать значок',
 
-    'genericExceptionTitle' => 'Ошибка типа Genetic Exception как правило не требует реакции. Обычно приходит одновременно с другим алертом, содержащим больше информации (message_id и т.д.)',
+    'genericExceptionTitle' => 'Ошибка типа Genetic Exception как правило не требует реакции. Обычно приходит одновременно с другим алертом, содержащим больше информации (message_id и т.д.), либо в ответ на разовую ошибку (сообщение в Waiting, а не System Error)',
 
 );

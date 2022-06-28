@@ -96,15 +96,15 @@ while ($row = $query->fetch()) {
         } else {
             $color = 'bg-success';
         }
-        echo "<td>
+        echo "<td><input type='hidden' value='".$secondsOnline."'>
                 <div class='progress' data-toggle='tooltip' data-placement='top' title='".$title."'>
                     <div class='progress-bar ".$color."' style='width:".$online."%' role='progressbar' aria-valuenow='".$online."' aria-valuemin='0' aria-valuemax='100'></div>
                 </div>
             </td>";
         $sumSeconds += $secondsOnline;
     }
-    echo "  <td>".getIntervalRoundLength( round($sumSeconds/7) )."</td>";
-    echo "</tr>";
+    echo "  <td><input type='hidden' value='".$sumSeconds."'>".getIntervalRoundLength( round($sumSeconds/7) )."</td>
+        </tr>";
 }
 echo "            </tbody>
                 </table>
@@ -112,4 +112,10 @@ echo "            </tbody>
         </form>
     </div>";
 
-echo $page->getPageFooter();
+$additionalScript = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            initJavascriptForOnline();
+        })
+    </script>";
+echo $page->getPageFooter( $additionalScript );

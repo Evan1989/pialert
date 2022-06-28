@@ -81,13 +81,14 @@ $query->execute(array());
 while ($row = $query->fetch()) {
     $user = new User($row);
     if ( $user->isOnline() ) {
-        $intervalFromLastAction = "<span class='badge bg-success'>online</span>";
+        $intervalFromLastAction = 0;
+        $intervalFromLastActionText = "<span class='badge bg-success'>online</span>";
     } else {
         $intervalFromLastAction = $user->getIntervalFromLastAction();
         if ($intervalFromLastAction > ONE_YEAR) {
-            $intervalFromLastAction = "<i>inactive</i>";
+            $intervalFromLastActionText = "<i>inactive</i>";
         } else {
-            $intervalFromLastAction = Text::usersLastActionTime(getIntervalRoundLength($intervalFromLastAction));
+            $intervalFromLastActionText = Text::usersLastActionTime(getIntervalRoundLength($intervalFromLastAction));
         }
     }
     if ( $user->isBlocked() ) {
@@ -102,7 +103,7 @@ while ($row = $query->fetch()) {
             <td>".$user->user_id."</td>
             <td>".showInput($row['user_id'], 'email', $user->email, $canChange, 'E-mail')."</td>
             <td>".showInput($row['user_id'], 'FIO', $user->FIO, $canChange, Text::SurnameName())."</td>
-            <td>".$intervalFromLastAction."</td>
+            <td><input type='hidden' value='".$intervalFromLastAction."'>".$intervalFromLastActionText."</td>
             <td>".$actions."</td>
           </tr>";
 }
