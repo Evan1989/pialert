@@ -411,6 +411,7 @@ function showNoAlertWarningBadge(system) {
 
 
 //////////////      Online     ////////////////
+// noinspection JSUnusedGlobalSymbols
 function initJavascriptForOnline() {
     $('.tablesorter').tablesorter( {
         textExtraction: _getValue,
