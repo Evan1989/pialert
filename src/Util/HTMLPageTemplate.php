@@ -65,7 +65,7 @@ class HTMLPageTemplate {
     }
 
     public static function getIcon(string $iconName, int $size = 16): string {
-        return "<img src='/img/icons/".$iconName.".svg' width='".$size."' height='".$size."' alt='' class='icon d-lg-none d-xl-inline'>";
+        return "<img src='/vendor/twbs/bootstrap-icons/icons/".$iconName.".svg' width='".$size."' height='".$size."' alt='' class='icon d-lg-none d-xl-inline'>";
     }
 
     /**
@@ -173,7 +173,9 @@ class HTMLPageTemplate {
         $linkToSupportRules = Settings::get(Settings::LINK_TO_SUPPORT_RULES);
         if ( $linkToSupportRules ) {
             $text .= "	<li class='nav-item'>
-                            <a href='".$linkToSupportRules."' class='nav-link' target='_blank'>".$this->getIcon('document-richtext')." ".Text::menuRules()."</a>
+                            <a href='".$linkToSupportRules."' class='nav-link' target='_blank'>
+                                ".$this->getIcon('file-earmark-richtext')." ".Text::menuRules()."
+                            </a>
                         </li>";
         }
         $text .= "		<li class='nav-item'>
