@@ -169,7 +169,7 @@ class PiAlertGroup {
     public function getHTMLErrorTextMask() :string {
         if ( is_null($this->_HTMLErrorTextMask) ) {
             $text = replaceLinksWithATag($this->errTextMask);
-            $text = preg_replace('~(GenericException|generic Exception)~iu', '\\1 <span data-toggle="tooltip" data-placement="top" title="'.Text::genericExceptionTitle().'">'.HTMLPageTemplate::getIcon('patch-question-fill').'</span>', $text, -1, $count);
+            $text = preg_replace('~(GenericException|generic Exception|genric error)~iu', '\\1 <span data-toggle="tooltip" data-placement="top" title="'.Text::genericExceptionTitle().'">'.HTMLPageTemplate::getIcon('patch-question-fill').'</span>', $text, -1, $count);
             $this->hasGenericException = $count > 0;
             $this->_HTMLErrorTextMask = str_replace('*', "<span class='text-danger'>*</span>", nl2br($text));
         }
