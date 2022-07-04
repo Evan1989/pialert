@@ -138,6 +138,7 @@ $texts = array(
     'dashboardLegendWait' => 'we are waiting for the error correction within the framework of the task indicated in the comments',
     'dashboardLegendClose' => 'the problem is resolved',
     'dashboardLegendReopen' => 'the error type has been fixed, but a new alert has arrived',
+    'dashboardShareLinkButton' => 'Link to this alert group',
 
     'authorizationPageTitle' => 'Login to PiAlert',
     'authorizationPageHeader' => 'Requires authorization',
