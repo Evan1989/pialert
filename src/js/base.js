@@ -228,7 +228,7 @@ function initJavascriptForDashboard() {
     });
     setInterval(function(){
         dashboardPageReload();
-    }, 3000);
+    }, 300000);
 }
 let reloadBlocked = false;
 function dashboardPageReload() {
