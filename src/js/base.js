@@ -226,17 +226,25 @@ function initJavascriptForDashboard() {
             location.href = 'dashboard.php?search='+search;
         }
     });
-    setTimeout(function(){
+    setInterval(function(){
         dashboardPageReload();
-    }, 300000);
+    }, 3000);
 }
+let reloadBlocked = false;
 function dashboardPageReload() {
+    if ( reloadBlocked ) {
+        return;
+    }
     let search = $('#mainTableSearch').val()
     location.href = 'dashboard.php?search='+search;
 }
 function addAjaxFunctionForInputInAlertGroupTable(field) {
     field.change(function(){
         changeInputFieldInAlertGroupTable(field);
+    }).focusin(function(){
+        reloadBlocked = true;
+    }).focusout(function(){
+        reloadBlocked = false;
     });
     if ( field.is('textarea') ) {
         addHTMLDivInsteadOfTextArea(field)
@@ -376,7 +384,8 @@ function unionAlertGroupStep2(group_id_from, group_id_to) {
     });
 }
 function getValueForFilterTr(tr) {
-    let result;
+    let result = tr.attr('filter-value');
+    console.log(result);
     tr.find('td').each(function(){
         result += getValueForFilterTd($(this));
     });

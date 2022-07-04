@@ -184,7 +184,8 @@ while($row = $query->fetch()) {
     } else {
         $newAlertFlag = '';
     }
-    echo "<tr>
+    $linkToAlertGroup = 'ID'.$alertGroup->group_id;
+    echo "<tr filter-value='".$linkToAlertGroup."'>
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
                 <td>".getUserChoice($alertGroup)."</td>
                 <td>".getComment($alertGroup)."</td>
@@ -195,7 +196,8 @@ while($row = $query->fetch()) {
                     ($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0)."
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
-                    <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>";
+                    <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
+                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showHistoryAlerts?'filter=1&':'')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }

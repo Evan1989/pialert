@@ -113,6 +113,7 @@ namespace EvanPiAlert\Util;
  * @method static string dashboardLastAlert()
  * @method static string dashboardShowAlertButton()
  * @method static string dashboardShowStatisticButton()
+ * @method static string dashboardShareLinkButton()
  * @method static string dashboardUnionGroupButton()
  * @method static string dashboardUnionGroupButtonStep2()
  * @method static string dashboardThisGroup()

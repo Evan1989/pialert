@@ -138,6 +138,7 @@ $texts = array(
     'dashboardLegendWait' => 'ждем исправления ошибки в рамках задачи, указанной в комментариях',
     'dashboardLegendClose' => 'проблема устранена',
     'dashboardLegendReopen' => 'тип ошибок был исправлен, но пришел новый алерт',
+    'dashboardShareLinkButton' => 'Ссылка на данный алерт',
 
     'authorizationPageTitle' => 'Вход в систему PiAlert',
     'authorizationPageHeader' => 'Необходимо пройти авторизацию',
