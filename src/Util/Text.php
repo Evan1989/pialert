@@ -128,6 +128,8 @@ namespace EvanPiAlert\Util;
  * @method static string dashboardLegendIgnore()
  * @method static string dashboardLegendClose()
  * @method static string dashboardLegendReopen()
+ * @method static string dashboardLastUserId()
+ * @method static string dashboardEditDate($date)
  * @method static string apiCBMAServiceInfo($arg1)
  * @method static string apiNetworkCheckServiceInfo($arg1)
  * @method static string authorizationPageTitle()

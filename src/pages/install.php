@@ -19,13 +19,15 @@ if ( !is_file(__DIR__."/../../vendor/autoload.php") ) {
 
 require_once(__DIR__."/../autoload.php");
 
-$page = new HTMLPageTemplate();
-echo $page->getPageHeader(Text::installPageHeader());
 
 //////////////////////////////////////////////////
 //   Шаг 2. Базовые настройки в config.php      //
 //////////////////////////////////////////////////
 if ( is_file(__DIR__ . "/../config.php") === false ) {
+
+    $page = new HTMLPageTemplate();
+    echo $page->getPageHeader(Text::installPageHeader());
+
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installStep1Header()."</div>
             <div class='card-body overflow-auto'>
@@ -59,6 +61,10 @@ function executeScriptInDataBase(int $mainVersion, int $minorVersion, bool $skip
 }
 
 if ( SystemVersion::getDatabaseVersion() === false ) {
+
+    $page = new HTMLPageTemplate();
+    echo $page->getPageHeader(Text::installPageHeader());
+
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installStep2Header()."</div>
             <div class='card-body overflow-auto'>";
@@ -88,6 +94,10 @@ if ( SystemVersion::getDatabaseVersion() === false ) {
 //   Шаг 4. Обновление версии базы данных       //
 //////////////////////////////////////////////////
 if ( SystemVersion::isFinishInstallNeeded() ) {
+
+    $page = new HTMLPageTemplate();
+    echo $page->getPageHeader(Text::installPageHeader());
+
     echo "<div class='card mb-4 shadow'>
 	        <div class='card-header'>".Text::installUpdateHeader()."</div>
             <div class='card-body overflow-auto'>";
@@ -120,10 +130,14 @@ if ( SystemVersion::isFinishInstallNeeded() ) {
 $authorizationAdmin = new AuthorizationAdmin();
 $authorizationAdmin->ifNotAccessGoErrorPage('/src/pages/settings.php');
 
+$page = new HTMLPageTemplate($authorizationAdmin);
+echo $page->getPageHeader(Text::installPageHeader());
+
 //////////////////////////////////////////////////
 //   Шаг 5. Обновление версии всей системы      //
 //////////////////////////////////////////////////
 if ( SystemVersion::isUpgradeNeeded() ) {
+
     $link = GITHUB_PROJECT_LINK."/archive/main.tar.gz";
     $autoUpdater = new SelfUpdateCode();
     echo "<div class='card mb-4 shadow'>

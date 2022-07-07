@@ -283,7 +283,7 @@ function updateInputFieldInAlertGroupTable(field) {
         url: 'dashboard.php',
         data: {'element':id},
         'success': function(data) {
-            field.replaceWith(data);
+            field.parent().html(data);
             addAjaxFunctionForInputInAlertGroupTable($('#'+id));
         }
     });
@@ -299,7 +299,7 @@ function changeInputFieldInAlertGroupTable(field) {
         url: 'dashboard.php',
         data: {'element':id, 'value':value},
         'success': function(data) {
-            field.replaceWith(data);
+            field.parent().html(data);
             let updatedField = $('#'+id)
             if ( userFieldUpdated === true ) {
                 updateInputFieldInAlertGroupTable(updatedField.parent().parent().find('.alert-group-status-select'));
@@ -357,12 +357,14 @@ function updateNewAlertFlagCount() {
         $('.new-alert-count .bell').hide();
         $('.new-alert-count').removeClass('d-none');
         $(document).prop('title', "🔔 "+PAGE_TITLE);
+        $('#favicon').attr('href', '/favicon2.png');
     } else if ( bell > 0 ) {
         $('.new-alert-count .count').html(bell_fill+bell);
         $('.new-alert-count .bell').show();
         $('.new-alert-count .bell-fill').hide();
         $('.new-alert-count').removeClass('d-none');
         $(document).prop('title', PAGE_TITLE);
+        $('#favicon').attr('href', '/favicon.png');
     } else {
         $('.new-alert-count').hide();
         $(document).prop('title', PAGE_TITLE);
@@ -385,7 +387,6 @@ function unionAlertGroupStep2(group_id_from, group_id_to) {
 }
 function getValueForFilterTr(tr) {
     let result = tr.attr('filter-value');
-    console.log(result);
     tr.find('td').each(function(){
         result += getValueForFilterTd($(this));
     });

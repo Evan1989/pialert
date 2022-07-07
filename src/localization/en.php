@@ -139,6 +139,8 @@ $texts = array(
     'dashboardLegendClose' => 'the problem is resolved',
     'dashboardLegendReopen' => 'the error type has been fixed, but a new alert has arrived',
     'dashboardShareLinkButton' => 'Link to this alert group',
+    'dashboardLastUserId' => 'Last responsible employee',
+    'dashboardEditDate' => 'Last edit: '.Text::REPLACE_PATTERN,
 
     'authorizationPageTitle' => 'Login to PiAlert',
     'authorizationPageHeader' => 'Requires authorization',

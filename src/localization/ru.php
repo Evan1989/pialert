@@ -139,6 +139,8 @@ $texts = array(
     'dashboardLegendClose' => 'проблема устранена',
     'dashboardLegendReopen' => 'тип ошибок был исправлен, но пришел новый алерт',
     'dashboardShareLinkButton' => 'Ссылка на данный алерт',
+    'dashboardLastUserId' => 'Предыдущий ответственный сотрудник',
+    'dashboardEditDate' => 'Дата редактирования: '.Text::REPLACE_PATTERN,
 
     'authorizationPageTitle' => 'Вход в систему PiAlert',
     'authorizationPageHeader' => 'Необходимо пройти авторизацию',

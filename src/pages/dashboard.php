@@ -25,7 +25,7 @@ $query = DB::prepare(" SELECT * FROM users ORDER BY FIO");
 $query->execute(array());
 while($row = $query->fetch()) {
     $user = new User($row);
-    $users[] = $user;
+    $users[ $user->user_id ] = $user;
     if ( $user->user_id != $authorizationAdmin->getUserId() && $user->isOnline() ) {
         $support_online = true;
     }
@@ -49,13 +49,17 @@ function getUserChoice(PiAlertGroup $alertGroup): string {
         }
         $result .= "<option value='".$user->user_id."' ".($user->user_id==$alertGroup->user_id?'selected':'').">".$user->getCaption()."</option>";
     }
-    return "<select id='user_".$alertGroup->group_id."' class='alert-group-user-select form-control-plaintext bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
+    $result = "<select id='user_".$alertGroup->group_id."' class='alert-group-user-select form-control-plaintext bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
+    if ( $alertGroup->last_user_id ) {
+        $result .= "<span class='alert-group-help-data' data-toggle='tooltip' title='".Text::dashboardLastUserId()."'>".$users[$alertGroup->last_user_id]->getCaption()."</span>";
+    }
+    return $result;
 }
 
 function getComment(PiAlertGroup $alertGroup): string {
     $div = '';
     if ( $alertGroup->comment ) {
-        $div = "<div class='alert-group-comment-html-div overflow-auto'>".$alertGroup->getHTMLComment()."</div>";
+        $div = "<div class='alert-group-comment-html-div overflow-auto' title='".Text::dashboardEditDate($alertGroup->comment_datetime)."'>".$alertGroup->getHTMLComment()."</div>";
     }
     return "<textarea class='d-none' id='comment_".$alertGroup->group_id."' maxlength='2000' placeholder='".Text::dashboardCommentPlaceholder()."'>".$alertGroup->comment."</textarea>".
         $div;
