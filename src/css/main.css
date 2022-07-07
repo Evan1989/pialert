@@ -31,6 +31,10 @@ table .hide {
 .alert-group .alert-group-comment-html-div::-webkit-scrollbar-thumb {
 	background-color: #C1C1C1;
 }
+.alert-group-help-data {
+	font-size: 10px;
+	color: #5c636a;
+}
 
 .admin-users input {
 	min-width: 180px;

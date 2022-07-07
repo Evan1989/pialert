@@ -47,7 +47,9 @@ class PiAlertGroup {
     public int $group_id = -1;
     public int $status = self::NEW;
     public ?string $comment = null;
+    public ?string $comment_datetime = null;
     public ?int $user_id = null;
+    public ?int $last_user_id = null;
 
     public string $piSystemName = '';
     public string $fromSystem = '';
@@ -73,7 +75,7 @@ class PiAlertGroup {
     }
 
     private function loadFromDB( int $group_id ) : void {
-        $query = DB::prepare(" SELECT *  FROM alert_group WHERE group_id = ?");
+        $query = DB::prepare(" SELECT * FROM alert_group WHERE group_id = ?");
         $query->execute(array( $group_id ));
         if ($row = $query->fetch()) {
             $this->loadFromRow($row);
@@ -84,7 +86,9 @@ class PiAlertGroup {
         $this->group_id = $row['group_id'];
         $this->status = $row['status'];
         $this->comment = $row['comment'];
+        $this->comment_datetime = $row['comment_datetime'];
         $this->user_id = $row['user_id'];
+        $this->last_user_id = $row['last_user_id'];
 
         $this->piSystemName = $row['piSystemName'];
         $this->fromSystem = $row['fromSystem'];
@@ -103,11 +107,44 @@ class PiAlertGroup {
 
     public function saveToDatabase() : bool {
         if ( $this->group_id > 0 ) {
-            $query = DB::prepare("UPDATE alert_group SET status=?, comment=?, user_id=?, piSystemName=?, fromSystem=?, toSystem=?, channel=?, interface=?, errText=?, errTextMask=?, first_alert=?, last_alert=?, last_user_action=?, maybe_need_union=? WHERE group_id = ?");
-            return $query->execute(array( $this->status, $this->comment, $this->user_id, $this->piSystemName, $this->fromSystem, $this->toSystem, $this->channel, $this->interface, $this->errText, $this->errTextMask, $this->firstAlert, $this->lastAlert, $this->lastUserAction, $this->maybe_need_union, $this->group_id ));
+            $query = DB::prepare("UPDATE alert_group SET 
+                status=?, comment=?, comment_datetime=?, 
+                user_id=?, last_user_id=?, piSystemName=?, 
+                fromSystem=?, toSystem=?, channel=?, 
+                interface=?, errText=?, errTextMask=?, 
+                first_alert=?, last_alert=?, last_user_action=?, 
+                maybe_need_union=? WHERE group_id = ?");
+            return $query->execute(array(
+                $this->status, $this->comment, $this->comment_datetime,
+                $this->user_id, $this->last_user_id, $this->piSystemName,
+                $this->fromSystem, $this->toSystem, $this->channel,
+                $this->interface, $this->errText, $this->errTextMask,
+                $this->firstAlert, $this->lastAlert, $this->lastUserAction,
+                $this->maybe_need_union, $this->group_id
+            ));
         } else {
-            $query = DB::prepare("INSERT INTO alert_group (status, comment, user_id, piSystemName, fromSystem, toSystem, channel, interface, errText, errTextMask, first_alert, last_alert, last_user_action, maybe_need_union) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $query->execute(array( $this->status, $this->comment, $this->user_id, $this->piSystemName, $this->fromSystem, $this->toSystem, $this->channel, $this->interface, $this->errText, $this->errTextMask, $this->firstAlert, $this->lastAlert, $this->lastUserAction, $this->maybe_need_union ));
+            $query = DB::prepare("INSERT INTO alert_group (
+                 status, comment, comment_datetime,
+                 user_id, last_user_id, piSystemName,
+                 fromSystem, toSystem, channel,
+                 interface, errText, errTextMask,
+                 first_alert, last_alert, last_user_action,
+                 maybe_need_union) VALUES (
+                       ?, ?, ?,
+                       ?, ?, ?, 
+                       ?, ?, ?, 
+                       ?, ?, ?, 
+                       ?, ?, ?, 
+                       ?
+                 )");
+            $query->execute(array(
+                $this->status, $this->comment, $this->comment_datetime,
+                $this->user_id, $this->last_user_id, $this->piSystemName,
+                $this->fromSystem, $this->toSystem, $this->channel,
+                $this->interface, $this->errText, $this->errTextMask,
+                $this->firstAlert, $this->lastAlert, $this->lastUserAction,
+                $this->maybe_need_union
+            ));
             $this->group_id = DB::lastInsertId();
             return ($this->group_id > 0);
         }
@@ -195,6 +232,7 @@ class PiAlertGroup {
     }
 
     public function setComment(string $comment) : void {
+        $this->comment_datetime = date("Y-m-d H:i:s");
         $this->comment = str_replace("<", "&lt;", $comment);
     }
 

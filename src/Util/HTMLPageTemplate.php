@@ -31,9 +31,9 @@ class HTMLPageTemplate {
         <title>".$title. "</title>
         <meta charset='utf-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
-        <link rel='shortcut icon' href='/favicon.png'>
+        <link rel='shortcut icon' href='/favicon.png' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v27' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v28' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -57,7 +57,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=38'></script>".
+        <script src='/src/js/base.js?v=39'></script>".
         $additionalJavaScript.
     "</body>
 </html>";

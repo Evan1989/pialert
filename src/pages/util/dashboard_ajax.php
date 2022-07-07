@@ -21,8 +21,10 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
             case 'user':
                 if ( !is_null($value) ) {
                     if ( $value ) {
+                        $alertGroup->last_user_id = null;
                         $alertGroup->user_id = (int)$value;
                     } else {
+                        $alertGroup->last_user_id = $alertGroup->user_id;
                         $alertGroup->user_id = null;
                     }
                 }
@@ -31,11 +33,12 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
             case 'status':
                 if ( !is_null($value) ) {
                     $alertGroup->status = (int)$value;
-                    if ( is_null($alertGroup->user_id) && (
-                        $alertGroup->status == PiAlertGroup::CLOSE ||
-                        $alertGroup->status == PiAlertGroup::WAIT
-                    )) {
+                    if ( $alertGroup->status == PiAlertGroup::CLOSE ) {
+                        $alertGroup->user_id = null;
+                        $alertGroup->last_user_id = $authorizationAdmin->getUserId();
+                    } elseif ( $alertGroup->status == PiAlertGroup::WAIT && is_null($alertGroup->user_id) ) {
                         $alertGroup->user_id = $authorizationAdmin->getUserId();
+                        $alertGroup->last_user_id = null;
                     }
                 }
                 $result = getStatusChoice($alertGroup);
@@ -47,7 +50,9 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
                 $result = getComment($alertGroup);
                 break;
         }
-        $alertGroup->saveToDatabase();
+        if ( !is_null($value) ) {
+            $alertGroup->saveToDatabase();
+        }
     }
     return $result;
 }
