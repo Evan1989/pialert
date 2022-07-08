@@ -45,15 +45,16 @@ if ( $system && $errorText ) {
     ");
     $systemForSearch = '%'.str_replace('*', '%',$system).'%';
     $errorTextForSearch = '%'.str_replace('*', '%',$errorText).'%';
-    var_dump($systemForSearch);
-    var_dump($errorTextForSearch);
     $query->execute(array($systemForSearch, $systemForSearch, $errorTextForSearch, PiAlertGroup::CLOSE));
     while ($row = $query->fetch()) {
         $alertGroup = new PiAlertGroup($row);
         if ( isset($_POST['comment']) ) {
             $alertGroup->setComment( $_POST['comment'] );
             $alertGroup->status = $status;
-            $alertGroup->user_id = $authorizationAdmin->getUserId();
+            $alertGroup->setUserId( $authorizationAdmin->getUserId() );
+            if ( $status == PiAlertGroup::CLOSE ) {
+                $alertGroup->setUserId( null );
+            }
             $alertGroup->lastUserAction = date("Y-m-d H:i:s");
             $alertGroup->saveToDatabase();
         }
