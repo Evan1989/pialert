@@ -236,6 +236,16 @@ class PiAlertGroup {
         $this->comment = str_replace("<", "&lt;", $comment);
     }
 
+    public function setUserId(?int $userID) : void {
+        if ( $userID ) {
+            $this->last_user_id = null;
+            $this->user_id = $userID;
+        } else {
+            $this->last_user_id = $this->user_id;
+            $this->user_id = null;
+        }
+    }
+
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @param int|null $timeLimit

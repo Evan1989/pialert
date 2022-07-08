@@ -79,8 +79,15 @@ class AlertAggregationUtil {
             }
         }
         if ( is_null($alertGroupTarget->user_id) ) {
-            $alertGroupTarget->user_id = $alertGroupFrom->user_id;
+            if ( is_null($alertGroupFrom->user_id) ) {
+                if ( is_null($alertGroupTarget->last_user_id) ) {
+                    $alertGroupTarget->last_user_id = $alertGroupFrom->last_user_id;
+                }
+            } else {
+                $alertGroupTarget->setUserId( $alertGroupFrom->user_id );
+            }
         }
+
         $unionMask = TextAnalysisUtil::getMaskFromTexts($alertGroupFrom->errTextMask, $alertGroupTarget->errTextMask);
         if ( is_null($unionMask) ) {
             return false;

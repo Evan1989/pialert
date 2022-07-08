@@ -357,14 +357,14 @@ function updateNewAlertFlagCount() {
         $('.new-alert-count .bell').hide();
         $('.new-alert-count').removeClass('d-none');
         $(document).prop('title', "🔔 "+PAGE_TITLE);
-        $('#favicon').attr('href', '/favicon.png');
+        $('#favicon').attr('href', '/favicon.png?v2');
     } else if ( bell > 0 ) {
         $('.new-alert-count .count').html(bell_fill+bell);
         $('.new-alert-count .bell').show();
         $('.new-alert-count .bell-fill').hide();
         $('.new-alert-count').removeClass('d-none');
         $(document).prop('title', PAGE_TITLE);
-        $('#favicon').attr('href', '/favicon2.png');
+        $('#favicon').attr('href', '/favicon2.png?v2');
     } else {
         $('.new-alert-count').hide();
         $(document).prop('title', PAGE_TITLE);

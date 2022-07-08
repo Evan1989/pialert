@@ -20,13 +20,7 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
         switch ($element_type) {
             case 'user':
                 if ( !is_null($value) ) {
-                    if ( $value ) {
-                        $alertGroup->last_user_id = null;
-                        $alertGroup->user_id = (int)$value;
-                    } else {
-                        $alertGroup->last_user_id = $alertGroup->user_id;
-                        $alertGroup->user_id = null;
-                    }
+                    $alertGroup->setUserId( (int) $value );
                 }
                 $result = getUserChoice($alertGroup);
                 break;
@@ -34,11 +28,10 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
                 if ( !is_null($value) ) {
                     $alertGroup->status = (int)$value;
                     if ( $alertGroup->status == PiAlertGroup::CLOSE ) {
-                        $alertGroup->user_id = null;
-                        $alertGroup->last_user_id = $authorizationAdmin->getUserId();
+                        $alertGroup->setUserId( $authorizationAdmin->getUserId() );
+                        $alertGroup->setUserId( null );
                     } elseif ( $alertGroup->status == PiAlertGroup::WAIT && is_null($alertGroup->user_id) ) {
-                        $alertGroup->user_id = $authorizationAdmin->getUserId();
-                        $alertGroup->last_user_id = null;
+                        $alertGroup->setUserId( $authorizationAdmin->getUserId() );
                     }
                 }
                 $result = getStatusChoice($alertGroup);
