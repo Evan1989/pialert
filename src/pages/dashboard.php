@@ -125,20 +125,28 @@ $defaultSearch = '';
 if ( isset($_GET['search']) ) {
     $defaultSearch = htmlspecialchars($_GET['search']);
 }
+$showOnlyImportant = true;
+if ( isset($_GET['showNotImportant']) && $_GET['showNotImportant'] == 1 ) {
+    $showOnlyImportant = false;
+}
 
-if ( isset($_GET['filter']) ) {
-    $showHistoryAlerts = true;
+if ( isset($_GET['showHistoryAlerts']) && $_GET['showHistoryAlerts'] == 1 ) {
+    $showOnlyNewAlerts = false;
     $query = DB::prepare("SELECT *  FROM alert_group order by last_alert desc");
 } else {
-    $showHistoryAlerts = false;
+    $showOnlyNewAlerts = true;
     $query = DB::prepare("SELECT *  FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc");
 }
 
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
 	        ".Text::dashboardPageHeader()."
-	        <div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOldAlerts()."'>
-                <input class='form-check-input' type='checkbox' id='showHistoryAlerts' ".($showHistoryAlerts?'checked':'').">
+	        <div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyNewAlerts()."'>
+                ".HTMLPageTemplate::getIcon( ($showOnlyNewAlerts?'newspaper':'h-circle') )."
+                <input class='form-check-input' type='checkbox' id='showOnlyNewAlerts' ".($showOnlyNewAlerts?'checked':'').">
+	        </div><div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyImportantAlerts()."'>
+                ".HTMLPageTemplate::getIcon( ($showOnlyImportant?'cup-hot':'cup') )."
+                <input class='form-check-input' type='checkbox' id='showOnlyImportant' ".($showOnlyImportant?'checked':'').">
 	        </div><div class='float-end mx-2'>
 	            <input class='d-inline form-control form-control-sm' id='mainTableSearch' type='text' placeholder='".Text::search()."...' value='".$defaultSearch."'>
             </div>";
@@ -198,6 +206,10 @@ while($row = $query->fetch()) {
         }
     }
     $linkToAlertGroup = 'ID'.$alertGroup->group_id;
+    $important = ( $alertGroup->status != PiAlertGroup::IGNORE && $alertGroup->status != PiAlertGroup::CLOSE ) || !empty($growIcon);
+    if ( $showOnlyImportant && !$important) {
+        continue;
+    }
     echo "<tr filter-value='".$linkToAlertGroup."'>
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
                 <td>".getUserChoice($alertGroup)."</td>
@@ -210,7 +222,7 @@ while($row = $query->fetch()) {
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
-                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showHistoryAlerts?'filter=1&':'')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyNewAlerts?'':'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }

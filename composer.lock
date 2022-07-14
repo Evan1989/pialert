@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79ad6064db7be84094455617e0662396",
+    "content-hash": "db14d6b4b4e96c629d239409f8a5780e",
     "packages": [
         {
             "name": "twbs/bootstrap-icons",
-            "version": "v1.8.3",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twbs/icons.git",
-                "reference": "9bcba3efe7fae552f6425f6f4aaf70590d835482"
+                "reference": "aa1ede051cd0cbc369be31ea097856e673e3573b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/icons/zipball/9bcba3efe7fae552f6425f6f4aaf70590d835482",
-                "reference": "9bcba3efe7fae552f6425f6f4aaf70590d835482",
+                "url": "https://api.github.com/repos/twbs/icons/zipball/aa1ede051cd0cbc369be31ea097856e673e3573b",
+                "reference": "aa1ede051cd0cbc369be31ea097856e673e3573b",
                 "shasum": ""
             },
             "type": "library",
@@ -41,9 +41,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twbs/icons/issues",
-                "source": "https://github.com/twbs/icons/tree/v1.8.3"
+                "source": "https://github.com/twbs/icons/tree/v1.9.0"
             },
-            "time": "2022-05-25T17:57:16+00:00"
+            "time": "2022-07-13T20:08:59+00:00"
         }
     ],
     "packages-dev": [

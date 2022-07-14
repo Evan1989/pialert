@@ -218,13 +218,11 @@ function initJavascriptForDashboard() {
             scrollTop: scrollTo.offset().top - scrollTo.parents('tr').height()
         }, 200);
     });
-    $('#showHistoryAlerts').change(function(){
-        let search = $('#mainTableSearch').val()
-        if ( $(this).is(':checked') ) {
-            location.href = 'dashboard.php?filter=1&search='+search;
-        } else {
-            location.href = 'dashboard.php?search='+search;
-        }
+    $('#showOnlyNewAlerts').change(function(){
+        dashboardPageReload();
+    });
+    $('#showOnlyImportant').change(function(){
+        dashboardPageReload();
     });
     setInterval(function(){
         dashboardPageReload();
@@ -235,8 +233,15 @@ function dashboardPageReload() {
     if ( reloadBlocked ) {
         return;
     }
+    let url = 'dashboard.php?'
+    if ( !$('#showOnlyNewAlerts').is(':checked') ) {
+        url = url+'showHistoryAlerts=1&';
+    }
+    if ( !$('#showOnlyImportant').is(':checked') ) {
+        url = url+'showNotImportant=1&';
+    }
     let search = $('#mainTableSearch').val()
-    location.href = 'dashboard.php?search='+search;
+    location.href = url+'search='+search;
 }
 function addAjaxFunctionForInputInAlertGroupTable(field) {
     field.change(function(){
@@ -368,7 +373,7 @@ function updateNewAlertFlagCount() {
     } else {
         $('.new-alert-count').hide();
         $(document).prop('title', PAGE_TITLE);
-        $('#favicon').attr('href', '/favicon2.png');
+        $('#favicon').attr('href', '/favicon2.png?v2');
     }
 }
 // noinspection JSUnusedGlobalSymbols

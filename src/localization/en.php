@@ -112,7 +112,8 @@ $texts = array(
     'dashboardCommentPlaceholder' => 'Steps that have already been taken or that need to be completed if alert repeated',
     'dashboardCheckAlertGroupAsCompleteButton' => 'The group received a new alert. Click if required action is completed',
     'dashboardCheckAlertGroupAsCompleteFail' => 'It is necessary to appoint a responsible person or change the status.',
-    'dashboardShowOldAlerts' => 'Show alerts older than two weeks',
+    'dashboardShowOnlyNewAlerts' => 'Only show new alerts (not older than two weeks)',
+    'dashboardShowOnlyImportantAlerts' => 'Show only alerts that require attention',
     'dashboardNoConnectToPiSystem' => 'No calls from systems for a long time, check the logs in SAP PI',
     'dashboardSupportOnline' => 'There are several employees is online in the system',
     'dashboardTitleToTopBillCounter' => 'Total actual alerts per page',
@@ -176,7 +177,7 @@ $texts = array(
 
     'apiCBMAServiceInfo' => "<h1>Service for receiving alerts (CBMA) from SAP PI</h1>
         <p>
-            Access is via HTTP Basic Auth at ".Text::REPLACE_PATTERN."
+            Access is via HTTP Basic Auth (any login, password change in admin settings) at ".Text::REPLACE_PATTERN."
         </p>
         <p>
             This service is designed to receive alerts (CBMA) from SAP PI and process them.
@@ -214,7 +215,7 @@ $texts = array(
 
     'apiNetworkCheckServiceInfo' => "<h1>Service for canary certificate</h1>
         <p>
-            Access is via HTTP Basic Auth at ".Text::REPLACE_PATTERN."
+            Access is via HTTP Basic Auth (any login, password change in admin settings) at ".Text::REPLACE_PATTERN."
         </p>
         <p>
             In SAP PI, the script REST polling → Dynamic Reciever Determination is configured (always giving false + selected ignore in ICO) → Any,
