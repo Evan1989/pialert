@@ -141,6 +141,7 @@ $texts = array(
     'dashboardShareLinkButton' => 'Ссылка на данный алерт',
     'dashboardLastUserId' => 'Предыдущий ответственный сотрудник',
     'dashboardEditDate' => 'Дата редактирования: '.Text::REPLACE_PATTERN,
+    'dashboardAvgBigCount' => 'Значение заметно больше обычного!',
 
     'authorizationPageTitle' => 'Вход в систему PiAlert',
     'authorizationPageHeader' => 'Необходимо пройти авторизацию',

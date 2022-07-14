@@ -141,6 +141,7 @@ $texts = array(
     'dashboardShareLinkButton' => 'Link to this alert group',
     'dashboardLastUserId' => 'Last responsible employee',
     'dashboardEditDate' => 'Last edit: '.Text::REPLACE_PATTERN,
+    'dashboardAvgBigCount' => 'The value is greater than the observed averages!',
 
     'authorizationPageTitle' => 'Login to PiAlert',
     'authorizationPageHeader' => 'Requires authorization',
