@@ -217,6 +217,25 @@ class PiAlertGroup {
         return nl2br(replaceLinksWithATag($this->comment));
     }
 
+    /**
+     * Насолько значение алертов за сутки больше, чем обычно
+     * @return int 0 - как обычно, чем число больше, тем более превышены средние
+     */
+    public function getAlert24HourCountCompareVsAverage() : int {
+        $dayCount = $this->getAlertCount(ONE_DAY);
+        $monthCount = $this->getAlertCount(ONE_MONTH);
+        $avgCount = 0.5 * (ceil($monthCount / 30.5) + ceil($dayCount / 7));
+        if ( $dayCount < 5 || $dayCount < 7 * $avgCount ) {
+            return 0;
+        }
+        if ( $dayCount > 50 * $avgCount ) {
+            return 3;
+        } elseif ( $dayCount > 15 * $avgCount ) {
+            return 2;
+        }
+        return 1;
+    }
+
     public function getAlertCount(int|null $timeLimit = null) : int {
         if ( is_null($timeLimit) ) {
             $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE group_id = ?");
