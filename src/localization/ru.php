@@ -112,7 +112,8 @@ $texts = array(
     'dashboardCommentPlaceholder' => 'Шаги, которые уже выполнены, либо который надо выполнить при повторении алерта',
     'dashboardCheckAlertGroupAsCompleteButton' => 'По группе пришел новый алерт. Кликните, если необходимые действия выполнены',
     'dashboardCheckAlertGroupAsCompleteFail' => 'Необходимо назначить ответственного или сменить статус.',
-    'dashboardShowOldAlerts' => 'Показывать алерты старше двух недель',
+    'dashboardShowOnlyNewAlerts' => 'Показывать только новые алерты (не старше двух недель)',
+    'dashboardShowOnlyImportantAlerts' => 'Показывать только алерты, требующие внимания',
     'dashboardNoConnectToPiSystem' => 'Давно нет вызовов от систем, проверьте логи в SAP PI',
     'dashboardSupportOnline' => 'В системе online несколько сотрудников',
     'dashboardTitleToTopBillCounter' => 'Всего актуальных алертов на странице',
@@ -176,7 +177,7 @@ $texts = array(
 
     'apiCBMAServiceInfo' => "<h1>Сервис для приема алертов (CBMA) из SAP PI</h1>
         <p>
-            Доступ осуществляется через HTTP Basic Auth по адресу ".Text::REPLACE_PATTERN."
+            Доступ осуществляется через HTTP Basic Auth (любой логин, пароль меняется в настройках администратора) по адресу ".Text::REPLACE_PATTERN."
         </p>
         <p>
             Данный сервис предназначен для получения алертов (CBMA) из SAP PI и их обработки.
@@ -214,7 +215,7 @@ $texts = array(
 
     'apiNetworkCheckServiceInfo' => "<h1>Сервис для свидетельства канарейки</h1>
         <p>
-            Доступ осуществляется через HTTP Basic Auth по адресу ".Text::REPLACE_PATTERN."
+            Доступ осуществляется через HTTP Basic Auth (любой логин, пароль меняется в настройках администратора) по адресу ".Text::REPLACE_PATTERN."
         </p>
         <p>
             В SAP PI настраивается сценарий REST polling → Dynamic Reciever Determination (всегда выдающий false + галочка ignore в ICO) → Any,
