@@ -188,6 +188,15 @@ while($row = $query->fetch()) {
     } else {
         $newAlertFlag = '';
     }
+    $weekCount = $alertGroup->getAlertCount(ONE_WEEK);
+    $length = ceil( (time() - strtotime($alertGroup->firstAlert) ) / ONE_DAY);
+    $growIcon = '';
+    if ( $weekCount > 0 && $length > 30 ) {
+        $compareResult = $alertGroup->getAlert24HourCountCompareVsAverage();
+        if ( $compareResult > 0 ) {
+            $growIcon = "<span style='color:red;font-size:150%' data-toggle='tooltip' title='".Text::dashboardAvgBigCount()."'>".str_repeat('↑', $compareResult)."</span>";
+        }
+    }
     $linkToAlertGroup = 'ID'.$alertGroup->group_id;
     echo "<tr filter-value='".$linkToAlertGroup."'>
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
@@ -197,7 +206,7 @@ while($row = $query->fetch()) {
                 <td style='max-width: 400px'>".$alertGroup->getHTMLErrorTextMask()."</td>
                 <td><input type='hidden' value='".$alertGroup->lastAlert."'>".$lastAlertDateShow."</td>
                 <td>".
-                    ($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0)."
+                    ($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0).$growIcon."
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
