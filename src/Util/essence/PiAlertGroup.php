@@ -218,19 +218,35 @@ class PiAlertGroup {
     }
 
     /**
-     * Насолько значение алертов за сутки больше, чем обычно
+     * Насколько значение алертов за сутки больше, чем обычно
      * @return int 0 - как обычно, чем число больше, тем более превышены средние
      */
     public function getAlert24HourCountCompareVsAverage() : int {
-        $dayCount = $this->getAlertCount(ONE_DAY);
-        $monthCount = $this->getAlertCount(ONE_MONTH);
-        $avgCount = 0.5 * (ceil($monthCount / 30.5) + ceil($dayCount / 7));
-        if ( $dayCount < 5 || $dayCount < 7 * $avgCount ) {
+        if ( time() - strtotime($this->firstAlert) < ONE_MONTH ) {
             return 0;
         }
-        if ( $dayCount > 50 * $avgCount ) {
+        $sum = 0;
+        $lastDay = 0;
+        $count = 0;
+        $query = $this->getAlertCountForDiagram(ONE_MONTH);
+        while($row = $query->fetch()) {
+            $lastDay = $row['count'];
+            $sum += $row['count'];
+            $count++;
+        }
+        if ( $count < 2 ) {
+            return 0;
+        }
+        $avgCount = ceil(($sum - $lastDay) / ($count - 1));
+
+        // На случай, если наступили новые сутки, и там всего один алерт то, чтобы отразить вчерашние проблемы
+        $lastDay = max( $lastDay, $this->getAlertCount(ONE_DAY) );
+        if ( $lastDay < 5 || $lastDay < 3 * $avgCount ) {
+            return 0;
+        }
+        if ( $lastDay > 50 * $avgCount ) {
             return 3;
-        } elseif ( $dayCount > 15 * $avgCount ) {
+        } elseif ( $lastDay > 10 * $avgCount ) {
             return 2;
         }
         return 1;
@@ -304,6 +320,7 @@ class PiAlertGroup {
             FROM alerts
             WHERE group_id = ? AND timestamp > NOW() - INTERVAL ? SECOND
             GROUP BY date
+            ORDER BY date 
         ");
         $query->execute(array( $this->group_id, $timeLimit ));
         return $query;
