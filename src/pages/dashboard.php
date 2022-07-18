@@ -197,9 +197,8 @@ while($row = $query->fetch()) {
         $newAlertFlag = '';
     }
     $weekCount = $alertGroup->getAlertCount(ONE_WEEK);
-    $length = ceil( (time() - strtotime($alertGroup->firstAlert) ) / ONE_DAY);
     $growIcon = '';
-    if ( $weekCount > 0 && $length > 30 ) {
+    if ( $weekCount > 0 ) {
         $compareResult = $alertGroup->getAlert24HourCountCompareVsAverage();
         if ( $compareResult > 0 ) {
             $growIcon = "<span style='color:red;font-size:150%' data-toggle='tooltip' title='".Text::dashboardAvgBigCount()."'>".str_repeat('↑', $compareResult)."</span>";

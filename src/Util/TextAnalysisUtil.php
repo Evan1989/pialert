@@ -110,7 +110,7 @@ class TextAnalysisUtil {
         $text2 = mb_str_split($text2);
         $i1 = count($text1)-1;
         $i2 = count($text2)-1;
-        for (; $i1 >= 0; $i1-- ) {
+        for (; $i1 >= 0 && $i2 >= 0; $i1-- ) {
             if ( $text1[$i1] != $text2[$i2] ) {
                 return $result;
             }
