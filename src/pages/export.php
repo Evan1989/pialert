@@ -50,6 +50,23 @@ if ( isset($_GET['report']) ) {
                 $excelFile->newLine();
             }
             break;
+        case 'support_online':
+            $excelFile->addCell("Date", 1, 1, true);
+            $excelFile->addCell("User", 1, 1, true);
+            $excelFile->addCell("Seconds per day", 1, 1, true);
+            $excelFile->addCell("Time per day (text)", 1, 1, true);
+            $excelFile->newLine();
+            $query = DB::prepare("SELECT *  FROM user_statistic_online order by date");
+            $query->execute(array());
+            while($row = $query->fetch()) {
+                $user = new User($row['user_id']);
+                $excelFile->addCell($row['date']);
+                $excelFile->addCell($user->getCaption('-'));
+                $excelFile->addCell($row['seconds']);
+                $excelFile->addCell(getIntervalRoundLength($row['seconds']));
+                $excelFile->newLine();
+            }
+            break;
         default:
             $excelFile->addCell(Text::exportErrorOnGenerateReport());
             break;
@@ -77,6 +94,11 @@ echo "<div class='card mb-4 shadow'>
                         <td>".Text::exportMainAlertGroupBase()."</td>
                         <td>".Text::exportLow()."</td>
                         <td><a href='export.php?report=main_base' class='btn btn-sm btn-primary'>download</a></td>
+                    </tr>
+                    <tr>
+                        <td>".Text::onlinePageHeader()."</td>
+                        <td>".Text::exportLow()."</td>
+                        <td><a href='export.php?report=support_online' class='btn btn-sm btn-primary'>download</a></td>
                     </tr>
                 </tbody>
             </table>

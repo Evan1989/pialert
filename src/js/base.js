@@ -64,6 +64,18 @@ function executeFunction( element, param ) {
     return true;
 }
 
+function loadSystemAbout() {
+    $.ajax({
+        type: 'POST',
+        url: location.href,
+        data: {'ajaxSystemAbout':true},
+        'success': function(data) {
+            $('#modal_piAlertDefault .modal-body').html( data );
+            $('#modal_piAlertDefault').modal('show');
+        }
+    });
+}
+
 
 //////////  Block input system   //////////////
 const BLOCK_SYSTEM_TIME_INTERVAL = 1000;
@@ -321,20 +333,20 @@ function changeInputFieldInAlertGroupTable(field) {
 // noinspection JSUnusedGlobalSymbols
 function loadAlertGroupFullInfo(group_id) {
     $.get( 'dashboard.php?loadAlertGroupFullInfo='+group_id, function( data ) {
-        $('#modal_alertsForGroup .modal-body').html( data );
-        $('#modal_alertsForGroup').modal('show');
-        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
+        $('#modal_piAlertDefault .modal-body').html( data );
+        $('#modal_piAlertDefault').modal('show');
+        $('#modal_piAlertDefault [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols
 function loadAlertsForGroup(group_id) {
     $.get( 'dashboard.php?loadAlertsForGroup='+group_id, function( data ) {
-        $('#modal_alertsForGroup .modal-body').html( data );
-        $('#modal_alertsForGroup').modal('show');
+        $('#modal_piAlertDefault .modal-body').html( data );
+        $('#modal_piAlertDefault').modal('show');
         $('.tablesorter.alert-table').tablesorter( {
             headers: {}
         });
-        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
+        $('#modal_piAlertDefault [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols
@@ -345,8 +357,8 @@ function checkAlertGroupAsComplete(group_id) {
             updateNewAlertFlagCount();
             updateInputFieldInAlertGroupTable($('#status_'+group_id))
         } else {
-            $('#modal_alertsForGroup .modal-body').html( data );
-            $('#modal_alertsForGroup').modal('show');
+            $('#modal_piAlertDefault .modal-body').html( data );
+            $('#modal_piAlertDefault').modal('show');
         }
     });
 }
@@ -379,16 +391,16 @@ function updateNewAlertFlagCount() {
 // noinspection JSUnusedGlobalSymbols
 function unionAlertGroup(group_id) {
     $.get( 'dashboard.php?unionAlertGroup='+group_id, function( data ) {
-        $('#modal_alertsForGroup .modal-body').html( data );
-        $('#modal_alertsForGroup').modal('show');
-        $('#modal_alertsForGroup [data-toggle=\"tooltip\"]').tooltip();
+        $('#modal_piAlertDefault .modal-body').html( data );
+        $('#modal_piAlertDefault').modal('show');
+        $('#modal_piAlertDefault [data-toggle=\"tooltip\"]').tooltip();
     });
 }
 // noinspection JSUnusedGlobalSymbols
 function unionAlertGroupStep2(group_id_from, group_id_to) {
     $.get( 'dashboard.php?unionAlertGroupStep2='+group_id_from+'&group_id_to='+group_id_to, function( data ) {
-        $('#modal_alertsForGroup .modal-body').html( data );
-        $('#modal_alertsForGroup').modal('show');
+        $('#modal_piAlertDefault .modal-body').html( data );
+        $('#modal_piAlertDefault').modal('show');
     });
 }
 function getValueForFilterTr(tr) {

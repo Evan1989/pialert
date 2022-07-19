@@ -81,7 +81,7 @@ $texts = array(
     'settingsInstallButton' => 'Обновление',
     'settingsCommonSettings' => 'Общие параметры',
     'settingsHostname' => 'Хост системы',
-    'settingsCodeVersion' => 'Версия кода',
+    'settingsCodeVersion' => 'Версия локального кода',
     'settingsDataBaseVersion' => 'Версия базы данных',
     'settingsGithubVersion' => 'Версия на Github',
     'settingsGroupCompany' => 'Данные компании',
@@ -165,7 +165,7 @@ $texts = array(
         Необходимо обновить версию структур базы данных до того же уровня.',
     'installUpgradeBody' => '1. Скачайте архив с <a href="'.Text::REPLACE_PATTERN.'" target="_blank">'.Text::REPLACE_PATTERN.'</a>
         <br>
-        2. Распакуйте файлы в папку PiAlert с заменой сущетсвующих
+        2. Распакуйте файлы в папку PiAlert с заменой существующих
         <br>
         3. Перезагрузите страницу',
     'installAutoUpgradeBody' => 'Система попробует автоматически скачать новую версию кода с Github и установить её на сервер.',
