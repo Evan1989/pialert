@@ -23,8 +23,35 @@ class HTMLPageTemplate {
         exit();
     }
 
-    public function getPageHeader(string $title) :string {
+    protected function calculateAjaxSystemInfo() : void {
+        if (!isset($_POST['ajaxSystemAbout'])) {
+            return;
+        }
+        $addLine = '';
+        $githubVersion = SystemVersion::getGithubVersion();
+        if ( $githubVersion !== false ) {
+            $addLine = Text::settingsGithubVersion().": ".$githubVersion;
+            if ( $this->authorizationAdmin->checkAccessToMenu(6) &&
+                (SystemVersion::isFinishInstallNeeded() || SystemVersion::isUpgradeNeeded() )
+            ) {
+                $addLine .= " <a href='install.php'>" . static::getIcon('cloud-download') . "</a>";
+            }
+            $addLine .= "<br>";
+        }
+        echo "<h5>PiAlert</h5>".
+            Text::settingsCodeVersion().": ".SystemVersion::getCodeVersion()."<br>".
+            $addLine.
+            "Source code: <a href='".GITHUB_PROJECT_LINK."' target='_blank'>".GITHUB_PROJECT_LINK."</a>";
+        exit();
+    }
+
+    protected function calculateAjaxOrTransitCalls() : void {
         $this->calculateUserLanguage();
+        $this->calculateAjaxSystemInfo();
+    }
+
+    public function getPageHeader(string $title) : string {
+        $this->calculateAjaxOrTransitCalls();
         return "<!doctype html>
 <html lang='ru'>
     <head>
@@ -33,7 +60,7 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v29' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v30' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -50,14 +77,22 @@ class HTMLPageTemplate {
                         " . Text::pageGenerated() . " " . date("Y-m-d H:i:s") . "
                     </div>";
         }
-        $text .= "</div>
+        $text .= "  <div class='modal fade' id='modal_piAlertDefault' tabindex='-1' role='dialog' aria-hidden='true'>
+                        <div class='modal-dialog modal-xl' role='document'>
+                            <div class='modal-content'>
+                                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                <div class='modal-body overflow-auto'></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
         <script src='/src/js/jquery.tablesorter.min.js'></script>
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=42'></script>".
+        <script src='/src/js/base.js?v=43'></script>".
         $additionalJavaScript.
     "</body>
 </html>";
@@ -140,7 +175,7 @@ class HTMLPageTemplate {
         }
         $text = "<nav class='navbar navbar-expand-lg navbar-dark fixed-top shadow'>
               <div class='container-fluid'>
-                <div class='company-logo'>".Settings::get(Settings::COMPANY_NAME)." PiAlert</div>
+                <div class='company-logo'><a href='javascript:loadSystemAbout()'>".Settings::get(Settings::COMPANY_NAME)." PiAlert</a></div>
                 <button class='navbar-toggler' type='button' data-bs-toggle='collapse'  data-bs-target='#mainMenu' aria-controls='#mainMenu'>
                     <span class='navbar-toggler-icon'></span>
                 </button>

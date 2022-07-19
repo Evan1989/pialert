@@ -1,11 +1,20 @@
 .company-logo {
-	color:white;
 	padding-right: 20px;
+}
+.company-logo,
+.company-logo a {
+	color:white;
+	text-decoration: none;
 }
 table .hide {
 	color: white;
 }
 
+.modal-content > .btn-close {
+	position: absolute;
+	right: 0;
+	z-index: 1000;
+}
 
 .new-alert-count {
 	cursor: pointer;

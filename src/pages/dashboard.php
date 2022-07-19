@@ -204,7 +204,7 @@ while($row = $query->fetch()) {
             $growIcon = "<span style='color:red;font-size:150%' data-toggle='tooltip' title='".Text::dashboardAvgBigCount()."'>".str_repeat('↑', $compareResult)."</span>";
         }
     }
-    $linkToAlertGroup = 'ID'.$alertGroup->group_id;
+    $linkToAlertGroup = 'ID['.$alertGroup->group_id.']';
     $important = ( $alertGroup->status != PiAlertGroup::IGNORE && $alertGroup->status != PiAlertGroup::CLOSE ) || !empty($growIcon);
     if ( $showOnlyImportant && !$important) {
         continue;
@@ -221,7 +221,7 @@ while($row = $query->fetch()) {
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
-                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyNewAlerts?'':'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyImportant?:'showNotImportant=1&').($showOnlyNewAlerts?:'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }
@@ -259,14 +259,6 @@ echo "              <tr>
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-    
-    <div class='modal fade' id='modal_alertsForGroup' tabindex='-1' role='dialog' aria-hidden='true'>
-        <div class='modal-dialog modal-xl' role='document'>
-            <div class='modal-content'>
-              <div class='modal-body overflow-auto'></div>
-            </div>
         </div>
     </div>";
 
