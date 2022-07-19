@@ -221,7 +221,7 @@ while($row = $query->fetch()) {
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
-                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyImportant?:'showNotImportant=1&').($showOnlyNewAlerts?:'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyImportant?'':'showNotImportant=1&').($showOnlyNewAlerts?'':'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }
