@@ -89,7 +89,7 @@ echo "<div class='card mb-4 shadow'>
             <form action='' method='POST'>
                 <div class='row mb-1'>
                     <div class='col-sm-6'>
-                        <input class='form-control' type='text' name='system' maxlength='100' placeholder='".Text::sender().'/'.Text::receiver()."' value=\"".$system."\" required>
+                        <input class='form-control' type='text' name='system' maxlength='100' placeholder='".Text::sender().' '.Text::or().' '.Text::receiver()."' value=\"".$system."\" required>
                     </div>
                     <label class='col-sm-6'>
                         <i>".implode(', ', $systems)."</i>
@@ -119,7 +119,7 @@ if ( $system && $errorText && $groupCount == 0 ) {
         ".Text::massAlertsFoundedCount()." 0 ".Text::pieces()."
     </div>";
 }
-if ( $groupCount > 1 ) {
+if ( $groupCount >= 1 ) {
     echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
 	        ".Text::massAlertsFoundedBlockHeader()."
