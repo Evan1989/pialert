@@ -18,6 +18,11 @@ $page = new HTMLPageTemplate($authorizationAdmin);
 if ( isset($_POST['system']) ) {
     $system = htmlspecialchars($_POST['system']);
     $errorText = $_POST['errorText'];
+    $_SESSION['system'] = $system;
+    $_SESSION['errorText'] = $errorText;
+} elseif ( isset($_SESSION['system']) ) {
+    $system = $_SESSION['system'];
+    $errorText = $_SESSION['errorText'];
 } else {
     $system = '';
     $errorText = '';
@@ -173,7 +178,10 @@ if ( $groupCount >= 1 ) {
                         <td>".$alertGroup->getHTMLErrorTextMask()."</td>
                         <td class='bg-".$alertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($alertGroup->status)."</td>
                         <td>".$alertGroup->getHTMLComment()."</td>
-                        <td>".$alertGroup->getAlertCount(ONE_DAY)." ".Text::pieces()."</td>
+                        <td>".$alertGroup->getAlertCount(ONE_DAY)." ".Text::pieces()."
+                            <br>
+                            <a href=\"".SERVER_HOST."src/pages/dashboard.php?id=".$alertGroup->group_id."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."' target='_blank'>".$page->getIcon('share')."</a>
+                        </td>
                     </tr>";
     }
     echo "      </tbody>
