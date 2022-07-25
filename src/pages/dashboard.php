@@ -4,7 +4,7 @@ require_once(__DIR__."/../autoload.php");
 
 use EvanPiAlert\Util\AlertAnalytics;
 use EvanPiAlert\Util\AuthorizationAdmin;
-use EvanPiAlert\Util\CalendarRussia;
+use EvanPiAlert\Util\Calendar;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\essence\User;
@@ -114,33 +114,45 @@ $page = new HTMLPageTemplate($authorizationAdmin);
 echo $page->getPageHeader(Text::dashboardPageHeader());
 
 $today = date("Y-m-d"); // сегодня
-$calendar = new CalendarRussia();
+$calendar = new Calendar( $authorizationAdmin->getUser()->language );
 $last_work_day = time()-ONE_DAY;
 while ($calendar->isWorkingDay( date("Y-m-d", $last_work_day) ) == false) {
     $last_work_day = $last_work_day-ONE_DAY;
 }
 $last_work_day = date("Y-m-d 16:00", $last_work_day); // предыдущий рабочий день, 16:00. Считаем, что все что раньше, уже обработано
 
+//  Фильтры выборки //
 $defaultSearch = '';
-if ( isset($_GET['search']) ) {
-    $defaultSearch = htmlspecialchars($_GET['search']);
-}
-$showOnlyImportant = true;
-if ( isset($_GET['showNotImportant']) && $_GET['showNotImportant'] == 1 ) {
+$additionalHeader = '';
+if ( isset($_GET['id']) ) {
+    $group_id = (int) $_GET['id'];
     $showOnlyImportant = false;
-}
-
-if ( isset($_GET['showHistoryAlerts']) && $_GET['showHistoryAlerts'] == 1 ) {
     $showOnlyNewAlerts = false;
-    $query = DB::prepare("SELECT *  FROM alert_group order by last_alert desc");
+    $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
+    $query = DB::prepare("SELECT *  FROM alert_group WHERE group_id = ?");
+    $query->execute(array( $group_id ));
 } else {
-    $showOnlyNewAlerts = true;
-    $query = DB::prepare("SELECT *  FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc");
+    if (isset($_GET['search'])) {
+        $defaultSearch = htmlspecialchars($_GET['search']);
+    }
+    $showOnlyImportant = true;
+    if (isset($_GET['showNotImportant']) && $_GET['showNotImportant'] == 1) {
+        $showOnlyImportant = false;
+    }
+    if (isset($_GET['showHistoryAlerts']) && $_GET['showHistoryAlerts'] == 1) {
+        $showOnlyNewAlerts = false;
+        $query = DB::prepare("SELECT *  FROM alert_group order by last_alert desc");
+    } else {
+        $showOnlyNewAlerts = true;
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc");
+    }
+    $query->execute(array());
 }
+//  Фильтры выборки //
 
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
-	        ".Text::dashboardPageHeader()."
+	        ".Text::dashboardPageHeader().$additionalHeader."
 	        <div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyNewAlerts()."'>
                 ".HTMLPageTemplate::getIcon( ($showOnlyNewAlerts?'newspaper':'h-circle') )."
                 <input class='form-check-input' type='checkbox' id='showOnlyNewAlerts' ".($showOnlyNewAlerts?'checked':'').">
@@ -176,7 +188,6 @@ echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='too
               </tr>
             </thead> 
             <tbody>";
-$query->execute(array());
 $globalLastAlert = array();
 while($row = $query->fetch()) {
     $alertGroup = new PiAlertGroup($row);
@@ -204,12 +215,11 @@ while($row = $query->fetch()) {
             $growIcon = "<span style='color:red;font-size:150%' data-toggle='tooltip' title='".Text::dashboardAvgBigCount()."'>".str_repeat('↑', $compareResult)."</span>";
         }
     }
-    $linkToAlertGroup = 'ID['.$alertGroup->group_id.']';
     $important = ( $alertGroup->status != PiAlertGroup::IGNORE && $alertGroup->status != PiAlertGroup::CLOSE ) || !empty($growIcon);
     if ( $showOnlyImportant && !$important) {
         continue;
     }
-    echo "<tr filter-value='".$linkToAlertGroup."'>
+    echo "<tr filter-value=''>
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
                 <td>".getUserChoice($alertGroup)."</td>
                 <td>".getComment($alertGroup)."</td>
@@ -221,7 +231,7 @@ while($row = $query->fetch()) {
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
-                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?".($showOnlyImportant?'':'showNotImportant=1&').($showOnlyNewAlerts?'':'showHistoryAlerts=1&')."search=".$linkToAlertGroup."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?id=".$alertGroup->group_id."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }

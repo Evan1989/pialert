@@ -3,7 +3,10 @@
 
 namespace EvanPiAlert\Util;
 
-class CalendarRussia {
+/**
+ * https://github.com/xmlcalendar/data
+ */
+class Calendar {
 
     // нет значения - рабочий день
     // 1 - праздничный день
@@ -12,11 +15,14 @@ class CalendarRussia {
 
     private array $holidaysData = array(); // unix дата => тип особенности
 
-    public function __construct( $year = false ) {
+    public function __construct( ?string $county, $year = false ) {
+        if ( empty($county) ) {
+            $county = 'ru';
+        }
         if ( !$year ) {
             $year = date('Y');
         }
-        $this->loadWorkCalendar( $year );
+        $this->loadWorkCalendar( $county, $year );
     }
 
     /**
@@ -32,14 +38,14 @@ class CalendarRussia {
         return date("N", $time) <= 5;
     }
 
-    private function loadWorkCalendar( int $year ) : void {
-        $cacheName = 'CalendarHolidayData_'.$year;
+    private function loadWorkCalendar( string $county, int $year ) : void {
+        $cacheName = 'CalendarHolidayData_'.$county.'_'.$year;
         if ( isset($_SESSION[$cacheName]) ) {
             $this->holidaysData = $_SESSION[$cacheName];
             return;
         }
         /** @noinspection HttpUrlsUsage */
-        $xml = simplexml_load_file("http://xmlcalendar.ru/data/ru/".$year."/calendar.xml");
+        $xml = simplexml_load_file("http://xmlcalendar.ru/data/".$county."/".$year."/calendar.xml");
         if ( $xml === false) {
             return;
         }
