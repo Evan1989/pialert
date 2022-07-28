@@ -2,6 +2,7 @@
 
 namespace EvanPiAlert\Util;
 
+use EvanPiAlert\Util\essence\PiAlertGroup;
 use PDOException;
 
 /**
@@ -76,5 +77,17 @@ class Settings {
             return false;
         }
         return false;
+    }
+
+    public static function systemCacheRefresh() : void {
+        AuthorizationAdmin::deleteAllOldToken();
+        Cache::clearOld();
+        // Сделаем перерасчет поля errTextMainPart для алертов
+        $query = DB::prepare("SELECT * FROM alert_group WHERE errTextMainPart is NULL");
+        $query->execute(array());
+        while ($row = $query->fetch()) {
+            $alertGroup = new PiAlertGroup($row);
+            $alertGroup->saveToDatabase();
+        }
     }
 }

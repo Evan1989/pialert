@@ -96,6 +96,11 @@ class HTMLPageTemplate {
         $additionalJavaScript.
     "</body>
 </html>";
+
+        if ( rand(0, 1000) == 1 ) {
+            Settings::systemCacheRefresh();
+        }
+
         return $text;
     }
 

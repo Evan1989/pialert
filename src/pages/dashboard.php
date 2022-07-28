@@ -121,6 +121,7 @@ while ($calendar->isWorkingDay( date("Y-m-d", $last_work_day) ) == false) {
 }
 $last_work_day = date("Y-m-d 16:00", $last_work_day); // предыдущий рабочий день, 16:00. Считаем, что все что раньше, уже обработано
 
+
 //  Фильтры выборки //
 $defaultSearch = '';
 $additionalHeader = '';
@@ -128,8 +129,13 @@ if ( isset($_GET['id']) ) {
     $group_id = (int) $_GET['id'];
     $showOnlyImportant = false;
     $showOnlyNewAlerts = false;
-    $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
-    $query = DB::prepare("SELECT *  FROM alert_group WHERE group_id = ?");
+    if (isset($_GET['showSameErrors'])) {
+        $additionalHeader = ' <i>(GroupID='.$group_id.' and same alerts)</i>';
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE errTextMainPart = (SELECT errTextMainPart FROM alert_group WHERE group_id = ?)");
+    } else {
+        $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE group_id = ?");
+    }
     $query->execute(array( $group_id ));
 } else {
     if (isset($_GET['search'])) {
@@ -149,6 +155,7 @@ if ( isset($_GET['id']) ) {
     $query->execute(array());
 }
 //  Фильтры выборки //
+
 
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
@@ -188,6 +195,7 @@ echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='too
               </tr>
             </thead> 
             <tbody>";
+$query2 = DB::prepare("SELECT *  FROM alert_group WHERE group_id != ? AND errTextMainPart = ? AND comment IS NOT NULL");
 $globalLastAlert = array();
 while($row = $query->fetch()) {
     $alertGroup = new PiAlertGroup($row);
@@ -231,7 +239,13 @@ while($row = $query->fetch()) {
                     <br>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
-                    <a href=\"".SERVER_HOST."src/pages/dashboard.php?id=".$alertGroup->group_id."\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+                    <a href='dashboard.php?id=".$alertGroup->group_id."' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";
+    if ( $alertGroup->status == PiAlertGroup::NEW || $alertGroup->status == PiAlertGroup::REOPEN ) {
+        $query2->execute(array($alertGroup->group_id, $alertGroup->getMainPartOfError()));
+        if ($row2 = $query2->fetch()) {
+            echo "  <a href='dashboard.php?id=".$alertGroup->group_id."&showSameErrors' data-toggle='tooltip' data-placement='top' title='".Text::dashboardFindSameErrors()."'>".$page->getIcon('magic')."</a>";
+        }
+    }
     if ( $alertGroup->maybe_need_union ) {
         echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
     }

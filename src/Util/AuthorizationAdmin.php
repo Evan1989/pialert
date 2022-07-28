@@ -281,7 +281,7 @@ class AuthorizationAdmin {
         $query->execute(array( $user_id ));
     }
 
-    public function deleteAllOldToken() : void {
+    public static function deleteAllOldToken() : void {
 		$query = DB::prepare("DELETE FROM user_tokens WHERE createtime < NOW() - INTERVAL 1 MONTH");
 		$query->execute(array());
 	}
