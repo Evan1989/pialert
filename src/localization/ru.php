@@ -127,6 +127,7 @@ $texts = array(
     'dashboardShowStatisticButton' => 'Статистика по группе',
     'dashboardUnionGroupButton' => 'Группу можно объединить с другой',
     'dashboardUnionGroupButtonStep2' => 'слить все алерты из группы ошибок в этой строке с',
+    'dashboardFindSameErrors' => 'Найти похожие алерты в PiAlert',
     'dashboardThisGroup' => 'данной группой',
     'dashboardUnionSuccess' => 'Группы ошибок успешно объединены.',
     'dashboardUnionFail' => 'Не удалось объединить данные группы ошибок.',

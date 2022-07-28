@@ -128,6 +128,7 @@ $texts = array(
     'dashboardShowAlertButton' => 'Show alerts',
     'dashboardShowStatisticButton' => 'Alert group statistics',
     'dashboardUnionGroupButton' => 'The alert group can be union with another one',
+    'dashboardFindSameErrors' => 'Find similar errors in PiAlert',
     'dashboardUnionSuccess' => 'Alert groups merged successfully.',
     'dashboardUnionFail' => 'Failed to merge alert group data.',
     'dashboardUnionFatalError' => 'Unable to merge alert group data.',

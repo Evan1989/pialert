@@ -113,8 +113,12 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $grou
                       </tr>";
     }
     $result.= "       <tr>
-                          <td>".Text::dashboardShowAlertButton()."</td>
-                          <td><a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" class='btn btn-sm btn-primary'>load</a></td>
+                          <td>".Text::actions()."</td>
+                          <td>
+                            <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".HTMLPageTemplate::getIcon('envelope')."</a>
+                            <a href='dashboard.php?id=".$alertGroup->group_id."' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".HTMLPageTemplate::getIcon('share')."</a>
+                            <a href='dashboard.php?id=".$alertGroup->group_id."&showSameErrors' data-toggle='tooltip' data-placement='top' title='".Text::dashboardFindSameErrors()."'>".HTMLPageTemplate::getIcon('magic')."</a>
+                          </td>
                       </tr>
                 </tbody>
               </table>";

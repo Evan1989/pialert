@@ -64,6 +64,7 @@ function executeFunction( element, param ) {
     return true;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function loadSystemAbout() {
     $.ajax({
         type: 'POST',

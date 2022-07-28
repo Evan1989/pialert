@@ -21,10 +21,33 @@ class TextAnalysisUtilTest extends TestCase {
         $this->assertTrue(TextAnalysisUtil::isTextFitToMask('проверочный текст, в котором А вопрос', $mask), 'Сломалась поддержка ?');
     }
 
+    public function testGetMainPartOfPiErrorText() {
+        $a = "Error occurred while sending query result: 'com.sap.aii.af.lib.util.configuration.ConfigurationException: Sender Agreement lookup failed: com.sap.aii.af.service.administration.api.cpa.CPAChannelStoppedException: Channel stopped by administrative task. Channel Name: ELT_Price_JDBC_Sender'";
+        $b = "Channel stopped by administrative task";
+        $this->assertEquals(TextAnalysisUtil::getMainPartOfPiErrorText($a), $b, 'Некорректно извлекли основную часть ошибки');
+
+        $a = "java.sql.SQLException: 2092.0";
+        $b = "java.sql.SQLException: 2092.0";
+        $this->assertEquals(TextAnalysisUtil::getMainPartOfPiErrorText($a), $b, 'Некорректно извлекли основную часть ошибки');
+        
+        $a = "Failed to put message into DB store. Reason: com.sap.engine.services.ts.transaction.TxRollbackException: Current transaction is marked for rollback";
+        $b = "Current transaction is marked for rollback";
+        $this->assertEquals(TextAnalysisUtil::getMainPartOfPiErrorText($a), $b, 'Некорректно извлекли основную часть ошибки');
+    }
+    
     public function testIsSimilarText() {
         $a = "Runtime Exception when executing application mapping program com/sap/xi/tf/_Invoice_to_InvoicePackage_; Details: com.sap.aii.mapping.tool.tf7.IllegalInstanceException; Cannot create target element /ns0:InvoicePackage/InvoiceHeader/. Values missing in queue context. Target XSD requires a value for this element, but the target-field mapping does not create one. Check whether the XML instance is valid for the source XSD, and whether the target-field mapping fulfils the requirement of the target XSD";
         $this->assertTrue(TextAnalysisUtil::isSimilarText($a, $a), 'Идентичные строки считаются разными');
 
+        $a = "Runtime Exception when executing application mapping program com/sap/xi/tf/_Offer_to_Offer_; Details: com.sap.aii.mappingtool.tf7.MessageMappingException; Runtime exception when processing target-field mapping /ns1:Offer/access[1]/cont_start_date; root message: Unparseable date: ''";
+        $b = "Runtime Exception when executing application mapping program com/sap/xi/tf/_Offer_to_Offer_; Details: com.sap.aii.mappingtool.tf7.MessageMappingException; Runtime exception when processing target-field mapping /ns1:Offer/access[20]/cont_start_date; root message: Unparseable date: ''";
+        $this->assertTrue(TextAnalysisUtil::isSimilarText($a, $b), 'Похожий xpath попал признан разным');
+
+        $a = "Runtime Exception when executing application mapping program com/sap/xi/tf/_ORDERS_SAP_to_CISLink_; Details: com.sap.aii.mappingtool.tf7.IllegalInstanceException; Cannot create target element /ns0:ORDERS96A/M_ORDERS/G_SG2[3]/S_NAD/C_C058/D_3124_1. Values missing in queue context. Target XSD requires a value for this element, but the target-field mapping does not create one. Check whether the XML instance is valid for the source XSD, and whether the target-field mapping fulfils the requirement of the target XSD";
+        $b = "Runtime Exception when executing application mapping program com/sap/xi/tf/_ORDERS_SAP_to_CISLink_; Details: com.sap.aii.mappingtool.tf7.IllegalInstanceException; Cannot create target element /ns0:ORDERS96A/M_ORDERS/G_SG2[3]/S_NAD/C_C059/D_3042_1. Values missing in queue context. Target XSD requires a value for this element, but the target-field mapping does not create one. Check whether the XML instance is valid for the source XSD, and whether the target-field mapping fulfils the requirement of the target XSD";
+        $this->assertFalse(TextAnalysisUtil::isSimilarText($a, $b), 'Ошибки в разных полях маппинга склеились');
+        /*
+         * Ранее было неточное сравнение текстов, но от него отказались
         $b = $a.'12345';
         $this->assertTrue(TextAnalysisUtil::isSimilarText($a, $b), 'Длинные похожие строки оказались разными');
 
@@ -42,6 +65,7 @@ class TextAnalysisUtilTest extends TestCase {
         $a = "com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException: Lock wait timeout exceeded; try restarting transaction";
         $b = "com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException: Deadlock found when trying to get lock; try restarting transaction";
         $this->assertFalse(TextAnalysisUtil::isSimilarText($a, $b), 'Средние разные строки показаны одинаковыми 1');
+        */
     }
 
     public function testGetMaskFromTexts() {

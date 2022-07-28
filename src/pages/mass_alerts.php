@@ -15,7 +15,7 @@ $page = new HTMLPageTemplate($authorizationAdmin);
 
 // TODO галочки, чтобы исключить часть строк
 
-if ( isset($_POST['system']) ) {
+if ( isset($_POST['errorText']) ) {
     $system = htmlspecialchars($_POST['system']);
     $errorText = $_POST['errorText'];
     $_SESSION['system'] = $system;
@@ -29,7 +29,7 @@ if ( isset($_POST['system']) ) {
 }
 
 $groups = array();
-if ( $system && $errorText ) {
+if ( $errorText ) {
     $status = $_POST['status']??null;
     if ( $status == PiAlertGroup::getStatusName(PiAlertGroup::CLOSE) ) {
         $status = PiAlertGroup::CLOSE;
@@ -85,6 +85,14 @@ while ($row = $query->fetch()) {
         $systems[] = $row['toSystem'];
     }
 }
+$errors = array();
+$query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? GROUP BY errTextMainPart order by count desc LIMIT 3");
+$query->execute(array(PiAlertGroup::CLOSE));
+while ($row = $query->fetch()) {
+    if ( $row['count'] > 1 ) {
+        $errors[] = $row['errTextMainPart'];
+    }
+}
 
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
@@ -94,7 +102,7 @@ echo "<div class='card mb-4 shadow'>
             <form action='' method='POST'>
                 <div class='row mb-1'>
                     <div class='col-sm-6'>
-                        <input class='form-control' type='text' name='system' maxlength='100' placeholder='".Text::sender().' '.Text::or().' '.Text::receiver()."' value=\"".$system."\" required>
+                        <input class='form-control' type='text' name='system' maxlength='100' placeholder='".Text::sender().' '.Text::or().' '.Text::receiver()."' value=\"".$system."\">
                     </div>
                     <label class='col-sm-6'>
                         <i>".implode(', ', $systems)."</i>
@@ -106,11 +114,7 @@ echo "<div class='card mb-4 shadow'>
                     </div>
                     <label class='col-sm-6'>
                         <i>
-                            Channel stopped by administrative task. Channel Name: *_JDBC_Receiver
-                            <br>
-                            Cannot establish connection
-                            <br>
-                            Connection refused
+                            ".implode('<br>', $errors)."
                         </i>
                     </label>
                 </div>

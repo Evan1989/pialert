@@ -5,6 +5,40 @@ namespace EvanPiAlert\Util;
 class TextAnalysisUtil {
 
     /**
+     * Получить из текста ошибки основную смысловую часть
+     * @param string $text
+     * @return string
+     */
+    public static function getMainPartOfPiErrorText(string $text) : string {
+        // Уберем message_id (4aece44e-0cb6-11ed-bddd-00000c31d092)
+        $text = preg_replace('/[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}/', '*', $text);
+        // Уберем название каналов
+        $text = preg_replace('/Channel Name: [^ ]+/', '*', $text);
+        // Уберем ip адреса, хосты, порты
+        $text = preg_replace('/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/', '*', $text);
+        $text = preg_replace('/[a-z\d\-.]+\.(net|com|ru|local)(:\d+)?/', '*', $text);
+        $text = preg_replace('/port \d+/', '*', $text);
+        $text = str_replace('**', '*', $text);
+        // Возьмем конец текста, тк.к. в начале обычно название классов и Exception
+        $result = static::getTextAfterLastColon($text);
+        if ( $result && mb_strlen($result) < 15 ) {
+            $result = static::getTextAfterLastColon($text, true);
+        }
+        // Удалим лишние символы на концах
+        return preg_replace('/^[.*;: ]*?(.*?)[.*;:\' ]*?$/', '\\1', $result);
+    }
+
+    private static function getTextAfterLastColon(string $text, bool $skipLastColon = false) : string {
+        $parts = explode(': ', $text);
+        if ( $skipLastColon && count($parts) > 1) {
+            $last = array_pop($parts);
+            $prevLast = array_pop($parts);
+            $parts[] = $prevLast.': '.$last;
+        }
+        return trim(array_pop($parts));
+    }
+
+    /**
      * Получить маску (с символом *), которой будут удовлетворять оба текста
      * @param string $text1
      * @param string $text2
@@ -161,6 +195,15 @@ class TextAnalysisUtil {
         if ( $text1 == $text2 ) { // точное совпадение
             return true;
         }
+        // Если ошибки совпадают, но в них указан одинаковый xpath ссылающийся на разные повторения unbounded тега
+        $text1 = preg_replace('/\[\d+]\//', '[]', $text1);
+        $text2 = preg_replace('/\[\d+]\//', '[]', $text2);
+        if ( $text1 == $text2 ) {
+            return true;
+        }
+        return false;
+        /*
+         * Ранее было неточное сравнение текстов, но от него отказались
         $text1_length = mb_strlen($text1);
         $text2_length = mb_strlen($text1);
         // для длинных строк 97% (9 символов из 300 совпадает)
@@ -179,5 +222,6 @@ class TextAnalysisUtil {
         }
         // для чуть более длинных от 95% до 98% (5 символов из 101-255)
         return $levenshtein <= 5;
+        */
     }
 }

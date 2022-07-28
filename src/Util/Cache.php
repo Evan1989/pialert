@@ -84,6 +84,7 @@ class Cache {
 
     /**
      * Узнать количество записей в кэше
+     * @noinspection PhpUnused
      */
     public static function getCurrentSize() {
         $query = DB::prepare("SELECT count(*) as c FROM cache WHERE 1");

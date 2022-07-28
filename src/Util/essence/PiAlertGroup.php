@@ -6,6 +6,7 @@ use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\HTMLPageTemplate;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
+use EvanPiAlert\Util\TextAnalysisUtil;
 use PDOStatement;
 
 class PiAlertGroup {
@@ -111,7 +112,8 @@ class PiAlertGroup {
                 status=?, comment=?, comment_datetime=?, 
                 user_id=?, last_user_id=?, piSystemName=?, 
                 fromSystem=?, toSystem=?, channel=?, 
-                interface=?, errText=?, errTextMask=?, 
+                interface=?, errText=?, errTextMask=?,
+                errTextMainPart=?,
                 first_alert=?, last_alert=?, last_user_action=?, 
                 maybe_need_union=? WHERE group_id = ?");
             return $query->execute(array(
@@ -119,6 +121,7 @@ class PiAlertGroup {
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
+                $this->getMainPartOfError(),
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
                 $this->maybe_need_union, $this->group_id
             ));
@@ -127,13 +130,15 @@ class PiAlertGroup {
                  status, comment, comment_datetime,
                  user_id, last_user_id, piSystemName,
                  fromSystem, toSystem, channel,
-                 interface, errText, errTextMask,
+                 interface, errText, errTextMask,   
+                 errTextMainPart,
                  first_alert, last_alert, last_user_action,
                  maybe_need_union) VALUES (
                        ?, ?, ?,
                        ?, ?, ?, 
                        ?, ?, ?, 
                        ?, ?, ?, 
+                       ?, 
                        ?, ?, ?, 
                        ?
                  )");
@@ -142,6 +147,7 @@ class PiAlertGroup {
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
+                $this->getMainPartOfError(),
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
                 $this->maybe_need_union
             ));
@@ -211,6 +217,10 @@ class PiAlertGroup {
             $this->_HTMLErrorTextMask = str_replace('*', "<span class='text-danger'>*</span>", nl2br($text));
         }
         return $this->_HTMLErrorTextMask;
+    }
+
+    public function getMainPartOfError() : string {
+        return TextAnalysisUtil::getMainPartOfPiErrorText($this->errTextMask);
     }
 
     public function getHTMLComment() :string {
