@@ -77,7 +77,7 @@ echo "<div class='card mb-4 shadow'>
                         <td class='profile-user-avatar'>
                             <form action='' method='POST' class='row g-3'>  
                                 <div class='col-md-3'>
-                                    <input class='form-control form-control-sm profile-change-avatar' type='url' name='newAvatar' maxlength='100' value='".$user->avatar."' placeholder='".Text::profileAvatar()."' required>
+                                    <input class='form-control form-control-sm profile-change-avatar' type='url' name='newAvatar' maxlength='300' value='".$user->avatar."' placeholder='".Text::profileAvatar()."' required>
                                 </div>
                                 <div class='col-md-3'>".$user->getAvatarImg()."</div>
                             </form> 
