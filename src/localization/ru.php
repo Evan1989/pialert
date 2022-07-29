@@ -7,6 +7,7 @@ $texts = array(
     'change' => 'Поменять',
     'pageGenerated' => 'Страница сгенерирована',
     'surnameName' => 'ФИО',
+    'avatar' => 'Аватарка',
     'status' => 'Статус',
     'actions' => 'Действия',
     'user' => 'Пользователь',
@@ -75,6 +76,7 @@ $texts = array(
     'profilePasswordChangeSuccess' => 'Пароль обновлен',
     'profilePasswordChangeFail' => 'Не удалось обновить пароль!',
     'profileTotalOnline' => 'Проведено в системе',
+    'profileAvatar' => 'Ссылка на аватарку',
 
     'settingsUpdateSuccess' => 'Настройки обновлены.',
     'settingsUpdateFail' => 'Не удалось сохранить одну из настроек!',

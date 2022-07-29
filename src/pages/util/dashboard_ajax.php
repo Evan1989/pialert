@@ -61,7 +61,7 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $grou
                       </tr>
                       <tr>
                           <td>".Text::responsibleEmployee()."</td>
-                          <td class='bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$user->getHTMLCaption('-')."</td>
+                          <td class='bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$user->getAvatarImg('alert-more-info-user-avatar').$user->getHTMLCaption('-')."</td>
                       </tr>
                       <tr>
                           <td>".Text::comment()."</td>

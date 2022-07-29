@@ -71,6 +71,7 @@ echo "<div class='card mb-4 shadow'>
                           <th>ID</th>
                           <th>E-mail</th>
                           <th>".Text::surnameName()."</th>
+                          <th></th>
                           <th>".Text::status()."</th>
                           <th>".Text::actions()."</th>
                       <tr>
@@ -103,6 +104,7 @@ while ($row = $query->fetch()) {
             <td>".$user->user_id."</td>
             <td>".showInput($row['user_id'], 'email', $user->email, $canChange, 'E-mail')."</td>
             <td>".showInput($row['user_id'], 'FIO', $user->FIO, $canChange, Text::SurnameName())."</td>
+            <td class='center'>".$user->getAvatarImg('users-user-avatar', '-')."</td>
             <td><input type='hidden' value='".$intervalFromLastAction."'>".$intervalFromLastActionText."</td>
             <td>".$actions."</td>
           </tr>";

@@ -81,7 +81,7 @@ while ($row = $query->fetch()) {
         continue;
     }
     echo "<tr>
-            <td>".$user->getHTMLCaption()."</td>";
+            <td>".$user->getAvatarImg('online-user-avatar').$user->getHTMLCaption()."</td>";
     $sumSeconds = 0;
     for ($i = 0; $i < 7; $i++) {
         $secondsOnline = $userOnlineStatistic[$user->user_id][($i+$startWeekDay)%7]??0;

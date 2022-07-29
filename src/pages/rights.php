@@ -108,7 +108,7 @@ echo "            </tr>
 foreach ( $adminsRights as $user_id => $data ) {
     $user = new User($data['user']);
     echo "<tr>
-            <td>".$user->getHTMLCaption()."</td>";
+            <td>".$user->getAvatarImg('rights-user-avatar').$user->getHTMLCaption()."</td>";
     foreach ($pages as $menu_id => $temp ) {
         echo "<td class='center'>
                 <input type='checkbox' class='form-check-input' id='".$user_id."_".$menu_id."'";

@@ -19,6 +19,10 @@ if ( isset($_GET['newLanguage']) ) {
     $user->language = Text::language($_GET['newLanguage']);
     $user->saveToDatabase();
 }
+if ( isset($_POST['newAvatar']) ) {
+    $user->avatar = str_replace(array('\'', '"'), '', $_POST['newAvatar']);
+    $user->saveToDatabase();
+}
 
 $page = new HTMLPageTemplate($authorizationAdmin);
 echo $page->getPageHeader(Text::menuProfile());
@@ -69,6 +73,17 @@ echo "<div class='card mb-4 shadow'>
                         <td>".$user->FIO."</td>
                     </tr>
                     <tr>
+                        <td>".Text::avatar()."</td>
+                        <td class='profile-user-avatar'>
+                            <form action='' method='POST' class='row g-3'>  
+                                <div class='col-md-3'>
+                                    <input class='form-control form-control-sm profile-change-avatar' type='url' name='newAvatar' maxlength='100' value='".$user->avatar."' placeholder='".Text::profileAvatar()."' required>
+                                </div>
+                                <div class='col-md-3'>".$user->getAvatarImg()."</div>
+                            </form> 
+                        </td>
+                    </tr>
+                    <tr>
                         <td>".Text::profileLanguage()."</td>
                         <td>
                             <div class='col-md-3'>
@@ -93,12 +108,12 @@ echo "<div class='card mb-4 shadow'>
                         <td>
                             <form action='' method='POST' class='row g-3'>  
                                 <div class='col-md-3'>
-                                    <input class='form-control' type='password' name='newPassword' maxlength='100' value='' placeholder='".Text::profileNewPassword()."' data-placement='top' required>
+                                    <input class='form-control form-control-sm' type='password' name='newPassword' maxlength='100' value='' placeholder='".Text::profileNewPassword()."' data-placement='top' required>
                                 </div> 
                                 <div class='col-md-3'>
-                                    <input class='btn btn-primary' type='submit' value='".Text::change()."'>
+                                    <input class='btn btn-primary btn-sm' type='submit' value='".Text::change()."'>
                                 </div> 
-                            </form>    
+                            </form>
                         </td>
                     </tr>
                 </tbody>

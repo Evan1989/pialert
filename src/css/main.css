@@ -19,6 +19,50 @@ table .hide {
 .new-alert-count {
 	cursor: pointer;
 }
+
+
+.menu-user-avatar {
+	max-height:16px;
+	max-width:16px;
+}
+.profile-user-avatar div {
+	display: inline-block;
+}
+.profile-user-avatar img {
+	max-height:30px;
+	max-width:30px;
+}
+.users-user-avatar {
+	max-height:38px;
+	max-width:38px;
+}
+.alert-more-info-user-avatar {
+	max-height:25px;
+	max-width:25px;
+	padding-right: 1px;
+}
+.rights-user-avatar,
+.online-user-avatar {
+	max-height:17px;
+	max-width:17px;
+	padding-right: 1px;
+}
+
+
+.alert-group .alert-group-user-td {
+	overflow: hidden;
+}
+.alert-group .alert-group-user-avatar {
+	position: absolute;
+	max-height: 2.325rem;
+	max-width: 2.325rem;
+}
+.alert-group .alert-group-user-select.has-avatar {
+	position: relative;
+	left: 2.325rem;
+}
+
+
 .alert-group textarea {
 	min-width: 300px;
 	min-height: 88px;

@@ -39,7 +39,6 @@ function getStatusChoice(PiAlertGroup $alertGroup): string {
     }
     return "<select id='status_".$alertGroup->group_id."' class='alert-group-status-select form-control-plaintext bg-".$alertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".$result."</select>";
 }
-
 function getUserChoice(PiAlertGroup $alertGroup): string {
     global $users, $authorizationAdmin;
     $result = "<option value='' ".(is_null($alertGroup->user_id)?'selected':'').">-</option>";
@@ -49,13 +48,18 @@ function getUserChoice(PiAlertGroup $alertGroup): string {
         }
         $result .= "<option value='".$user->user_id."' ".($user->user_id==$alertGroup->user_id?'selected':'').">".$user->getCaption()."</option>";
     }
-    $result = "<select id='user_".$alertGroup->group_id."' class='alert-group-user-select form-control-plaintext bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
+    $selectedUser = $users[$alertGroup->user_id]??false;
+    if ( $selectedUser !== false ) {
+        $avatar = $selectedUser->getAvatarImg('alert-group-user-avatar');
+    } else {
+        $avatar = '';
+    }
+    $result = $avatar."<select id='user_".$alertGroup->group_id."' class='alert-group-user-select form-control-plaintext ".($avatar?'has-avatar':'')." bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
     if ( $alertGroup->last_user_id ) {
         $result .= "<span class='alert-group-help-data' data-toggle='tooltip' title='".Text::dashboardLastUserId()."'>".$users[$alertGroup->last_user_id]->getCaption()."</span>";
     }
     return $result;
 }
-
 function getComment(PiAlertGroup $alertGroup): string {
     $div = '';
     if ( $alertGroup->comment ) {
@@ -229,7 +233,7 @@ while($row = $query->fetch()) {
     }
     echo "<tr filter-value=''>
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
-                <td>".getUserChoice($alertGroup)."</td>
+                <td class='alert-group-user-td'>".getUserChoice($alertGroup)."</td>
                 <td>".getComment($alertGroup)."</td>
                 <td>".nl2br($alertGroup->getAbout())."</td>
                 <td style='max-width: 400px'>".$alertGroup->getHTMLErrorTextMask()."</td>

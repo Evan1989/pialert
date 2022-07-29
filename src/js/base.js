@@ -160,6 +160,19 @@ function initJavascriptForProfile() {
         let language = $(this).val()
         location.href = 'profile.php?newLanguage='+language;
     });
+    $('.profile-change-avatar').change(function(){
+        let inputField = $(this);
+        let avatar = inputField.val()
+        inputField.prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: 'profile.php',
+            data: {'newAvatar': avatar},
+            'success': function() {
+                inputField.prop('disabled', false);
+            }
+        });
+    });
 }
 ///////////////////////////////////////////////
 
@@ -197,7 +210,8 @@ function initJavascriptForUsers() {
     });
     $('.tablesorter').tablesorter( {
         headers: {
-            4: {sorter: false},
+            3: {sorter: false},
+            5: {sorter: false},
         },
         textExtraction: _getValue
     });
