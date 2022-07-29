@@ -7,6 +7,7 @@ $texts = array(
     'change' => 'Cancel',
     'pageGenerated' => 'Page generated',
     'surnameName' => 'Surname Name',
+    'avatar' => 'Avatar',
     'status' => 'Status',
     'actions' => 'Actions',
     'user' => 'User',
@@ -75,6 +76,7 @@ $texts = array(
     'profilePasswordChangeSuccess' => 'Password change successfully',
     'profilePasswordChangeFail' => 'Password change failed!',
     'profileTotalOnline' => 'Total online',
+    'profileAvatar' => 'Link to avatar',
 
     'settingsUpdateSuccess' => 'Settings updated.',
     'settingsUpdateFail' => 'Settings update failed!',

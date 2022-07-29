@@ -60,7 +60,7 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v30' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v31' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -92,7 +92,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=43'></script>".
+        <script src='/src/js/base.js?v=44'></script>".
         $additionalJavaScript.
     "</body>
 </html>";
@@ -219,7 +219,9 @@ class HTMLPageTemplate {
                         </li>";
         }
         $text .= "		<li class='nav-item'>
-                            <a href='profile.php' class='nav-link'>".$this->getIcon('person')." ".Text::menuProfile()."</a>
+                            <a href='profile.php' class='nav-link'>
+                                ".$this->authorizationAdmin->getUser()->getAvatarImg('menu-user-avatar', $this->getIcon('person'))." ".Text::menuProfile()."
+                            </a>
                         </li>
                         <li class='nav-item'>
                             <a href='".$_SERVER['PHP_SELF']."?logout=1' class='nav-link'>".$this->getIcon('box-arrow-right')." Logout</a>

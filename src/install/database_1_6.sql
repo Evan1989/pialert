@@ -1,0 +1,8 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+
+ALTER TABLE `users` ADD `avatar` VARCHAR(300) NULL AFTER `FIO`;
+
+UPDATE `settings` SET `value` = '1.6' WHERE `settings`.`code` = 'DATABASE VERSION';
+
+COMMIT;

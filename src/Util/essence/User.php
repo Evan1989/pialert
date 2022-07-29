@@ -13,6 +13,7 @@ class User {
     public int $user_id = -1;
 
     public ?string $email = null;
+    public ?string $avatar = null;
     public ?string $FIO = null;
     public ?string $language = null;
     protected ?string $online = null;
@@ -35,6 +36,7 @@ class User {
      */
 	private function loadFromRow(array $row ) : void {
 		$this->user_id = $row['user_id'];
+        $this->avatar = $row['avatar'];
         $this->FIO = $row['FIO'];
         $this->language = $row['language'];
         $this->email = $row['email'];
@@ -55,11 +57,11 @@ class User {
 
     public function saveToDatabase() : void {
         if ( $this->user_id > 0 ) {
-            $query = DB::prepare("UPDATE users SET email=?, FIO=?, `language`=? WHERE user_id = ?");
-            $query->execute(array( $this->email, $this->FIO, $this->language, $this->user_id ));
+            $query = DB::prepare("UPDATE users SET email=?, FIO=?, avatar=?, `language`=? WHERE user_id = ?");
+            $query->execute(array( $this->email, $this->FIO, $this->avatar, $this->language, $this->user_id ));
         } else {
-            $query = DB::prepare("INSERT INTO users (email, FIO, `language`) VALUES (?, ?, ?)");
-            $query->execute(array( $this->email, $this->FIO, $this->language ));
+            $query = DB::prepare("INSERT INTO users (email, FIO, avatar, `language`) VALUES (?, ?, ?, ?)");
+            $query->execute(array( $this->email, $this->FIO, $this->avatar, $this->language ));
             $this->user_id = DB::lastInsertId();
         }
     }
@@ -150,6 +152,13 @@ class User {
             return 'ID '.$this->user_id;
         }
         return $default;
+    }
+
+    public function getAvatarImg(string $cssClass = '', string $returnedIfEmpty = ''): string {
+        if ( $this->avatar ) {
+            return "<img src='".$this->avatar."' class='".$cssClass."'>";
+        }
+        return $returnedIfEmpty;
     }
 
     public function setNewPassword($newPassword) :bool {
