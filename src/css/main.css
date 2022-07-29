@@ -24,6 +24,7 @@ table .hide {
 .menu-user-avatar {
 	max-height:16px;
 	max-width:16px;
+	border-radius: 8px;
 }
 .profile-user-avatar div {
 	display: inline-block;
@@ -48,9 +49,14 @@ table .hide {
 	padding-right: 1px;
 }
 
+.profile-table td {
+	vertical-align: middle;
+}
+
 
 .alert-group .alert-group-user-td {
 	overflow: hidden;
+	position: relative;
 }
 .alert-group .alert-group-user-avatar {
 	position: absolute;

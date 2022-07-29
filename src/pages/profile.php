@@ -45,7 +45,7 @@ function showLanguageForm(?string $userLanguage) : string {
     foreach (Text::LANGUAGES as $language) {
         $result .= "<option value='".$language."' ".($language==$userLanguage?'selected':'').">".$language."</option>";
     }
-    return "<select class='form-control-plaintext profile-change-language'>".$result."</select>";
+    return "<select class='form-control-plaintext form-control-sm profile-change-language'>".$result."</select>";
 }
 
 $query = DB::prepare("
@@ -62,7 +62,7 @@ if ($row = $query->fetch()) {
 echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>".Text::profilePageHeader()."</div>
         <div class='card-body overflow-auto'>
-            <table class='table table-sm table-hover table-responsive-sm tablesorter'>
+            <table class='table table-sm table-hover table-responsive-sm tablesorter profile-table'>
                 <tbody>
                     <tr>
                         <td>User ID</td>
