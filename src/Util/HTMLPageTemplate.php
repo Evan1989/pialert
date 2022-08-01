@@ -60,7 +60,7 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v32' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v33' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -92,7 +92,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=44'></script>".
+        <script src='/src/js/base.js?v=45'></script>".
         $additionalJavaScript.
     "</body>
 </html>";
@@ -142,12 +142,12 @@ class HTMLPageTemplate {
         foreach ($alerts as $alert) {
             $result .= "<tr>
                     <td>".$alert->timestamp."</td>
-                    ".($sender?"<td>".$alert->fromSystem."</td>":"")."
-                    ".($receiver?"<td>".$alert->toSystem."</td>":"")."
-                    <td data-toggle='tooltip' data-placement='auto' title='".$alert->namespace."'>".$alert->getObject()."</td>
-                    <td>".$alert->getHTMLMessageId()."</td>
-                    ".($UDS?"<td>".$alert->UDSAttributes."</td>":"")."
-                    <td ".($alert->errCategory.$alert->errCode?"data-toggle='tooltip' data-placement='auto'  title='".$alert->errCategory.PHP_EOL.$alert->errCode."'":"").">".$alert->getHTMLErrorText()."</td>
+                    ".($sender?"<td><div class='alert-limit-td'>".$alert->fromSystem."</div></td>":"")."
+                    ".($receiver?"<td><div class='alert-limit-td'>".$alert->toSystem."</div></td>":"")."
+                    <td data-toggle='tooltip' data-placement='auto' title='".$alert->namespace."'><div class='alert-limit-td'>".$alert->getObject()."</div></td>
+                    <td><div class='alert-limit-td'>".$alert->getHTMLMessageId()."</div></td>
+                    ".($UDS?"<td><div class='alert-limit-td'>".$alert->UDSAttributes."</div></td>":"")."
+                    <td ".($alert->errCategory.$alert->errCode?"data-toggle='tooltip' data-placement='auto'  title='".$alert->errCategory.PHP_EOL.$alert->errCode."'":"")."><div class='alert-limit-td large'>".$alert->getHTMLErrorText()."</div></td>
                 </tr>";
         }
         return $result."</tbody>
