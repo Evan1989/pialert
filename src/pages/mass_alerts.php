@@ -75,14 +75,14 @@ $query = DB::prepare("SELECT fromSystem, count(*) as count FROM alert_group WHER
 $query->execute(array(PiAlertGroup::CLOSE));
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 ) {
-        $systems[] = $row['fromSystem'];
+        $systems[ $row['fromSystem'] ] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-system m-1'>".$row['fromSystem']."</span>";
     }
 }
 $query = DB::prepare("SELECT toSystem, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? AND toSystem IS NOT NULL AND toSystem != '' GROUP BY toSystem order by count desc LIMIT 3");
 $query->execute(array(PiAlertGroup::CLOSE));
 while ($row = $query->fetch()) {
-    if ( $row['count'] > 1 && !in_array($row['toSystem'], $systems) ) {
-        $systems[] = $row['toSystem'];
+    if ( $row['count'] > 1 && !isset($systems[$row['toSystem']]) ) {
+        $systems[] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-system m-1'>".$row['toSystem']."</span>";
     }
 }
 $errors = array();
@@ -90,7 +90,7 @@ $query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group
 $query->execute(array(PiAlertGroup::CLOSE));
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 ) {
-        $errors[] = $row['errTextMainPart'];
+        $errors[] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-error m-1'>".$row['errTextMainPart']."</span>";
     }
 }
 
@@ -104,19 +104,13 @@ echo "<div class='card mb-4 shadow'>
                     <div class='col-sm-6'>
                         <input class='form-control' type='text' name='system' maxlength='100' placeholder='".Text::sender().' '.Text::or().' '.Text::receiver()."' value=\"".$system."\">
                     </div>
-                    <label class='col-sm-6'>
-                        <i>".implode(', ', $systems)."</i>
-                    </label>
+                    <label class='col-sm-6'>".implode(' ', $systems)."</label>
                 </div>
                 <div class='row mb-1'>
                     <div class='col-sm-6'>
                         <textarea class='form-control' name='errorText' maxlength='2000' placeholder='".Text::error()."' required>".$errorText."</textarea>
                     </div>
-                    <label class='col-sm-6'>
-                        <i>
-                            ".implode('<br>', $errors)."
-                        </i>
-                    </label>
+                    <label class='col-sm-6'>".implode(' ', $errors)."</label>
                 </div>
                 <input class='btn btn-primary mb-1' type='submit' value='".Text::search()."'>
                 </form>
@@ -194,4 +188,9 @@ if ( $groupCount >= 1 ) {
 	</div>";
 }
 
-echo $page->getPageFooter();
+$additionalScript = "<script type='text/javascript'>
+        $(document).ready(function() {
+            initJavascriptForMassAlerts();
+        });
+    </script>";
+echo $page->getPageFooter( $additionalScript );

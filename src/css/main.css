@@ -40,13 +40,13 @@ table .hide {
 .alert-more-info-user-avatar {
 	max-height:25px;
 	max-width:25px;
-	padding-right: 1px;
+	margin-right: 2px;
 }
 .rights-user-avatar,
 .online-user-avatar {
 	max-height:17px;
 	max-width:17px;
-	padding-right: 1px;
+	margin-right: 2px;
 }
 
 .profile-table td {
@@ -76,17 +76,34 @@ table .hide {
 .alert-group textarea:focus {
 	min-height: 300px;
 }
+.alert-table .alert-limit-td,
+.alert-group .alert-group-comment-html-div {
+	cursor: text;
+	overflow: auto;
+	word-wrap: break-word;
+}
 .alert-group .alert-group-comment-html-div {
 	width: 300px;
 	height: 88px;
-	cursor: text;
 }
+.alert-table .alert-limit-td {
+	max-width: 150px;
+	max-height: 100px;
+}
+.alert-table .alert-limit-td.large {
+	max-width: 460px;
+	max-height: 200px;
+}
+.alert-table .alert-limit-td::-webkit-scrollbar,
 .alert-group .alert-group-comment-html-div::-webkit-scrollbar {
 	width: 3px;
+	height: 3px;
 }
+.alert-table .alert-limit-td::-webkit-scrollbar-track,
 .alert-group .alert-group-comment-html-div::-webkit-scrollbar-track {
 	background-color: #F1F1F1;
 }
+.alert-table .alert-limit-td::-webkit-scrollbar-thumb,
 .alert-group .alert-group-comment-html-div::-webkit-scrollbar-thumb {
 	background-color: #C1C1C1;
 }

@@ -179,6 +179,21 @@ function initJavascriptForProfile() {
 
 
 
+///////////////   Mass Alerts  ////////////////
+// noinspection JSUnusedGlobalSymbols
+function initJavascriptForMassAlerts() {
+    $('.mass-alert-help-button-system').click(function(){
+        $("form input[name='system']").val( $(this).html() );
+    });
+    $('.mass-alert-help-button-error').click(function(){
+        $("form textarea[name='errorText']").val( $(this).html() );
+    });
+}
+///////////////////////////////////////////////
+
+
+
+
 ///////////////      Users     ////////////////
 // noinspection JSUnusedGlobalSymbols
 function initJavascriptForUsers() {
