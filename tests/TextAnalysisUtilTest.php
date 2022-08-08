@@ -73,6 +73,15 @@ class TextAnalysisUtilTest extends TestCase {
         $b = "java.sql.SQLException: Routine (xi_2_sap_send_delivery_return) can not be resolved.";
         $this->assertNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На разные тексты удалось создать маску');
 
+
+        $a = "com.sap.aii.utilxi.xmlvalidation.impl.XMLValidationException: XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://komus.ru/I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
+1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
+2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
+        $b = "XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://komus.ru/I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
+1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
+2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
+        $this->assertNOtNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На похожие тексты не удалось создать маску');
+
         $a = "Could not process file 'ee2f2d3c-38fa-4e07-a087-e795477c78e9.sbis.xml': File modified during processing. 0 bytes expected, 899 bytes found";
         $b = "Could not process file 'nn111111-n2nn-2222-nn4n-24141414141f.sbis.xml': File modified during processing. 0 bytes expected, 1546 bytes found";
         $mask = TextAnalysisUtil::getMaskFromTexts($a, $b);

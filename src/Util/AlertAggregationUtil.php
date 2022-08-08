@@ -14,7 +14,7 @@ class AlertAggregationUtil {
      */
     public static function createOrFindGroupForAlert(PiAlert $alert) : PiAlertGroup {
         $maybe_need_union = 0;
-        $query = DB::prepare("SELECT *  FROM alert_group WHERE piSystemName=? AND fromSystem=? AND toSystem=? AND channel=? AND interface=?");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE piSystemName=? AND fromSystem=? AND toSystem=? AND (channel=? OR interface=?)");
         $query->execute(array($alert->piSystemName, $alert->fromSystem??'', $alert->toSystem??'', $alert->channel??'', $alert->interface??''));
         while($row = $query->fetch()) {
             $alertGroup = new PiAlertGroup($row);
@@ -52,7 +52,7 @@ class AlertAggregationUtil {
      */
     public static function getMaybeSimilarAlertGroup(PiAlertGroup $alertGroup) : array {
         $result = array();
-        $query = DB::prepare("SELECT *  FROM alert_group WHERE piSystemName=? AND fromSystem=? AND toSystem=? AND channel=? AND interface=? AND group_id != ?");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE piSystemName=? AND fromSystem=? AND toSystem=? AND (channel=? OR interface=?) AND group_id != ?");
         $query->execute(array($alertGroup->piSystemName, $alertGroup->fromSystem, $alertGroup->toSystem, $alertGroup->channel, $alertGroup->interface, $alertGroup->group_id));
         while($row = $query->fetch()) {
             $alertGroup2 = new PiAlertGroup($row);
