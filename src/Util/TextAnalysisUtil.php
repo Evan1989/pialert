@@ -98,7 +98,9 @@ class TextAnalysisUtil {
         $text2_length = mb_strlen($text2);
         $text1_part = floor(3*$text1_length/4);
         $text2_part = floor(3*$text2_length/4);
-        if ( similar_text($text1, $text2) < 0.5 * min($text1_length, $text2_length) ) {
+        if ( $text1_length == 0 ||
+             $text2_length == 0 ||
+             similar_text($text1, $text2) < 0.5 * min($text1_length, $text2_length) ) {
             return '*';
         }
         $maxSameLength = 0;
