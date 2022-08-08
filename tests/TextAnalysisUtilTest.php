@@ -74,10 +74,10 @@ class TextAnalysisUtilTest extends TestCase {
         $this->assertNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На разные тексты удалось создать маску');
 
 
-        $a = "com.sap.aii.utilxi.xmlvalidation.impl.XMLValidationException: XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://komus.ru/I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
+        $a = "com.sap.aii.utilxi.xmlvalidation.impl.XMLValidationException: XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
 1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
 2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
-        $b = "XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://komus.ru/I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
+        $b = "XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
 1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
 2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
         $this->assertNOtNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На похожие тексты не удалось создать маску');
