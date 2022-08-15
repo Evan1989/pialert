@@ -86,7 +86,7 @@ while ($row = $query->fetch()) {
     }
 }
 $errors = array();
-$query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? GROUP BY errTextMainPart order by count desc LIMIT 3");
+$query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? GROUP BY errTextMainPart order by count desc LIMIT 5");
 $query->execute(array(PiAlertGroup::CLOSE));
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 ) {

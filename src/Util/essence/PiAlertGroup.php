@@ -200,11 +200,11 @@ class PiAlertGroup {
         return mb_strtoupper($parts[1]);
     }
 
-    public function getAbout(): string {
-        return $this->getPiSystemSID().PHP_EOL.
+    public function getHTMLAbout(): string {
+        return nl2br($this->getPiSystemSID().PHP_EOL.
             $this->fromSystem.
             ($this->toSystem?' → '.$this->toSystem:'').PHP_EOL.
-            ($this->interface?:$this->channel);
+            ($this->interface?:$this->channel));
     }
 
 

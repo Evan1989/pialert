@@ -69,7 +69,7 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $grou
                       </tr>
                       <tr>
                           <td>".Text::dashboardRequisites()."</td>
-                          <td>".nl2br($alertGroup->getAbout())."</td>
+                          <td>".$alertGroup->getHTMLAbout()."</td>
                       </tr>
                       <tr>
                           <td>".Text::dashboardMaskOrError()."</td>
@@ -132,6 +132,7 @@ function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $auth
                 <thead>
                     <tr>
                         <th>".Text::status()."</th>
+                        <th>".Text::object()."</th>
                         <th>".Text::comment()."</th>
                         <th>".Text::dashboardMaskOrError()."</th>
                         <th>".Text::dashboardMaskAfterUnion()."</th>
@@ -141,6 +142,7 @@ function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $auth
                 <tbody>
                     <tr>
                         <td class='bg-".$alertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($alertGroup->status)."</td>
+                        <td>".$alertGroup->getHTMLAbout()."</td>
                         <td>".$alertGroup->getHTMLComment()."</td>
                         <td>".$alertGroup->getHTMLErrorTextMask()."</td>
                         <td>-</td>
@@ -150,6 +152,7 @@ function getUnionAlertGroupForm(HTMLPageTemplate $page, AuthorizationAdmin $auth
         /** @var PiAlertGroup $altAlertGroup */
         $result .= "<tr>
                         <td class='bg-".$altAlertGroup->getStatusColor($authorizationAdmin->getUserId())."'>".PiAlertGroup::getStatusName($altAlertGroup->status)."</td>
+                        <td>".$altAlertGroup->getHTMLAbout()."</td>
                         <td>".$altAlertGroup->getHTMLComment()."</td>
                         <td>".$altAlertGroup->getHTMLErrorTextMask()."</td>
                         <td>".str_replace('*', "<span class='text-danger'>*</span>", $mask)."</td>
