@@ -235,7 +235,7 @@ while($row = $query->fetch()) {
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
                 <td class='alert-group-user-td'>".getUserChoice($alertGroup)."</td>
                 <td>".getComment($alertGroup)."</td>
-                <td>".nl2br($alertGroup->getHTMLAbout())."</td>
+                <td>".$alertGroup->getHTMLAbout()."</td>
                 <td style='max-width: 400px'>".$alertGroup->getHTMLErrorTextMask()."</td>
                 <td><input type='hidden' value='".$alertGroup->lastAlert."'>".$lastAlertDateShow."</td>
                 <td>".
