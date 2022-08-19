@@ -23,6 +23,9 @@ class AlertAggregationUtil {
                     $alertGroup->status = PiAlertGroup::REOPEN;
                 }
                 $alertGroup->lastAlert = $alert->timestamp;
+                if ( $alertGroup->interface != $alert->interface ) {
+                    $alertGroup->multi_interface = 1;
+                }
                 $alertGroup->saveToDatabase();
                 return $alertGroup;
             }
@@ -70,31 +73,37 @@ class AlertAggregationUtil {
      * @param PiAlertGroup $alertGroupTarget
      * @return bool
      */
-    public static function unionAlertGroups(PiAlertGroup $alertGroupFrom, PiAlertGroup $alertGroupTarget) : bool {
-        if ( !is_null($alertGroupFrom->comment) ) {
-            if ( is_null($alertGroupTarget->comment) ) {
+    public static function unionAlertGroups(PiAlertGroup $alertGroupFrom, PiAlertGroup $alertGroupTarget) : bool
+    {
+        if (!is_null($alertGroupFrom->comment)) {
+            if (is_null($alertGroupTarget->comment)) {
                 $alertGroupTarget->comment = $alertGroupFrom->comment;
-            } elseif ( $alertGroupTarget->comment != $alertGroupFrom->comment ) {
-                $alertGroupTarget->comment .= PHP_EOL.PHP_EOL.'Старый коммент: '.$alertGroupFrom->comment;
+            } elseif ($alertGroupTarget->comment != $alertGroupFrom->comment) {
+                $alertGroupTarget->comment .= PHP_EOL . PHP_EOL . 'Старый коммент: ' . $alertGroupFrom->comment;
             }
         }
-        if ( is_null($alertGroupTarget->user_id) ) {
-            if ( is_null($alertGroupFrom->user_id) ) {
-                if ( is_null($alertGroupTarget->last_user_id) ) {
+        if (is_null($alertGroupTarget->user_id)) {
+            if (is_null($alertGroupFrom->user_id)) {
+                if (is_null($alertGroupTarget->last_user_id)) {
                     $alertGroupTarget->last_user_id = $alertGroupFrom->last_user_id;
                 }
             } else {
-                $alertGroupTarget->setUserId( $alertGroupFrom->user_id );
+                $alertGroupTarget->setUserId($alertGroupFrom->user_id);
             }
         }
 
         $unionMask = TextAnalysisUtil::getMaskFromTexts($alertGroupFrom->errTextMask, $alertGroupTarget->errTextMask);
-        if ( is_null($unionMask) ) {
+        if (is_null($unionMask)) {
             return false;
         }
         $alertGroupTarget->errTextMask = $unionMask;
-        if ( $alertGroupTarget->status == PiAlertGroup::CLOSE ) {
+        if ($alertGroupTarget->status == PiAlertGroup::CLOSE) {
             $alertGroupTarget->status = PiAlertGroup::REOPEN;
+        }
+        if ($alertGroupFrom->interface != $alertGroupTarget->interface) {
+            $alertGroupTarget->multi_interface = 1;
+        } else {
+            $alertGroupTarget->multi_interface = max($alertGroupTarget->multi_interface, $alertGroupFrom->multi_interface);
         }
         $alertGroupTarget->firstAlert = min($alertGroupTarget->firstAlert, $alertGroupFrom->firstAlert);
         $alertGroupTarget->lastAlert = max($alertGroupTarget->lastAlert, $alertGroupFrom->lastAlert);
