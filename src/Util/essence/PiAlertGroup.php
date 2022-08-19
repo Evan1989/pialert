@@ -57,6 +57,7 @@ class PiAlertGroup {
     public string $toSystem = '';
     public string $channel = '';
     public string $interface = '';
+    public int $multi_interface = 0; // В данной группе ошибки разных интерфейсов, полученных по общему названию канала
     public string $errText = '';
     public string $errTextMask = '';
 
@@ -96,6 +97,7 @@ class PiAlertGroup {
         $this->toSystem = $row['toSystem'];
         $this->channel = $row['channel'];
         $this->interface = $row['interface'];
+        $this->multi_interface = $row['multi_interface'];
         $this->errText = $row['errText'];
         $this->errTextMask = $row['errTextMask'];
 
@@ -113,7 +115,7 @@ class PiAlertGroup {
                 user_id=?, last_user_id=?, piSystemName=?, 
                 fromSystem=?, toSystem=?, channel=?, 
                 interface=?, errText=?, errTextMask=?,
-                errTextMainPart=?,
+                errTextMainPart=?, multi_interface=?,
                 first_alert=?, last_alert=?, last_user_action=?, 
                 maybe_need_union=? WHERE group_id = ?");
             return $query->execute(array(
@@ -121,7 +123,7 @@ class PiAlertGroup {
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
-                $this->getMainPartOfError(),
+                $this->getMainPartOfError(), $this->multi_interface,
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
                 $this->maybe_need_union, $this->group_id
             ));
@@ -131,14 +133,14 @@ class PiAlertGroup {
                  user_id, last_user_id, piSystemName,
                  fromSystem, toSystem, channel,
                  interface, errText, errTextMask,   
-                 errTextMainPart,
+                 errTextMainPart, multi_interface,
                  first_alert, last_alert, last_user_action,
                  maybe_need_union) VALUES (
                        ?, ?, ?,
                        ?, ?, ?, 
                        ?, ?, ?, 
                        ?, ?, ?, 
-                       ?, 
+                       ?, ?,
                        ?, ?, ?, 
                        ?
                  )");
@@ -147,7 +149,7 @@ class PiAlertGroup {
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
-                $this->getMainPartOfError(),
+                $this->getMainPartOfError(), $this->multi_interface,
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
                 $this->maybe_need_union
             ));
@@ -200,11 +202,20 @@ class PiAlertGroup {
         return mb_strtoupper($parts[1]);
     }
 
+    /**
+     * Описание ICO, которого касается данный тип ошибок
+     * @return string
+     */
     public function getHTMLAbout(): string {
+        if ( $this->multi_interface == 0 ) {
+            $object = ($this->interface?:$this->channel);
+        } else {
+            $object = ($this->channel?:'');
+        }
         return nl2br($this->getPiSystemSID().PHP_EOL.
             $this->fromSystem.
             ($this->toSystem?' → '.$this->toSystem:'').PHP_EOL.
-            ($this->interface?:$this->channel));
+            $object);
     }
 
 
