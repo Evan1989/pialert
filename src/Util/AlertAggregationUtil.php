@@ -79,7 +79,7 @@ class AlertAggregationUtil {
             if (is_null($alertGroupTarget->comment)) {
                 $alertGroupTarget->comment = $alertGroupFrom->comment;
             } elseif ($alertGroupTarget->comment != $alertGroupFrom->comment) {
-                $alertGroupTarget->comment .= PHP_EOL . PHP_EOL . 'Старый коммент: ' . $alertGroupFrom->comment;
+                $alertGroupTarget->comment = $alertGroupFrom->comment.PHP_EOL.PHP_EOL.'Старый коммент: '.$alertGroupTarget->comment;
             }
         }
         if (is_null($alertGroupTarget->user_id)) {
