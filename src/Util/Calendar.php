@@ -40,8 +40,8 @@ class Calendar {
 
     private function loadWorkCalendar( string $county, int $year ) : void {
         $cacheName = 'CalendarHolidayData_'.$county.'_'.$year;
-        if ( isset($_SESSION[$cacheName]) ) {
-            $this->holidaysData = $_SESSION[$cacheName];
+        if ( $cache = Cache::get($cacheName) ) {
+            $this->holidaysData = $cache;
             return;
         }
         /** @noinspection HttpUrlsUsage */
@@ -58,7 +58,7 @@ class Calendar {
             }
             $this->holidaysData[$date] = $day['@attributes']['t'];
         }
-        $_SESSION[$cacheName] = $this->holidaysData;
+        Cache::save($cacheName, $this->holidaysData, ONE_MONTH);
     }
 
     /**
