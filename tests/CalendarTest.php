@@ -5,12 +5,14 @@ namespace EvanPiAlert\Test;
 
 require_once(__DIR__ . "/../src/autoload.php");
 
+use EvanPiAlert\Util\Cache;
 use EvanPiAlert\Util\Calendar;
 use PHPUnit\Framework\TestCase;
 
 class CalendarTest extends TestCase {
 
     public function testAll() {
+        Cache::hardClear();
         $calendar = new Calendar('ru', '2020');
         $hours = $calendar->getWorkingHoursBetween('2020-01-01', '2020-01-10');
         $this->assertEquals(2*8, $hours, 'Новогодние праздники');
