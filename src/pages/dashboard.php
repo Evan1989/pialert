@@ -7,6 +7,7 @@ use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\Calendar;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
+use EvanPiAlert\Util\essence\PiSystem;
 use EvanPiAlert\Util\essence\User;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\HTMLPageTemplate;
@@ -294,10 +295,10 @@ $noConnectPiSystems = array();
 // Проверка сетевой доступности SAP PI через частоту вызова сервиса /api/network_check.php
 $checks = Settings::get(Settings::SYSTEMS_NETWORK_CHECK);
 $checks = json_decode($checks, true);
-foreach ($globalLastAlert as $system => $timeFromLastAlert) {
+foreach ($globalLastAlert as $piSystemName => $timeFromLastAlert) {
     // Проверяем только если от этой системы хотя бы раз приходил ping
-    if ( !empty($checks[$system]) && time() - strtotime($checks[$system]) > 600 ) {
-        $noConnectPiSystems[$system] = 1;
+    if ( !empty($checks[$piSystemName]) && time() - strtotime($checks[$piSystemName]) > 600 ) {
+        $noConnectPiSystems[$piSystemName] = 1;
     }
 }
 // Проверка сетевой доступности SAP PI через статистический анализ
@@ -305,10 +306,10 @@ if ( Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) > 0) {
     $hour = date("H");
     $day = date("N") - 1;
     $alertAnalytics = new AlertAnalytics();
-    foreach ($globalLastAlert as $system => $timeFromLastAlert) {
+    foreach ($globalLastAlert as $piSystemName => $timeFromLastAlert) {
         // если нет алертов (уже в N раз больше времени, чем обычно), наверно отвалился сценарий отправки из SAP PI
-        if ($timeFromLastAlert > Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) * $alertAnalytics->getAverageAlertInterval($system, $day, $hour)) {
-            $noConnectPiSystems[$system] = 1;
+        if ($timeFromLastAlert > Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) * $alertAnalytics->getAverageAlertInterval($piSystemName, $day, $hour)) {
+            $noConnectPiSystems[$piSystemName] = 1;
         }
     }
 }
@@ -316,8 +317,9 @@ if ( Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) > 0) {
 $additionalScript = "<script type='text/javascript'>
         $(document).ready(function() {
             initJavascriptForDashboard();";
-foreach ($noConnectPiSystems as $system => $temp) {
-    $additionalScript .= "showNoAlertWarningBadge('" . $system . "');";
+foreach ($noConnectPiSystems as $piSystemName => $temp) {
+    $piSystem = new PiSystem($piSystemName);
+    $additionalScript .= "showNoAlertWarningBadge('" . $piSystem->getSID() . "');";
 }
 $additionalScript .= "})
     </script>";
