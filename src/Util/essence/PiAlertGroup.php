@@ -4,7 +4,6 @@ namespace EvanPiAlert\Util\essence;
 
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\HTMLPageTemplate;
-use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
 use EvanPiAlert\Util\TextAnalysisUtil;
 use PDOStatement;
@@ -191,15 +190,8 @@ class PiAlertGroup {
     }
 
     public function getPiSystemSID() :string {
-        $systemNames = Settings::get(Settings::SYSTEMS_NAMES);
-        if ( $systemNames !== false ) {
-            $systemNames = json_decode($systemNames, true);
-            if ( isset($systemNames[$this->piSystemName]) ) {
-                return $systemNames[$this->piSystemName];
-            }
-        }
-        $parts = explodeWithDefault('.', $this->piSystemName, 3, $this->piSystemName);
-        return mb_strtoupper($parts[1]);
+        $system = new PiSystem($this->piSystemName);
+        return $system->getSID();
     }
 
     /**
