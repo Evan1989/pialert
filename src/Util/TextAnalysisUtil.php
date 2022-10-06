@@ -181,7 +181,7 @@ class TextAnalysisUtil {
         // Поддержка ?
         $newMask = implode(').(', explode('?', $newMask));
         // Поддержка *
-        $newMask = implode(').+(', explode('*', $newMask));
+        $newMask = implode(').*(', explode('*', $newMask));
         // Поиск ведем на всю строку
         $newMask = '~^('.$newMask.')$~siu';
         return preg_match($newMask, $text);
