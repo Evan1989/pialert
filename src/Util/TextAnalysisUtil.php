@@ -10,8 +10,8 @@ class TextAnalysisUtil {
      * @return string
      */
     public static function getMainPartOfPiErrorText(string $text) : string {
-        // Уберем message_id (4aece44e-0cb6-11ed-bddd-00000c31d092)
-        $text = preg_replace('/[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}/', '*', $text);
+        // Уберем message_id
+        $text = self::replaceMessageIdToMask($text);
         // Уберем название каналов
         $text = preg_replace('/Channel Name: [^ ]+/', '*', $text);
         // Уберем ip адреса, хосты, порты
@@ -26,6 +26,11 @@ class TextAnalysisUtil {
         }
         // Удалим лишние символы на концах
         return preg_replace('/^[.*;: ]*?(.*?)[.*;:\' ]*?$/', '\\1', $result);
+    }
+
+    public static function replaceMessageIdToMask(string $text) : string {
+        // Уберем message_id (4aece44e-0cb6-11ed-bddd-00000c31d092)
+        return preg_replace('/[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}/', '*', $text);
     }
 
     private static function getTextAfterLastColon(string $text, bool $skipLastColon = false) : string {
@@ -157,7 +162,7 @@ class TextAnalysisUtil {
     }
 
     const REGEXP_META_SYMBOLS = array(
-        '\\', '.', '|', '(', ')', '[', ']', '+', '^', '+', '^', '$', '{', '}', '=', '\''
+        '\\', '.', '|', '(', ')', '[', ']', '+', '+', '^', '$', '{', '}', '=', '\''
     );
     protected static array $regexpMetaSymbolsWithEscape = array();
     protected static function escapeMetaSymbols(string $string) : string {

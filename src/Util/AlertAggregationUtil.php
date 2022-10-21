@@ -40,7 +40,7 @@ class AlertAggregationUtil {
         $alertGroup->channel = $alert->channel??'';
         $alertGroup->interface = $alert->interface??'';
         $alertGroup->errText = $alert->errText;
-        $alertGroup->errTextMask = $alert->errText;
+        $alertGroup->errTextMask = TextAnalysisUtil::replaceMessageIdToMask($alert->errText);
         $alertGroup->firstAlert = $alert->timestamp;
         $alertGroup->lastAlert = $alert->timestamp;
         $alertGroup->maybe_need_union = $maybe_need_union;

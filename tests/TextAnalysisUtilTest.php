@@ -73,7 +73,6 @@ class TextAnalysisUtilTest extends TestCase {
         $b = "java.sql.SQLException: Routine (xi_2_sap_send_delivery_return) can not be resolved.";
         $this->assertNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На разные тексты удалось создать маску');
 
-
         $a = "com.sap.aii.utilxi.xmlvalidation.impl.XMLValidationException: XML Validation for payload with root element name Out_DeliveryOrder_A , target namespace http://I/Elite/WH/OutboundProcessing Failed!Errors Encountered During Parsing
 1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
 2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
@@ -81,6 +80,10 @@ class TextAnalysisUtilTest extends TestCase {
 1.cvc-datatype-valid.1.2.1: '' is not a valid value for 'date'.
 2.cvc-attribute.3: The value '' of attribute 'plan_date' on element 'header' is not valid with respect to its type, 'date'.";
         $this->assertNOtNull(TextAnalysisUtil::getMaskFromTexts($a, $b), 'На похожие тексты не удалось создать маску');
+
+        $a = "com.sap.aii.af.sdk.xi.srt.BubbleException: System Error Received. HTTP Status Code = 200: However System Error received in payload ErrorCode = GENERAL ErrorCategory = XIAdapterFramework Parameter1 = Parameter2 = Parameter3 = Parameter4 = Additional text = com.sap.engine.interfaces.messaging.api.exception.MessageExpiredException: Message b3d63871-515d-11ed-80d2-00000074ed66(INBOUND) expired ErrorStack = [http://sap.com/xi/XI/Message/30^Error \"GENERAL\"]";
+        $mask = "com.sap.aii.af.sdk.xi.srt.BubbleException: System Error Received. HTTP Status Code = 200: However System Error received in payload ErrorCode = GENERAL ErrorCategory = XIAdapterFramework Parameter1 = Parameter2 = Parameter3 = Parameter4 = Additional text = com.sap.engine.interfaces.messaging.api.exception.MessageExpiredException: Message *-00000074e*(INBOUND) expired ErrorStack = [http://sap.com/xi/XI/Message/30^Error \"GENERAL\"]";
+        $this->assertTrue(TextAnalysisUtil::isTextFitToMask($a, $mask), 'Маска с ^ не подоходит');
 
         $a = "Could not process file 'ee2f2d3c-38fa-4e07-a087-e795477c78e9.sbis.xml': File modified during processing. 0 bytes expected, 899 bytes found";
         $b = "Could not process file 'nn111111-n2nn-2222-nn4n-24141414141f.sbis.xml': File modified during processing. 0 bytes expected, 1546 bytes found";
