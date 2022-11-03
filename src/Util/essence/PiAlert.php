@@ -109,7 +109,8 @@ class PiAlert {
     }
 
     public function getHTMLErrorText() :string {
-        $text = replaceLinksWithATag($this->errText);
+        $text = htmlspecialchars($this->errText);
+        $text = replaceLinksWithATag($text);
         return nl2br($text);
     }
 
