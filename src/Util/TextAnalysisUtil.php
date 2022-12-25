@@ -12,12 +12,13 @@ class TextAnalysisUtil {
     public static function getMainPartOfPiErrorText(string $text) : string {
         // Уберем message_id
         $text = self::replaceMessageIdToMask($text);
+        // Уберем порты
+        $text = self::replacePortNumberToMask($text);
         // Уберем название каналов
         $text = preg_replace('/Channel Name: [^ ]+/', '*', $text);
-        // Уберем ip адреса, хосты, порты
+        // Уберем ip адреса, хосты
         $text = preg_replace('/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/', '*', $text);
         $text = preg_replace('/[a-z\d\-.]+\.(net|com|ru|local)(:\d+)?/', '*', $text);
-        $text = preg_replace('/port \d+/', '*', $text);
         $text = str_replace('**', '*', $text);
         // Возьмем конец текста, тк.к. в начале обычно название классов и Exception
         $result = static::getTextAfterLastColon($text);
@@ -31,6 +32,10 @@ class TextAnalysisUtil {
     public static function replaceMessageIdToMask(string $text) : string {
         // Уберем message_id (4aece44e-0cb6-11ed-bddd-00000c31d092)
         return preg_replace('/[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}/', '*', $text);
+    }
+    public static function replacePortNumberToMask(string $text) : string {
+        // port 10232
+        return preg_replace('/port \d+/', 'port *', $text);
     }
 
     private static function getTextAfterLastColon(string $text, bool $skipLastColon = false) : string {
