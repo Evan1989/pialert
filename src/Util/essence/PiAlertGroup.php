@@ -62,7 +62,7 @@ class PiAlertGroup {
 
     public string $firstAlert = '';
     public string $lastAlert = '';
-    public ?string $lastUserAction = '';
+    public ?string $lastUserAction = null;
     public int $maybe_need_union = 0;
 
     protected ?bool $hasGenericException = null;
