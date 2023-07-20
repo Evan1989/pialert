@@ -6,7 +6,7 @@
 
 use EvanPiAlert\Util\AlertAggregationUtil;
 use EvanPiAlert\Util\essence\PiAlert;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
 

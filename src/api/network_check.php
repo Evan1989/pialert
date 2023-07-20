@@ -5,7 +5,8 @@
 //    PI тыкает PiAlert, чтобы проверить сеть   //
 //////////////////////////////////////////////////
 
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
+use EvanPiAlert\Util\jobs\JobsUtil;
 use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
 
@@ -30,3 +31,6 @@ $checks[$system] = date("Y-m-d H:i:s");
 Settings::set(Settings::SYSTEMS_NETWORK_CHECK, json_encode($checks));
 
 echo "{}";
+
+// Вызовем обработку фоновых заданий, на случай, если на сервере нет настроек cron
+JobsUtil::executeNeededJobs();

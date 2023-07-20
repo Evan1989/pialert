@@ -45,7 +45,7 @@ class Calendar {
             return;
         }
         /** @noinspection HttpUrlsUsage */
-        $xml = simplexml_load_file("http://xmlcalendar.ru/data/".$county."/".$year."/calendar.xml");
+        $xml = @simplexml_load_file("http://xmlcalendar.ru/data/".$county."/".$year."/calendar.xml");
         if ( $xml === false) {
             return;
         }

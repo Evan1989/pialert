@@ -1,8 +1,11 @@
 <?php
 
-namespace EvanPiAlert\Util;
+namespace EvanPiAlert\Util\HTML;
 
+use EvanPiAlert\Util\AlertAnalytics;
+use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
+use EvanPiAlert\Util\Text;
 
 class HTMLChart {
 

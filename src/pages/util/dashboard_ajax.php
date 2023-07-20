@@ -8,8 +8,8 @@ use EvanPiAlert\Util\AlertAggregationUtil;
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\essence\User;
-use EvanPiAlert\Util\HTMLChart;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLChart;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 
 function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string $value) : string {

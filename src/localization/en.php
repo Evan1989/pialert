@@ -4,7 +4,7 @@ use EvanPiAlert\Util\Text;
 
 $texts = array(
 
-    'change' => 'Cancel',
+    'change' => 'Change',
     'pageGenerated' => 'Page generated',
     'surnameName' => 'Surname Name',
     'avatar' => 'Avatar',

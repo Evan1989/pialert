@@ -9,8 +9,8 @@ use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\essence\PiSystem;
 use EvanPiAlert\Util\essence\User;
+use EvanPiAlert\Util\HTML\HTMLPageAlerts;
 use EvanPiAlert\Util\Settings;
-use EvanPiAlert\Util\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();
@@ -70,7 +70,7 @@ function getComment(PiAlertGroup $alertGroup): string {
         $div;
 }
 
-$page = new HTMLPageTemplate($authorizationAdmin);
+$page = new HTMLPageAlerts($authorizationAdmin);
 
 { // Ajax обработка
     if ( isset($_POST['element']) ) {
@@ -124,7 +124,7 @@ $last_work_day = time()-ONE_DAY;
 while ($calendar->isWorkingDay( date("Y-m-d", $last_work_day) ) == false) {
     $last_work_day = $last_work_day-ONE_DAY;
 }
-$last_work_day = date("Y-m-d 16:00", $last_work_day); // предыдущий рабочий день, 16:00. Считаем, что все что раньше, уже обработано
+$last_work_day = date("Y-m-d 16:00", $last_work_day); // Предыдущий рабочий день, 16:00. Считаем, что все что раньше, уже обработано
 
 
 //  Фильтры выборки //
@@ -166,10 +166,10 @@ echo "<div class='card mb-4 shadow'>
 	    <div class='card-header'>
 	        ".Text::dashboardPageHeader().$additionalHeader."
 	        <div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyNewAlerts()."'>
-                ".HTMLPageTemplate::getIcon( ($showOnlyNewAlerts?'newspaper':'h-circle') )."
+                ".HTMLPageAlerts::getIcon( ($showOnlyNewAlerts?'newspaper':'h-circle') )."
                 <input class='form-check-input' type='checkbox' id='showOnlyNewAlerts' ".($showOnlyNewAlerts?'checked':'').">
 	        </div><div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyImportantAlerts()."'>
-                ".HTMLPageTemplate::getIcon( ($showOnlyImportant?'cup-hot':'cup') )."
+                ".HTMLPageAlerts::getIcon( ($showOnlyImportant?'cup-hot':'cup') )."
                 <input class='form-check-input' type='checkbox' id='showOnlyImportant' ".($showOnlyImportant?'checked':'').">
 	        </div><div class='float-end mx-2'>
 	            <input class='d-inline form-control form-control-sm' id='mainTableSearch' type='text' placeholder='".Text::search()."...' value='".$defaultSearch."'>
