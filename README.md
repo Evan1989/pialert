@@ -10,7 +10,7 @@ Language support:
 
 # 💻 Server requirements for PiAlert
 1. 1 CPU, 1 GB HDD, 1 GB RAM
-2. PHP 8.0
+2. PHP 8.1
 3. PHP dependencies via composer.json:
    1. extension  = curl
    2. extension  = mbstring
@@ -29,6 +29,7 @@ Language support:
 6. Create the required users in /src/pages/users.php
 7. Grant new users rights via /src/pages/rights.php
 8. _(optional)_ For the semi-automatic PiAlert upgrade system to work, need permissions to write into / (under php user)
+9. _(optional)_ Add script /src/main_job.php to cron settings every 5 minutes (it is recommended to add error log redirection to php log, for example, 2>>/var/log/php-fpm/error.log)
 
 # 👷 Installation steps (RU)
 1. Скачать систему PiAlert
@@ -41,6 +42,7 @@ Language support:
 6. Завести необходимых пользователей в /src/pages/users.php
 7. Предоставить новым пользователям права через /src/pages/rights.php
 8. _(необязательно)_ Для работы полуавтоматического обновления PiAlert, нужны права на запись в / (под пользователем php)
+9. _(необязательно)_ Добавить скрипт /src/main_job.php в настройки cron раз в 5 минут (рекомендуется добавить перенаправление лога ошибок в лог php, например, 2>>/var/log/php-fpm/error.log)
 
 # 🚧 Requirements in SAP PI/PO
 1. ⚠️Network access from SAP PI/PO to PiAlert (HTTP/HTTPS)
