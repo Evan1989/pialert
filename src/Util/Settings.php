@@ -2,7 +2,6 @@
 
 namespace EvanPiAlert\Util;
 
-use EvanPiAlert\Util\essence\PiAlertGroup;
 use PDOException;
 
 /**
@@ -20,6 +19,8 @@ class Settings {
     const CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
 
     const DATABASE_VERSION = 'DATABASE VERSION';
+
+    const JOB_CACHE_REFRESH_TIME = 'JOB CACHE REFRESH TIME';
 
     private static ?Settings $_instance = null;
     private array $cache = array();
@@ -58,6 +59,16 @@ class Settings {
     }
 
     /**
+     * Установить в параметр значение NOW()
+     * @param string $name
+     * @return bool
+     */
+    public static function setNow(string $name): bool {
+        $query = DB::prepare("UPDATE settings SET value = NOW() WHERE code = ?");
+        return $query->execute(array($name));
+    }
+
+    /**
      * Получить параметр для компании, для которой был инициализирован класс
      * @param string $name Название параметра
      * @return false|string Значение параметра, либо false, если такого параметра не существует
@@ -77,17 +88,5 @@ class Settings {
             return false;
         }
         return false;
-    }
-
-    public static function systemCacheRefresh() : void {
-        AuthorizationAdmin::deleteAllOldToken();
-        Cache::clearOld();
-        // Сделаем перерасчет поля errTextMainPart для алертов
-        $query = DB::prepare("SELECT * FROM alert_group WHERE errTextMainPart is NULL");
-        $query->execute(array());
-        while ($row = $query->fetch()) {
-            $alertGroup = new PiAlertGroup($row);
-            $alertGroup->saveToDatabase();
-        }
     }
 }

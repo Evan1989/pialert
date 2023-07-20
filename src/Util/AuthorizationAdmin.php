@@ -3,6 +3,7 @@
 namespace EvanPiAlert\Util;
 
 use EvanPiAlert\Util\essence\User;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use JetBrains\PhpStorm\NoReturn;
 
 /**

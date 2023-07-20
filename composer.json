@@ -3,7 +3,7 @@
   "description": "Automate aggregation tools to standard alerts from SAP PI/PO (CBMA) for internal support team.",
   "keywords": ["sap", "sap pi", "sap po", "cbma", "alerts", "support team"],
   "homepage": "https://pialert.orpein.com",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "Apache-2.0",
   "authors": [
     {
@@ -13,7 +13,7 @@
   ],
   "prefer-stable": true,
   "require": {
-    "php": ">=8.0.0",
+    "php": ">=8.1.0",
     "ext-pdo": "*",
     "ext-json": "*",
     "ext-mbstring": "*",

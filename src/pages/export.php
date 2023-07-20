@@ -7,7 +7,7 @@ use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\essence\User;
 use EvanPiAlert\Util\ExcelFile;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();

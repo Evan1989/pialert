@@ -4,13 +4,13 @@ require_once(__DIR__."/../autoload.php");
 
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageAlerts;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();
 $authorizationAdmin->ifNotAccessGoErrorPage();
 
-$page = new HTMLPageTemplate($authorizationAdmin);
+$page = new HTMLPageAlerts($authorizationAdmin);
 echo $page->getPageHeader(Text::alertsPageHeader());
 
 echo "<div class='card mb-4 shadow'>

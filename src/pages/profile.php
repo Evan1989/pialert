@@ -2,7 +2,7 @@
 
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 
 require_once(__DIR__."/../autoload.php");

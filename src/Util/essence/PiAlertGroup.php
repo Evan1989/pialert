@@ -3,7 +3,7 @@
 namespace EvanPiAlert\Util\essence;
 
 use EvanPiAlert\Util\DB;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 use EvanPiAlert\Util\TextAnalysisUtil;
 use PDOStatement;

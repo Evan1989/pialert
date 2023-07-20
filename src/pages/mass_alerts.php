@@ -5,7 +5,7 @@ require_once(__DIR__."/../autoload.php");
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
-use EvanPiAlert\Util\HTMLPageTemplate;
+use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();
