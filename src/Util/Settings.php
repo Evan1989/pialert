@@ -13,7 +13,11 @@ class Settings {
     const LINK_TO_SUPPORT_RULES = 'LINK TO SUPPORT RULES';
 
     const SYSTEMS_NAMES = 'SYSTEMS NAMES';
+
+    const SYSTEMS_SETTINGS = 'SYSTEMS SETTINGS';
+
     const SYSTEMS_NETWORK_CHECK = 'SYSTEMS NETWORK CHECK';
+
     const AVERAGE_ALERT_INTERVAL_RATIO = 'AVERAGE ALERT INTERVAL RATIO';
 
     const CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
@@ -21,6 +25,12 @@ class Settings {
     const DATABASE_VERSION = 'DATABASE VERSION';
 
     const JOB_CACHE_REFRESH_TIME = 'JOB CACHE REFRESH TIME';
+
+    const JOB_MESSAGE_STAT_REFRESH_TIME = 'JOB MESSAGESTAT REFRESH TIME'; //время обновления задания статистики
+
+    const MESSAGE_STAT_STORE_DAYS = 'MESSAGESTAT STORE DAYS'; //время хранения в днях статистики
+
+    const JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGESTATDELETE REFRESH TIME'; //время обновления задания очистки статистики
 
     private static ?Settings $_instance = null;
     private array $cache = array();
