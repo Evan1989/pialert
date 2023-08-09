@@ -22,15 +22,19 @@ class Settings {
 
     const CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
 
+    const MESSAGE_STAT_SERVICE_PASSWORD = 'MESSAGE STATISTIC SERVICE PASSWORD';
+
+    const MESSAGE_STAT_SERVICE_USER = 'MESSAGE STATISTIC SERVICE USER';
+
     const DATABASE_VERSION = 'DATABASE VERSION';
 
     const JOB_CACHE_REFRESH_TIME = 'JOB CACHE REFRESH TIME';
 
-    const JOB_MESSAGE_STAT_REFRESH_TIME = 'JOB MESSAGESTAT REFRESH TIME'; //время обновления задания статистики
+    const JOB_MESSAGE_STAT_REFRESH_TIME = 'JOB MESSAGE STATISTIC REFRESH TIME'; //время обновления задания статистики
 
-    const MESSAGE_STAT_STORE_DAYS = 'MESSAGESTAT STORE DAYS'; //время хранения в днях статистики
+    const MESSAGE_STAT_STORE_DAYS = 'MESSAGE STATISTIC STORE DAYS'; //время хранения в днях статистики
 
-    const JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGESTATDELETE REFRESH TIME'; //время обновления задания очистки статистики
+    const JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGE STATISTIC DELETE REFRESH TIME'; //время обновления задания очистки статистики
 
     private static ?Settings $_instance = null;
     private array $cache = array();

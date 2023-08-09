@@ -1,6 +1,6 @@
 <?php
 
-namespace EvanPiAlert\Util;
+namespace EvanPiAlert\Util\essence;
 
 use PDOException;
 use EvanPiAlert\Util\DB;
@@ -37,7 +37,7 @@ class MessageStatistic{
     }
 
 	   public function saveNewToDatabase() : bool {
-           $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, message_count, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+           $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageСount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
            return $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp,$this->messageCount,$this->messageProcTime,$this->messageProcTimePI));
        }
 
@@ -45,4 +45,5 @@ class MessageStatistic{
         $query = DB::prepare("DELETE FROM messages_stat WHERE timestamp<=NOW()- INTERVAL ? DAY"); //подготовка запроса для удаления данных статистики
         return $query->execute(array($store_in_days));
     }
+
 }

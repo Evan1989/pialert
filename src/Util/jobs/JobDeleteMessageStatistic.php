@@ -7,9 +7,9 @@ use EvanPiAlert\Util\Cache;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\Settings;
-use EvanPiAlert\Util\MessageStat;
+use EvanPiAlert\Util\essence\MessageStatistic;
 
-class JobDeleteMessageStat extends JobAbstract {
+class JobDeleteMessageStatistic extends JobAbstract {
 
     const JOB_INTERVAL = 86400; // Раз в сутки
 
@@ -18,7 +18,7 @@ class JobDeleteMessageStat extends JobAbstract {
         $store_days=Settings::get(Settings::MESSAGE_STAT_STORE_DAYS);
 		if(isset($store_days))
         {
-            MessageStat::DeleteFromDatabase($store_days);
+            MessageStatistic::DeleteFromDatabase($store_days);
         }
     }
 
