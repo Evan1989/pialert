@@ -40,9 +40,9 @@ INSERT INTO `messages_stat` (`piSystemName`, `fromSystem`, `toSystem`, `interfac
 INSERT INTO `settings` (`grp`, `code`, `value`, `type`) VALUES
 (null, 'JOB MESSAGE STATISTIC REFRESH TIME', '', 'datetime'),
 (null, 'JOB MESSAGE STATISTIC DELETE REFRESH TIME', '', 'datetime'),
-(null, 'MESSAGE STATISTIC STORE DAYS', '365', 'number'),
-(null, 'MESSAGE STATISTIC SERVICE USER', 'user', 'text'),
-(null, 'MESSAGE STATISTIC SERVICE PASSWORD', 'password', 'password'),
+('SYSTEMS', 'MESSAGE STATISTIC STORE DAYS', '365', 'number'),
+('SYSTEMS', 'MESSAGE STATISTIC SERVICE USER', 'user', 'text'),
+('SYSTEMS', 'MESSAGE STATISTIC SERVICE PASSWORD', 'password', 'password'),
 ('SYSTEMS', 'SYSTEMS SETTINGS', '{\"af.pfq.pfq-db\":{ \r\n\"SID\":\"PFQ\",\r\n\"Host\":\"pfq-wd.komus.net:8000\",\r\n\"StatEnable\":\"true\"\r\n}}', 'textarea');
 
 
