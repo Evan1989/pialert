@@ -15,6 +15,7 @@ Language support:
    1. extension  = curl
    2. extension  = mbstring
    3. extension  = pdo_mysql
+   4. extension  = simplexml
 4. MySQL/MariaDB
 5. Nginx
 
