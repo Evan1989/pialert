@@ -105,7 +105,7 @@ class PiAlert {
         if ($this->interface) {
             return $this->interface;
         }
-        return $this->channel;
+        return $this->channel??'';
     }
 
     public function getHTMLErrorText() :string {
