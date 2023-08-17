@@ -10,7 +10,7 @@ class PiAlert {
 
     public ?string $alertRuleId;
     public string $piSystemName = '';
-    public string $priority;
+    public ?string $priority = null;
     public string $timestamp;
 
     public ?string $messageId = null;
@@ -18,7 +18,7 @@ class PiAlert {
     public ?string $fromSystem = null;
     public ?string $toSystem = null;
 
-    public string $adapterType;
+    public ?string $adapterType = null;
     public ?string $channel = null;
 
     public ?string $ICOName = null;
@@ -49,7 +49,7 @@ class PiAlert {
 
         $this->alertRuleId = $alert->RuleId;
         $this->piSystemName = $alert->Component;
-        $this->priority = $alert->Severity;
+        $this->priority = $alert->Severity??null;
         $this->timestamp = date("Y-m-d H:i:s", strtotime($alert->Timestamp));
 
         $this->messageId = $alert->MsgId??null;
@@ -57,7 +57,7 @@ class PiAlert {
         $this->fromSystem = $this->toSystemName($alert->FromParty??null, $alert->FromService??null);
         $this->toSystem = $this->toSystemName($alert->ToParty??null, $alert->ToService??null);
 
-        $this->adapterType = $alert->AdapterType;
+        $this->adapterType = $alert->AdapterType??null;
         $this->channel = $alert->Channel??null;
 
         $this->ICOName = $alert->ScenarioName??null;
