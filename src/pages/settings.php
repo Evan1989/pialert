@@ -7,6 +7,7 @@ use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\SystemVersion;
 use EvanPiAlert\Util\Text;
 use JetBrains\PhpStorm\Pure;
+use EvanPiAlert\Util\jobs\JobsUtil;
 
 require_once(__DIR__ . "/../autoload.php");
 
@@ -153,3 +154,5 @@ foreach (Settings::getSettingGroups() as $code => $description) {
 echo "</div>";
 
 echo $page->getPageFooter();
+
+JobsUtil::executeNeededJobs();

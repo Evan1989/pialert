@@ -10,7 +10,8 @@ class JobSaveMessageStatistic extends JobAbstract {
     const JOB_INTERVAL = 3600; // Раз в час
 
     protected function executeJobInternal(): void {
-     MessageStatisticServiceCall::serviceCall();
+       $msgStat=new MessageStatisticServiceCall();
+       $msgStat->serviceCall();
     }
 
     protected function getSettingName(): string {

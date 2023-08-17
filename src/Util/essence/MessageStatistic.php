@@ -19,22 +19,17 @@ class MessageStatistic{
 
     public ?string $messageProcTimePI=null;
 
-    public function __construct(array $inputData) {
-        if ( is_array($inputData) ) {
-            $this->createFromRow($inputData);
-        }
+    public function __construct($piSystemName,$fromSystem,$toSystem,$interface,$timestamp,$messageCount,$messageProcTime,$messageProcTimePI) {
+        $this->piSystemName = $piSystemName;
+        $this->fromSystem = $fromSystem;
+        $this->toSystem = $toSystem;
+        $this->interface = $interface;
+        $this->timestamp = $timestamp;
+        $this->messageCount = $messageCount;
+        $this->messageProcTime = $messageProcTime;
+        $this->messageProcTimePI = $messageProcTimePI;
     }
 
-    private function createFromRow(array $row ) : void {
-        $this->piSystemName = $row['piSystemName'];
-        $this->timestamp = $row['timestamp'];
-        $this->fromSystem = $row['fromSystem'];
-        $this->toSystem = $row['toSystem'];
-        $this->interface = $row['interface'];
-        $this->messageCount = $row['messageCount'];
-        $this->messageProcTime = $row['messageProcTime'];
-        $this->messageProcTimePI = $row['messageProcTimePI'];
-    }
 
 	   public function saveNewToDatabase() : bool {
            $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageСount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
