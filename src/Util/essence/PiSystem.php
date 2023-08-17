@@ -12,17 +12,15 @@ class PiSystem {
     }
 
     public function getSID() : string {
-        $systemNames = Settings::get(Settings::SYSTEMS_SETTINGS);
+        $systemNames = Settings::get(Settings::SYSTEMS_NAMES);
         if ( $systemNames !== false ) {
             $systemNames = json_decode($systemNames, true);
             if ( isset($systemNames[$this->piSystemName]) ) {
-                return $systemNames[$this->piSystemName]['SID'];
+                return $systemNames[$this->piSystemName];
             }
         }
         $parts = explodeWithDefault('.', $this->piSystemName, 3, $this->piSystemName);
         return mb_strtoupper($parts[1]);
     }
-
-
 
 }

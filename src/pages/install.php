@@ -107,7 +107,11 @@ if ( SystemVersion::isFinishInstallNeeded() ) {
         for ($curVersion+=1; $curVersion <= $targetVersion; $curVersion++) {
             $result = executeScriptInDataBase(floor($curVersion/10), $curVersion%10, $curVersion < $targetVersion);
             if ($result === true) {
-                echo "<div class='alert alert-success' role='alert'>".Text::installUpdateSuccess($curVersion)."</div>";
+                $dataBaseVersionToShow = $curVersion/10;
+                if ( $curVersion % 10 == 0 ) {
+                    $dataBaseVersionToShow = $dataBaseVersionToShow.'.0';
+                }
+                echo "<div class='alert alert-success' role='alert'>".Text::installUpdateSuccess($dataBaseVersionToShow)."</div>";
             } elseif ( $result ) {
                 echo "  <div class='alert alert-danger' role='alert'>".Text::installError($result)."</div>";
                 break;
