@@ -7,7 +7,7 @@ use EvanPiAlert\Util\Settings;
 class PiSystem {
     protected string $piSystemName; // from alert
     protected string $piHost;
-    protected string $piStatisticEnable;
+    protected bool $piStatisticEnable;
     protected string $piSID;
 
     public function __construct(string $piSystemName) {
@@ -17,14 +17,14 @@ class PiSystem {
     public function setHost($piHost){
         $this->piHost=$piHost;
     }
-    public function setStatisticEnable($piStatisticEnable){
+    public function setStatisticEnable(bool $piStatisticEnable){
         $this->piStatisticEnable=$piStatisticEnable;
     }
 
     public function getHost():string{
         return $this->piHost;
     }
-    public function getStatisticEnable():string{
+    public function getStatisticEnable():bool{
         return $this->piStatisticEnable;
     }
 

@@ -34,14 +34,11 @@ class MessageStatistic{
 	   public function saveNewToDatabase() : bool {
            $query = DB::prepare("SELECT piSystemName FROM messages_stat WHERE piSystemName = ? AND fromSystem = ? AND toSystem = ? AND interface = ? AND timestamp = ?");  //проверям на наличие существующей записи
            $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
-           if($query->fetch()){ //обновляем существующую запись
-               $query = DB::prepare("UPDATE messages_stat SET  messageCount=?, messageProcTime=?, messageProcTimePI=? WHERE piSystemName=? AND fromSystem=?  AND toSystem=? AND interface=? AND timestamp=?");
-               return $query->execute(array( $this->messageCount,$this->messageProcTime,$this->messageProcTimePI,$this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
-           }
-           else {  //вставляем новую запись
+           if(!$query->fetch()){
                $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageCount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                return $query->execute(array($this->piSystemName, $this->fromSystem, $this->toSystem, $this->interface, $this->timestamp, $this->messageCount, $this->messageProcTime, $this->messageProcTimePI));
            }
+           return false;
     }
 
     public static function DeleteFromDatabase(int $store_in_days) : bool {

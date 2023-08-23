@@ -29,6 +29,9 @@ class ManagePiSystem{
         return Settings::set(Settings::SYSTEMS_SETTINGS,json_encode($systemInfo));
     }
 
+    /**
+      *  return PiSystem[]
+     */
     public function getPiSystems():array{
         return $this->piSystems;
     }

@@ -24,7 +24,7 @@ class MessageStatisticServiceCall{
         return 'http://' . $systemHostName . '/mdt/performancedataqueryservlet?component=' . $systemName . '&begin=' . rawurlencode($begin) . '&end=' . rawurlencode($end);
     }
 
-    protected function isXml(string $value): bool
+    function isXml(string $value): bool
     {
         $prev = libxml_use_internal_errors(true);
 
@@ -36,7 +36,6 @@ class MessageStatisticServiceCall{
 
         return false !== $doc && empty($errors);
     }
-
 
     /**
      * @throws \Exception
@@ -50,8 +49,9 @@ class MessageStatisticServiceCall{
             return $response['http_code'];
         }
         else {
-            if($this->isXml($response['http_body'])) {
-                $xml = new SimpleXMLElement($response['http_body']);
+               if ($this->isXml($response['http_body']))
+              {
+                $xml = simplexml_load_string($response['http_body']);
                 if (isset($xml->Data->DataRows->Row)) {
                     foreach ($xml->Data->DataRows->Row as $row) { //строка содержащая информацию о статистике обработки сообщений
                         $pi_proc_time = $row->Entry[20]; //вычисляем время обработки в SAP PI
@@ -72,11 +72,10 @@ class MessageStatisticServiceCall{
                     }
                     return $response['http_code'];
                 }
-            }
-            else{
-                $this->logError("Error in MessageStatistic service call. Error in response".$response['http_body']);
-                return 400;
-            }
+              } else {
+                    $this->logError("Error in MessageStatistic service call. Error in response" . $response['http_body']);
+                    return 400;
+                }
         }
         return $response['http_code'];
     }
@@ -89,8 +88,8 @@ class MessageStatisticServiceCall{
         $serviceCall = new HttpProvider();
         $res=false;
         foreach ($piSystems->getPiSystems() as $value) {
-            if($value->getStatisticEnable() =='true') {
-                $query = DB::prepare("SELECT MAX(timestamp) FROM messages_stat WHERE piSystemName=?"); //подготовка запроса для удаления данных статистики
+            if($value->getStatisticEnable()) {
+                $query = DB::prepare("SELECT MAX(timestamp) FROM messages_stat WHERE piSystemName=?");
                 $query->execute(array($value->getSystemName()));
                 $end = date("Y-m-d H:00:00.0");
                 while($row = $query->fetch()) {
@@ -98,8 +97,8 @@ class MessageStatisticServiceCall{
                     if(!isset($begin)) {
                         $begin = date("Y-m-d H:00:0.0", strtotime($end) - 3600); //запрашиваем данные за часовой интервал
                     }
-                    if(strtotime($end)- strtotime($begin)>86400) {
-                        $begin=date("Y-m-d H:00:0.0", strtotime($end) - 86400); //запрашиваем за послединие сутки, т.к. данные по часовым интервалам хранятся 24 часа
+                    if(strtotime($end)- strtotime($begin)>ONE_DAY) {
+                        $begin=date("Y-m-d H:00:0.0", strtotime($end) - ONE_DAY); //запрашиваем за послединие сутки, т.к. данные по часовым интервалам хранятся 24 часа
                     }
                     while(strtotime($end)- strtotime($begin)>=3600) {
                         $end_iterator=date("Y-m-d H:00:0.0", strtotime($begin) + 3600);
