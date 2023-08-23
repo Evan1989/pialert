@@ -26,6 +26,6 @@ abstract class JobAbstract {
 
     protected function isNeedToStartJob(string $settingName, int $secondsInterval) : bool {
         $lastExecuteTime = strtotime(Settings::get($settingName));
-        return $lastExecuteTime === false || time() - $lastExecuteTime < $secondsInterval;
+        return $lastExecuteTime === false || time() - $lastExecuteTime > $secondsInterval;
     }
 }

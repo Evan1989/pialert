@@ -32,13 +32,22 @@ class MessageStatistic{
 
 
 	   public function saveNewToDatabase() : bool {
-           $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageСount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-           return $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp,$this->messageCount,$this->messageProcTime,$this->messageProcTimePI));
-       }
+           $query = DB::prepare("SELECT piSystemName FROM messages_stat WHERE piSystemName = ? AND fromSystem = ? AND toSystem = ? AND interface = ? AND timestamp = ?");  //проверям на наличие существующей записи
+           $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
+           if($query->fetch()){ //обновляем существующую запись
+               $query = DB::prepare("UPDATE messages_stat SET  messageCount=?, messageProcTime=?, messageProcTimePI=? WHERE piSystemName=? AND fromSystem=?  AND toSystem=? AND interface=? AND timestamp=?");
+               return $query->execute(array( $this->messageCount,$this->messageProcTime,$this->messageProcTimePI,$this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
+           }
+           else {  //вставляем новую запись
+               $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageCount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+               return $query->execute(array($this->piSystemName, $this->fromSystem, $this->toSystem, $this->interface, $this->timestamp, $this->messageCount, $this->messageProcTime, $this->messageProcTimePI));
+           }
+    }
 
     public static function DeleteFromDatabase(int $store_in_days) : bool {
         $query = DB::prepare("DELETE FROM messages_stat WHERE timestamp<=NOW()- INTERVAL ? DAY"); //подготовка запроса для удаления данных статистики
         return $query->execute(array($store_in_days));
     }
+
 
 }

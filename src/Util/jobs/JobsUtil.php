@@ -17,6 +17,12 @@ class JobsUtil {
         $job = new JobCacheRefresh();
         $job->executeJob();
 
+        $job_msg_stat = new JobSaveMessageStatistic();
+        $job_msg_stat->executeJob();
+
+        $job_msg_stat_delete = new JobDeleteMessageStatistic();
+        $job_msg_stat_delete->executeJob();
+
         // Сюда можно добавить новое фоновое задание, если надо
     }
 

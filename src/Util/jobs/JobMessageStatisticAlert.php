@@ -2,19 +2,16 @@
 
 namespace EvanPiAlert\Util\jobs;
 
+use EvanPiAlert\Util\MessageStatAlertUtil;
 use EvanPiAlert\Util\MessageStatisticServiceCall;
 use EvanPiAlert\Util\Settings;
 
-class JobSaveMessageStatistic extends JobAbstract {
+class JobMessageStatisticAlert extends JobAbstract {
 
     const JOB_INTERVAL = 3600; // Раз в час
 
-    /**
-     * @throws \Exception
-     */
     protected function executeJobInternal(): void {
-       $msgStat=new MessageStatisticServiceCall();
-       $msgStat->serviceCall();
+        $msgStatAlertUtil=new MessageStatAlertUtil();
     }
 
     protected function getSettingName(): string {

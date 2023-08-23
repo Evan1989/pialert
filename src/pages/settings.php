@@ -154,5 +154,3 @@ foreach (Settings::getSettingGroups() as $code => $description) {
 echo "</div>";
 
 echo $page->getPageFooter();
-
-JobsUtil::executeNeededJobs();
