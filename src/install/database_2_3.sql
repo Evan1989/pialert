@@ -6,21 +6,21 @@ START TRANSACTION;
 --
 
 CREATE TABLE `messages_stat` (
-                                 `id` INT(11) NOT NULL AUTO_INCREMENT,
-                                 `piSystemName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-                                 `fromSystem` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-                                 `toSystem` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-                                 `interface` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-                                 `timestamp` DATETIME NULL DEFAULT NULL,
-                                 `messageCount` INT(11) NULL DEFAULT NULL,
-                                 `messageProcTime` INT(11) NULL DEFAULT NULL,
-                                 `messageProcTimePI` INT(11) NULL DEFAULT NULL,
-                                 PRIMARY KEY (`id`) USING BTREE,
-                                 INDEX `timestamp` (`timestamp`) USING BTREE,
-                                 INDEX `piSystemName` (`piSystemName`) USING BTREE,
-                                 INDEX `interface` (`interface`) USING BTREE,
-                                 INDEX `fromSystem` (`fromSystem`) USING BTREE,
-                                 INDEX `toSystem` (`toSystem`) USING BTREE
+     `id` INT(11) NOT NULL AUTO_INCREMENT,
+     `piSystemName` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+     `fromSystem` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+     `toSystem` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+     `interface` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+     `timestamp` DATETIME NULL DEFAULT NULL,
+     `messageCount` INT(11) NULL DEFAULT NULL,
+     `messageProcTime` INT(11) NULL DEFAULT NULL,
+     `messageProcTimePI` INT(11) NULL DEFAULT NULL,
+     PRIMARY KEY (`id`) USING BTREE,
+     INDEX `timestamp` (`timestamp`) USING BTREE,
+     INDEX `piSystemName` (`piSystemName`) USING BTREE,
+     INDEX `interface` (`interface`) USING BTREE,
+     INDEX `fromSystem` (`fromSystem`) USING BTREE,
+     INDEX `toSystem` (`toSystem`) USING BTREE
 )
     COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB

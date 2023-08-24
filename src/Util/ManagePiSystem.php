@@ -2,7 +2,6 @@
 
 namespace EvanPiAlert\Util;
 use EvanPiAlert\Util\essence\PiSystem;
-use EvanPiAlert\Util\Settings;
 
 class ManagePiSystem{
 
@@ -30,9 +29,9 @@ class ManagePiSystem{
     }
 
     /**
-      *  return PiSystem[]
+     * @return PiSystem[]
      */
-    public function getPiSystems():array{
+    public function getPiSystems() : array {
         return $this->piSystems;
     }
 

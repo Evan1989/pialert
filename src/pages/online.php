@@ -11,8 +11,6 @@ require_once(__DIR__."/../autoload.php");
 $authorizationAdmin = new AuthorizationAdmin();
 $authorizationAdmin->ifNotAccessGoErrorPage();
 
-//Тест
-
 $page = new HTMLPageTemplate($authorizationAdmin);
 echo $page->getPageHeader(Text::onlinePageHeader());
 
