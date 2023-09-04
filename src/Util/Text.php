@@ -16,6 +16,7 @@ namespace EvanPiAlert\Util;
  * @method static string employee()
  * @method static string responsibleEmployee()
  * @method static string save()
+ * @method static string delete()
  * @method static string summary()
  * @method static string pieces()
  * @method static string perDay()
@@ -61,6 +62,7 @@ namespace EvanPiAlert\Util;
  * @method static string menuProfile()
  * @method static string menuOnline()
  * @method static string menuMassAlerts()
+ * @method static string menuSystems()
  * @method static string profilePageHeader()
  * @method static string profileLanguage()
  * @method static string profileAvatar()
@@ -91,6 +93,10 @@ namespace EvanPiAlert\Util;
  * @method static string statisticAlertMonthCount()
  * @method static string statisticAlertMonthChart()
  * @method static string statisticAlertTotalCount()
+ * @method static string systemsCode()
+ * @method static string systemsName()
+ * @method static string systemsContact()
+ * @method static string systemsComment()
  * @method static string chartsNormalForDay($arg1)
  * @method static string chartsAverageDay()
  * @method static string exportPageHeader()
@@ -168,6 +174,8 @@ namespace EvanPiAlert\Util;
  * @method static string massAlertsReplace()
  * @method static string massAlertsRemoveIcon()
  * @method static string genericExceptionTitle()
+ * @method static string systemsPageHeader()
+ * @method static string systemCard()
  **/
 class Text {
 

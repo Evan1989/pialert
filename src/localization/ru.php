@@ -15,6 +15,7 @@ $texts = array(
     'responsibleEmployee' => 'Ответственный сотрудник',
     'addUser' => 'Добавить пользователя',
     'save' => 'Сохранить',
+    'delete' => 'Удалить',
     'summary' => 'Итого',
     'pieces' => 'шт.',
     'perDay' => 'в сутки',
@@ -63,6 +64,7 @@ $texts = array(
     'menuProfile' => 'Профиль',
     'menuOnline' => 'Поддержка online',
     'menuMassAlerts' => 'Массовые инциденты',
+    'menuSystems' => 'Информация о системах',
 
     'usersPageHeader' => 'Все пользователи',
     'usersAddUserSuccess' => 'Для пользователя '.Text::REPLACE_PATTERN.' создана ссылка для входа: '.Text::REPLACE_PATTERN,
@@ -247,5 +249,12 @@ $texts = array(
     'massAlertsRemoveIcon' => 'Убрать значок',
 
     'genericExceptionTitle' => 'Ошибка типа Genetic Exception как правило не требует реакции. Обычно приходит одновременно с другим алертом, содержащим больше информации (message_id и т.д.), либо в ответ на разовую ошибку (сообщение в Waiting, а не System Error)',
+
+    'systemsPageHeader' => 'Информация о системах',
+    'systemsCode' => 'SLD код',
+    'systemsName' => 'Наименование системы',
+    'systemsContact' => 'Контактная информация',
+    'systemsComment' => 'Комментарий',
+    'systemCard' => 'Карточка системы',
 
 );

@@ -15,6 +15,7 @@ $texts = array(
     'responsibleEmployee' => 'Responsible employee',
     'addUser' => 'Add user',
     'save' => 'Save',
+    'delete' => 'Delete',
     'summary' => 'Summary',
     'pieces' => 'pcs.',
     'perDay' => 'per day',
@@ -63,6 +64,7 @@ $texts = array(
     'menuProfile' => 'Profile',
     'menuOnline' => 'Support online',
     'menuMassAlerts' => 'Mass Incidents',
+    'menuSystems' => 'Systems information',
 
     'usersPageHeader' => 'All users',
     'usersAddUserSuccess' => 'For user '.Text::REPLACE_PATTERN.' created login link: '.Text::REPLACE_PATTERN,
@@ -248,4 +250,10 @@ $texts = array(
 
     'genericExceptionTitle' => 'An error of type Genetic Exception does not require a reaction usually. Is occurs simultaneously with other alert containing more information (message_id, etc.) generally. Either in response to a one-time error (message in Waiting status, not in System Error)',
 
+    'systemsPageHeader' => 'Systems information',
+    'systemsCode' => 'SLD code',
+    'systemsName' => 'System name',
+    'systemsContact' => 'System contacts',
+    'systemsComment' => 'Comments',
+    'systemCard' => 'System Card',
 );
