@@ -481,14 +481,18 @@ function initJavascriptForOnline() {
 
 //////////////      Systems   ////////////////
 // noinspection JSUnusedGlobalSymbols
-function selectSystemInfo(document) {
-    var table = document.getElementById('systems');
+function initJavascriptForSystems(document) {
+    $('.tablesorter').tablesorter({
+        textExtraction: _getValue
+    });
+
+    let table = document.getElementById('systems');
     console.log("call selectSystemInfo");
-    for (var i = 1; i < table.rows.length; i++) {
+    for (let i = 1; i < table.rows.length; i++) {
         table.rows[i].onclick = function () {
-            let rIndex = this.rowIndex;
-          //  console.log("rIndex="+rIndex );
+           let rIndex = this.rowIndex;
            document.getElementById('code').value = document.getElementById("systems").rows[rIndex].cells[1].innerHTML;
+           $('#prev_code').val( document.getElementById('code').value );
            document.getElementById('name').value = document.getElementById("systems").rows[rIndex].cells[2].innerHTML;
            document.getElementById('contact').value = document.getElementById("systems").rows[rIndex].cells[3].innerHTML;
            document.getElementById('comment').value = document.getElementById("systems").rows[rIndex].cells[4].innerHTML;
