@@ -54,4 +54,5 @@ Language support:
 4. _(optional)_ Create ICO to check network problems between PiAlert and SAP PI/PO:
    1. REST polling (every 5 minutes) → Dynamic Receiver Determination (ignore option) → Any Receiver (never called)
    2. End-point /src/api/network_check.php?system=_SAP_PI_system_name_
-   4. If there is no call, then PiAlert will notify the support team on Dashboard page.
+   3. If there is no call, then PiAlert will notify the support team on Dashboard page.
+5. _(optional)_ Network access from PiAlert to SAP PI/PO (HTTP) and user in SAP PI/PO with role SAP_XI_MONITOR_J2EE for statistic monitoring.
