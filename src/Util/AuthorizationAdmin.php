@@ -112,8 +112,8 @@ class AuthorizationAdmin {
         }
         $query = DB::prepare("SELECT * FROM users WHERE email = ? ");
         $query->execute(array( $email ));
-        if ($row = $query->fetch() ) {
-            if ( $row['password'] == User::getHashForPassword($password, $row['salt']) ) {
+        if ( $row = $query->fetch() ) {
+            if ( $row['password'] == User::getHashForPassword($password, ''.$row['salt']) ) {
                 return $row['user_id'];
             }
         }
