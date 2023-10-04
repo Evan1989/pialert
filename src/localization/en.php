@@ -256,4 +256,6 @@ $texts = array(
     'systemsContact' => 'System contacts',
     'systemsComment' => 'Comments',
     'systemCard' => 'System Card',
+    'messageAlertCount' => 'Error: no message or message count per interval is min for interface: ',
+    'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: ',
 );

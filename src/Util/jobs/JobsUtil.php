@@ -23,6 +23,9 @@ class JobsUtil {
         $job_msg_stat_delete = new JobDeleteMessageStatistic();
         $job_msg_stat_delete->executeJob();
 
+        $job_msg_alert = new JobMessageStatisticAlert();
+        $job_msg_alert->executeJob();
+
         // Сюда можно добавить новое фоновое задание, если надо
     }
 

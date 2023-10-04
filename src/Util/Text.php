@@ -176,6 +176,8 @@ namespace EvanPiAlert\Util;
  * @method static string genericExceptionTitle()
  * @method static string systemsPageHeader()
  * @method static string systemCard()
+ * @method static string messageAlertCount()
+ * @method static string messageAlertProcTime()
  **/
 class Text {
 

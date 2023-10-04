@@ -11,12 +11,11 @@ class JobMessageStatisticAlert extends JobAbstract {
 
     protected function executeJobInternal(): void {
         $msgStatAlertUtil = new MessageStatAlertGenerator();
-        //TODO Временно отключили
-        //$msgStatAlertUtil->generatePiAlertMessageCount();
-        //$msgStatAlertUtil->generatePiAlertMessageProcTime();
+        $msgStatAlertUtil->generatePiAlertMessageCount();
+        $msgStatAlertUtil->generatePiAlertMessageProcTime();
     }
 
     protected function getSettingName(): string {
-        return Settings::JOB_MESSAGE_STAT_REFRESH_TIME;
+        return Settings::JOB_MESSAGE_STAT_ALERT_REFRESH_TIME;
     }
 }

@@ -36,6 +36,12 @@ class Settings {
 
     const JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGE STATISTIC DELETE REFRESH TIME'; //время обновления задания очистки статистики
 
+    const ALERT_MESSAGE_COUNT = 'ALERT MESSAGE COUNT'; //пороговое значение для алерта по количеству сообщений
+
+    const ALERT_PROC_TIME = 'ALERT MESSAGE PROCESSING TIME'; //пороговое значение для алерта по времени обработки
+
+    const JOB_MESSAGE_STAT_ALERT_REFRESH_TIME = 'JOB MESSAGE STATISTIC ALERT REFRESH TIME'; //время обновления задания очистки статистики
+
     private static ?Settings $_instance = null;
     private array $cache = array();
 

@@ -15,7 +15,7 @@ class ManagePiSystem{
         {
             $piSystem = new PiSystem($key);
             $piSystem->setHost($value['Host']);
-            $piSystem->setStatisticEnable($value['StatEnable']);
+            $piSystem->setStatisticEnable(filter_var($value['StatEnable'],FILTER_VALIDATE_BOOLEAN));
             $piSystem->setSID($value['SID']);
             $piSystem_array[] =  $piSystem;
         }
