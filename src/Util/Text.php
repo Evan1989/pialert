@@ -178,6 +178,10 @@ namespace EvanPiAlert\Util;
  * @method static string systemCard()
  * @method static string messageAlertCount()
  * @method static string messageAlertProcTime()
+ * @method static string averageMessageCount()
+ * @method static string currentMessageCount()
+ * @method static string averageMessageProcessingTime()
+ * @method static string currentMessageProcessingTime()
  **/
 class Text {
 

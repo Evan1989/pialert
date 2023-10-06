@@ -6,6 +6,11 @@ INSERT INTO `settings` (`grp`, `code`, `value`, `type`) VALUES
 ('SYSTEMS', 'ALERT MESSAGE COUNT', '10', 'number'),
 ('SYSTEMS', 'ALERT MESSAGE PROCESSING TIME', '10', 'number');
 
+ALTER TABLE `messages_stat`
+    ADD INDEX `messageProcTime` (`messageProcTime`),
+    ADD INDEX `messageCount` (`messageCount`);
+
+
 UPDATE `settings` SET `value` = '2.6' WHERE `settings`.`code` = 'DATABASE VERSION';
 
 COMMIT;
