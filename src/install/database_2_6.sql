@@ -10,6 +10,7 @@ ALTER TABLE `messages_stat`
     ADD INDEX `messageProcTime` (`messageProcTime`),
     ADD INDEX `messageCount` (`messageCount`);
 
+UPDATE `settings` SET `value` = '{\"af.pip.pip-db\":{ \r\n\"SID\":\"PIP\",\r\n\"host\":\"pip-db.host.net:8000\",\r\n\"statEnable\":true\r\n}}' WHERE `settings`.`value` = 'SYSTEMS SETTINGS';
 
 UPDATE `settings` SET `value` = '2.6' WHERE `settings`.`code` = 'DATABASE VERSION';
 

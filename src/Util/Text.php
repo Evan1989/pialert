@@ -176,12 +176,8 @@ namespace EvanPiAlert\Util;
  * @method static string genericExceptionTitle()
  * @method static string systemsPageHeader()
  * @method static string systemCard()
- * @method static string messageAlertCount()
- * @method static string messageAlertProcTime()
- * @method static string averageMessageCount()
- * @method static string currentMessageCount()
- * @method static string averageMessageProcessingTime()
- * @method static string currentMessageProcessingTime()
+ * @method static string messageAlertCount(string $interface, string $averageCount, string $currentCount)
+ * @method static string messageAlertProcTime(string $interface, string $averageProcessingTime, string $currentProcessingTime)
  **/
 class Text {
 

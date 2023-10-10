@@ -256,10 +256,10 @@ $texts = array(
     'systemsContact' => 'System contacts',
     'systemsComment' => 'Comments',
     'systemCard' => 'System Card',
-    'messageAlertCount' => 'Error: no message or message count per interval is min for interface: ',
-    'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: ',
-    'averageMessageCount' => 'Average message count= ',
-    'currentMessageCount' => 'Message count per last interval= ',
-    'averageMessageProcessingTime' => 'Average message processing time(ms)= ',
-    'currentMessageProcessingTime' => 'Message processing time(ms) per last interval= ',
+    'messageAlertCount' => 'Error: no message or message count per interval is different than average for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
+                            'Average message count: '.Text::REPLACE_PATTERN.PHP_EOL.
+                            'Message count per last interval: '.Text::REPLACE_PATTERN,
+    'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
+                            'Average message processing time (ms): '.Text::REPLACE_PATTERN.PHP_EOL.
+                            'Message processing time (ms) per last interval: '.Text::REPLACE_PATTERN
 );

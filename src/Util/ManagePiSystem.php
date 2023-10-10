@@ -7,23 +7,21 @@ class ManagePiSystem{
 
     protected ?array $piSystems = null;
 
-    public function __construct()
-    {
-        $systemInfo=(json_decode(Settings::get(Settings::SYSTEMS_SETTINGS),true));
-        $piSystem_array = [];
-        foreach($systemInfo as $key => $value)
-        {
+    public function __construct() {
+        $systemInfo = json_decode(Settings::get(Settings::SYSTEMS_SETTINGS),true);
+        $piSystem_array = array();
+        foreach($systemInfo as $key => $value) {
             $piSystem = new PiSystem($key);
-            $piSystem->setHost($value['Host']);
-            $piSystem->setStatisticEnable(filter_var($value['StatEnable'],FILTER_VALIDATE_BOOLEAN));
+            $piSystem->setHost($value['host']);
+            $piSystem->setStatisticEnable( $value['statEnable'] );
             $piSystem->setSID($value['SID']);
-            $piSystem_array[] =  $piSystem;
+            $piSystem_array[] = $piSystem;
         }
-        $this->piSystems=$piSystem_array;
+        $this->piSystems = $piSystem_array;
     }
 
     public function deletePiSystem($systemName):bool{
-        $systemInfo=json_decode(Settings::get(Settings::SYSTEMS_SETTINGS),true);
+        $systemInfo = json_decode(Settings::get(Settings::SYSTEMS_SETTINGS),true);
         unset($systemInfo[$systemName]);
         return Settings::set(Settings::SYSTEMS_SETTINGS,json_encode($systemInfo));
     }
