@@ -34,7 +34,7 @@ class MessageStatAlertGenerator {
                 WHERE  (ms1.messageCount IS NULL OR ms2.avg_msg_cnt/ms1.messageCount>? OR ms1.messageCount/ms2.avg_msg_cnt>?) AND ms1.piSystemName NOT IN (?)");
         $query->execute(array($this->message_count_alert, $this->message_count_alert, $this->stat_enable_piSystem_list));
         while($row = $query->fetch()) {
-            if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount('-',0,0)) ) {
+            if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatCountAlert for ".json_encode($row));
             }
         }
@@ -54,7 +54,7 @@ class MessageStatAlertGenerator {
             WHERE ms1.msg_proc_time/ms2.avg_msg_proc_time>? AND ms1.piSystemName NOT IN (?)");
         $query->execute(array($this->message_procTime_alert, $this->stat_enable_piSystem_list));
         while($row = $query->fetch()) {
-            if ( !$this->savePiAlert($row,Text::messageAlertProcTime($row['interface'], $row['avg_msg_proc_time'], $row['msg_proc_time']), Text::messageAlertProcTime('-',0,0)) ) {
+            if ( !$this->savePiAlert($row,Text::messageAlertProcTime($row['interface'], $row['avg_msg_proc_time'], $row['msg_proc_time']), Text::messageAlertProcTime($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatProcTimeAlert for ".json_encode($row));
             }
         }
