@@ -12,13 +12,17 @@ class MessageStatistic{
     public ?string $toSystem = null;
     public ?string $interface = null;
 
-    public ?string $messageCount = null;
+    public ?int $messageCount = null;
 
-    public ?string $messageProcTime = null;
+    public ?int $messageProcTime = null;
 
-    public ?string $messageProcTimePI = null;
+    public ?int $messageProcTimePI = null;
 
-    public function __construct($piSystemName,$fromSystem,$toSystem,$interface,$timestamp,$messageCount,$messageProcTime,$messageProcTimePI) {
+    public function __construct(
+            string $piSystemName, ?string $fromSystem, ?string $toSystem,
+            ?string $interface, ?string $timestamp, ?int $messageCount,
+            ?int $messageProcTime, ?int $messageProcTimePI
+    ) {
         $this->piSystemName = $piSystemName;
         $this->fromSystem = $fromSystem;
         $this->toSystem = $toSystem;
@@ -30,14 +34,16 @@ class MessageStatistic{
     }
 
     public function saveNewToDatabase() : bool {
-       $query = DB::prepare("SELECT piSystemName FROM messages_stat WHERE piSystemName = ? AND fromSystem = ? AND toSystem = ? AND interface = ? AND timestamp = ?");
-       // Проверяем на наличие существующей записи
+        // Проверяем на наличие существующей записи
+       $query = DB::prepare("SELECT * FROM messages_stat WHERE piSystemName = ? AND fromSystem = ? AND toSystem = ? AND interface = ? AND timestamp = ?");
        $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
-       if( !$query->fetch() ) {
-           $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageCount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-           return $query->execute(array($this->piSystemName, $this->fromSystem, $this->toSystem, $this->interface, $this->timestamp, $this->messageCount, $this->messageProcTime, $this->messageProcTimePI));
+       if ( $query->fetch() ) {
+           $query = DB::prepare("DELETE FROM messages_stat WHERE piSystemName = ? AND fromSystem = ? AND toSystem = ? AND interface = ? AND timestamp = ?");
+           $query->execute(array( $this->piSystemName,$this->fromSystem,$this->toSystem,$this->interface,$this->timestamp));
        }
-       return false;
+       // Пишем новые данные
+       $query = DB::prepare("INSERT INTO messages_stat (piSystemName, fromSystem, toSystem, interface, timestamp, messageCount, messageProcTime, messageProcTimePI) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+       return $query->execute(array($this->piSystemName, $this->fromSystem, $this->toSystem, $this->interface, $this->timestamp, $this->messageCount, $this->messageProcTime, $this->messageProcTimePI));
     }
 
     public static function DeleteFromDatabase(int $store_in_days) : bool {

@@ -21,15 +21,9 @@ class MessageStatAlertGenerator {
 
     public function generatePiAlertMessageCount() : void {
         $query = DB::prepare("SELECT ms1.messageCount,ms2.avg_msg_cnt,ms1.piSystemName,ms1.interface,ms1.fromSystem,ms1.toSystem,ms1.timestamp FROM 
-            (SELECT ms1.piSystemName,ms1.interface,ms1.fromSystem,ms1.toSystem,ms1.id,ms1.timestamp,ms1.messageCount
-            FROM   messages_stat ms1  INNER JOIN 
-            (SELECT MAX(timestamp) AS max_time,piSystemName,interface,fromSystem,toSystem  FROM messages_stat WHERE timestamp>NOW() - INTERVAL 2 MONTH GROUP BY piSystemName,interface,fromSystem,toSystem) ms2
-            ON
-                ms2.piSystemName=ms1.piSystemName AND
-                ms2.interface=ms1.interface AND
-                ms2.fromSystem=ms1.fromSystem AND
-                ms2.toSystem=ms1.toSystem AND
-                ms2.max_time=ms1.timestamp)  
+            (SELECT ROUND(AVG(messageCount)) AS messageCount,piSystemName,interface,fromSystem,toSystem,MAX(TIMESTAMP) AS timestamp FROM messages_stat 
+            WHERE timestamp>NOW() - INTERVAL 1 DAY
+            GROUP BY piSystemName,interface,fromSystem,toSystem)  
             AS ms1   RIGHT OUTER JOIN 
             (SELECT ROUND(AVG(messageCount)) AS avg_msg_cnt,piSystemName,interface,fromSystem,toSystem FROM messages_stat WHERE timestamp>NOW() - INTERVAL 2 MONTH
             GROUP BY piSystemName,interface,fromSystem,toSystem) AS ms2
@@ -40,22 +34,16 @@ class MessageStatAlertGenerator {
                 WHERE  (ms1.messageCount IS NULL OR ms2.avg_msg_cnt/ms1.messageCount>? OR ms1.messageCount/ms2.avg_msg_cnt>?) AND ms1.piSystemName NOT IN (?)");
         $query->execute(array($this->message_count_alert, $this->message_count_alert, $this->stat_enable_piSystem_list));
         while($row = $query->fetch()) {
-            if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount('-',0,0)) ) {
+            if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatCountAlert for ".json_encode($row));
             }
         }
     }
     public function generatePiAlertMessageProcTime() : void {
         $query = DB::prepare("SELECT ms1.msg_proc_time,ms2.avg_msg_proc_time,ms1.piSystemName,ms1.interface,ms1.fromSystem,ms1.toSystem,ms1.timestamp FROM 
-            (SELECT ms1.piSystemName,ms1.interface,ms1.fromSystem,ms1.toSystem,ms1.id,ROUND(ms1.messageProcTime/1000) AS msg_proc_time,ms1.timestamp
-            FROM   messages_stat ms1  INNER JOIN 
-            (SELECT MAX(TIMESTAMP) AS max_time,piSystemName,interface,fromSystem,toSystem  FROM messages_stat WHERE timestamp>NOW() - INTERVAL 2 MONTH GROUP BY piSystemName,interface,fromSystem,toSystem) ms2
-            ON
-                ms2.piSystemName=ms1.piSystemName AND
-                ms2.interface=ms1.interface AND
-                ms2.fromSystem=ms1.fromSystem AND
-                ms2.toSystem=ms1.toSystem AND
-                ms2.max_time=ms1.timestamp)  as ms1 JOIN
+            (SELECT ROUND(AVG(messageProcTime)/1000) AS msg_proc_time,piSystemName,interface,fromSystem,toSystem,MAX(TIMESTAMP) AS TIMESTAMP FROM messages_stat 
+            WHERE  timestamp>NOW() - INTERVAL 1 DAY
+            GROUP BY piSystemName,interface,fromSystem,toSystem)  as ms1 JOIN
             (SELECT ROUND(AVG(messageProcTime)/1000) AS avg_msg_proc_time,piSystemName,interface,fromSystem,toSystem FROM messages_stat 
             WHERE timestamp>NOW() - INTERVAL 2 MONTH
             GROUP BY piSystemName,interface,fromSystem,toSystem) AS ms2 ON
@@ -66,7 +54,7 @@ class MessageStatAlertGenerator {
             WHERE ms1.msg_proc_time/ms2.avg_msg_proc_time>? AND ms1.piSystemName NOT IN (?)");
         $query->execute(array($this->message_procTime_alert, $this->stat_enable_piSystem_list));
         while($row = $query->fetch()) {
-            if ( !$this->savePiAlert($row,Text::messageAlertProcTime($row['interface'], $row['avg_msg_proc_time'], $row['msg_proc_time']), Text::messageAlertProcTime('-',0,0)) ) {
+            if ( !$this->savePiAlert($row,Text::messageAlertProcTime($row['interface'], $row['avg_msg_proc_time'], $row['msg_proc_time']), Text::messageAlertProcTime($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatProcTimeAlert for ".json_encode($row));
             }
         }
