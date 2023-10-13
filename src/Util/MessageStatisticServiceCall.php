@@ -55,8 +55,8 @@ class MessageStatisticServiceCall {
                     if ( !empty( (string) $row->Entry[8]) ) { //исключаем ошибочные сообщения с неизвестным получателем
                         $msg_stat = new MessageStatistic(
                             $systemName, $row->Entry[6], $row->Entry[8],
-                            $row->Entry[9], $end, $row->Entry[13],
-                            $row->Entry[20], ($row->Entry[20] - $pi_proc_time)
+                            $row->Entry[9], $end, (int) $row->Entry[13],
+                            (int) $row->Entry[20], (int) ($row->Entry[20] - $pi_proc_time)
                         );
                         if ( !$msg_stat->saveNewToDatabase() ) { //сохраняем в БД
                             $this->logError("Error saving to DB row: SystemName=".$systemName.", fromSystem=".$row->Entry[6].", toSystem=".$row->Entry[8].", interface=".$row->Entry[9].", timestamp=".$end.", message_count=".$row->Entry[13].", messageProcTime=".$row->Entry[20].", messageProcTimePI=". $row->Entry[20] - $pi_proc_time);
