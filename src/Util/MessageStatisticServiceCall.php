@@ -75,26 +75,27 @@ class MessageStatisticServiceCall {
         $piSystems = new ManagePiSystem();
         $res = false;
         foreach ($piSystems->getPiSystems() as $piSystem) {
-            if ( $piSystem->getStatisticEnable() ) {
-                $query = DB::prepare("SELECT MAX(timestamp) as max FROM messages_stat WHERE piSystemName=?");
-                $query->execute(array($piSystem->getSystemName()));
-                $end = strtotime(date("Y-m-d H:00:00.0"));
-                while($row = $query->fetch()) {
-                    $begin = strtotime( (string)$row['max'] );
-                    if( $begin === false ) {
-                        $begin = $end - 3600; //Данные за часовой интервал
-                    }
-                    if( $end - $begin > ONE_DAY) {
-                        $begin = $end - ONE_DAY; // За последние сутки, т.к. данные по часовым интервалам хранятся 24 часа
-                    }
-                    while( $end - $begin >= 3600 ) {
-                        $temp_end = $begin + 3600;
-                        $this->serviceCallPerSystem($piSystem->getSystemName(), $piSystem->getHost(), date("Y-m-d H:00:0.0",$begin), date("Y-m-d H:00:0.0",$temp_end));
-                        $begin = $temp_end;
-                    }
-                }
-                $res = true;
+            if ( !$piSystem->getStatisticEnable() ) {
+                continue;
             }
+            $query = DB::prepare("SELECT MAX(timestamp) as max FROM messages_stat WHERE piSystemName=?");
+            $query->execute(array($piSystem->getSystemName()));
+            $end = strtotime(date("Y-m-d H:00:00.0"));
+            while($row = $query->fetch()) {
+                $begin = strtotime( (string)$row['max'] );
+                if( $begin === false ) {
+                    $begin = $end - 3600; //Данные за часовой интервал
+                }
+                if( $end - $begin > ONE_DAY) {
+                    $begin = $end - ONE_DAY; // За последние сутки, т.к. данные по часовым интервалам хранятся 24 часа
+                }
+                while( $end - $begin >= 3600 ) {
+                    $temp_end = $begin + 3600;
+                    $this->serviceCallPerSystem($piSystem->getSystemName(), $piSystem->getHost(), date("Y-m-d H:00:0.0",$begin), date("Y-m-d H:00:0.0",$temp_end));
+                    $begin = $temp_end;
+                }
+            }
+            $res = true;
         }
         return $res;
     }
