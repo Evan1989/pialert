@@ -47,16 +47,15 @@ class MessageStatisticServiceCall {
                 foreach ($xml->Data->DataRows->Row as $row) { //строка содержащая информацию о статистике обработки сообщений
                     $pi_proc_time = $row->Entry[20]; //вычисляем время обработки в SAP PI
                     foreach ($row->Entry[22]->MeasuringPoints->MP as $MP) { //находим время обработки в Адаптере
-                        if (mb_substr_count($MP->Name, 'module_out') > 0 && mb_substr_count($MP->Name, 'Adapter') > 0) {
-                            $pi_proc_time = (($row->Entry[20]) - ($MP->Avg));
-                            break;
+                        if (mb_substr_count($MP->Name, 'module_') > 0) {
+                            $pi_proc_time -= ($MP->Avg);
                         }
                     }
-                    if ( !empty( (string) $row->Entry[8]) ) { //исключаем ошибочные сообщения с неизвестным получателем
+                    if ( !empty( (string) $row->Entry[8]) && !empty( (string) $row->Entry[11]) ) { //исключаем ошибочные сообщения с неизвестным получателем
                         $msg_stat = new MessageStatistic(
                             $systemName, $row->Entry[6], $row->Entry[8],
                             $row->Entry[9], $end, (int) $row->Entry[13],
-                            (int) $row->Entry[20], (int) ($row->Entry[20] - $pi_proc_time)
+                            (int) $row->Entry[20], (int) ($pi_proc_time)
                         );
                         if ( !$msg_stat->saveNewToDatabase() ) { //сохраняем в БД
                             $this->logError("Error saving to DB row: SystemName=".$systemName.", fromSystem=".$row->Entry[6].", toSystem=".$row->Entry[8].", interface=".$row->Entry[9].", timestamp=".$end.", message_count=".$row->Entry[13].", messageProcTime=".$row->Entry[20].", messageProcTimePI=". $row->Entry[20] - $pi_proc_time);
