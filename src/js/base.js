@@ -501,3 +501,32 @@ function initJavascriptForSystems(document) {
     }
 }
 ///////////////////////////////////////////////
+// noinspection JSUnusedGlobalSymbols
+function getSystemContact()
+{
+    $('.system_contact').on('mouseover',function(){
+        var x=$(this).attr('code');
+        $.ajax({
+            type:'post',
+            url:'system_contact.php',
+            data:{code : $(this).attr('code')},
+            success: function(data){
+                $('[code='+x+']').popover({
+                    container: 'body',
+                    html: true,
+                    title: 'Контактные данные',
+                    content: data
+                });
+                $('[code='+x+']').popover('show')
+            }
+        });
+    })
+        .on('mouseleave', function () {
+            var _this = $(this);
+            setTimeout(function () {
+                if (!$('.popover:hover').length) {
+                    $(_this).popover('hide');
+                }
+            }, 1);
+        });
+}

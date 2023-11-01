@@ -29,6 +29,7 @@ $texts = array(
     'object' => 'Объект',
     'error' => 'Ошибка',
     'comment' => 'Комментарий',
+    'requestList' => 'Список запросов',
     'last' => 'Последний',
     'reloadPage' => 'Обновить страницу',
     'complete' => 'Готово',
@@ -114,6 +115,7 @@ $texts = array(
 
     'dashboardPageHeader' => 'Агрегированные алерты из SAP PI',
     'dashboardCommentPlaceholder' => 'Шаги, которые уже выполнены, либо который надо выполнить при повторении алерта',
+    'dashboardAlertLinkPlaceholder' => 'Список созданных запросов',
     'dashboardCheckAlertGroupAsCompleteButton' => 'По группе пришел новый алерт. Кликните, если необходимые действия выполнены',
     'dashboardCheckAlertGroupAsCompleteFail' => 'Необходимо назначить ответственного или сменить статус.',
     'dashboardShowOnlyNewAlerts' => 'Показывать только новые алерты (не старше двух недель)',

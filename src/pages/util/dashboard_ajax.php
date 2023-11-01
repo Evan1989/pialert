@@ -42,6 +42,12 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
                 }
                 $result = getComment($alertGroup);
                 break;
+            case 'alertlink':
+                if ( !is_null($value) ) {
+                    $alertGroup->setAlertLink($value);
+                }
+                $result = getAlertLink($alertGroup);
+                break;
         }
         if ( !is_null($value) ) {
             $alertGroup->saveToDatabase();
