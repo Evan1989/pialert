@@ -65,6 +65,8 @@ class PiAlertGroup {
     public ?string $lastUserAction = null;
     public int $maybe_need_union = 0;
 
+    public ?string $alert_link= null;
+
     protected ?bool $hasGenericException = null;
 
     public function __construct(array|int|null $inputData = null) {
@@ -104,6 +106,7 @@ class PiAlertGroup {
         $this->lastAlert = $row['last_alert'];
         $this->lastUserAction = $row['last_user_action'];
         $this->maybe_need_union = $row['maybe_need_union'];
+        $this->alert_link = $row['alert_link'];
     }
 
 
@@ -116,7 +119,7 @@ class PiAlertGroup {
                 interface=?, errText=?, errTextMask=?,
                 errTextMainPart=?, multi_interface=?,
                 first_alert=?, last_alert=?, last_user_action=?, 
-                maybe_need_union=? WHERE group_id = ?");
+                maybe_need_union=?, alert_link=? WHERE group_id = ?");
             return $query->execute(array(
                 $this->status, $this->comment, $this->comment_datetime,
                 $this->user_id, $this->last_user_id, $this->piSystemName,
@@ -124,7 +127,7 @@ class PiAlertGroup {
                 $this->interface, $this->errText, $this->errTextMask,
                 $this->getMainPartOfError(), $this->multi_interface,
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
-                $this->maybe_need_union, $this->group_id
+                $this->maybe_need_union, $this->alert_link, $this->group_id
             ));
         } else {
             $query = DB::prepare("INSERT INTO alert_group (
@@ -134,14 +137,14 @@ class PiAlertGroup {
                  interface, errText, errTextMask,   
                  errTextMainPart, multi_interface,
                  first_alert, last_alert, last_user_action,
-                 maybe_need_union) VALUES (
+                 maybe_need_union, alert_link) VALUES (
                        ?, ?, ?,
                        ?, ?, ?, 
                        ?, ?, ?, 
                        ?, ?, ?, 
                        ?, ?,
                        ?, ?, ?, 
-                       ?
+                       ?, ?
                  )");
             $query->execute(array(
                 $this->status, $this->comment, $this->comment_datetime,
@@ -150,7 +153,7 @@ class PiAlertGroup {
                 $this->interface, $this->errText, $this->errTextMask,
                 $this->getMainPartOfError(), $this->multi_interface,
                 $this->firstAlert, $this->lastAlert, $this->lastUserAction,
-                $this->maybe_need_union
+                $this->maybe_need_union, $this->alert_link
             ));
             $this->group_id = DB::lastInsertId();
             return ($this->group_id > 0);
@@ -205,8 +208,8 @@ class PiAlertGroup {
             $object = ($this->channel?:'');
         }
         return nl2br($this->getPiSystemSID().PHP_EOL.
-            $this->fromSystem.
-            ($this->toSystem?' → '.$this->toSystem:'').PHP_EOL.
+           "<span  class='system_contact'>". $this->fromSystem."</span>".
+          ($this->toSystem?' → '  ."<span class='system_contact'>".$this->toSystem:'')."</span>".PHP_EOL.
             $object);
     }
 
@@ -229,6 +232,10 @@ class PiAlertGroup {
 
     public function getHTMLComment() :string {
         return nl2br(replaceLinksWithATag($this->comment));
+    }
+
+    public function getHTMLAlertLink() :string {
+        return nl2br(replaceLinksWithATag($this->alert_link));
     }
 
     /**
@@ -283,6 +290,10 @@ class PiAlertGroup {
     public function setComment(string $comment) : void {
         $this->comment_datetime = date("Y-m-d H:i:s");
         $this->comment = str_replace("<", "&lt;", $comment);
+    }
+
+    public function setAlertLink(string $alert_link) : void {
+        $this->alert_link= str_replace("<", "&lt;", $alert_link);
     }
 
     public function setUserId(?int $userID) : void {

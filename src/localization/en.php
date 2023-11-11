@@ -29,6 +29,7 @@ $texts = array(
     'object' => 'Object',
     'error' => 'Error',
     'comment' => 'Comment',
+    'requestList' => 'Request list',
     'last' => 'Last',
     'reloadPage' => 'Reload page',
     'complete' => 'Complete',
@@ -114,6 +115,7 @@ $texts = array(
 
     'dashboardPageHeader' => 'Aggregated alerts from SAP PI',
     'dashboardCommentPlaceholder' => 'Steps that have already been taken or that need to be completed if alert repeated',
+    'dashboardAlertLinkPlaceholder' => 'List of created requests',
     'dashboardCheckAlertGroupAsCompleteButton' => 'The group received a new alert. Click if required action is completed',
     'dashboardCheckAlertGroupAsCompleteFail' => 'It is necessary to appoint a responsible person or change the status.',
     'dashboardShowOnlyNewAlerts' => 'Only show new alerts (not older than two weeks)',

@@ -70,6 +70,15 @@ function getComment(PiAlertGroup $alertGroup): string {
         $div;
 }
 
+function getAlertLink(PiAlertGroup $alertGroup): string {
+    $div = '';
+    if ( $alertGroup->alert_link ) {
+        $div = "<div class='alert-group-comment-html-div narrow' title='".Text::requestList()."'>".$alertGroup->getHTMLAlertLink()."</div>";
+    }
+    return "<textarea class='d-none narrow' id='alertLink_".$alertGroup->group_id."' maxlength='2000' placeholder='".Text::dashboardAlertLinkPlaceholder()."'>".$alertGroup->alert_link."</textarea>".
+        $div;
+}
+
 $page = new HTMLPageAlerts($authorizationAdmin);
 
 { // Ajax обработка
@@ -193,6 +202,7 @@ echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='too
                   <th>".Text::status()."</th>
                   <th data-toggle='tooltip' data-placement='bottom' title='".Text::responsibleEmployee()."'>".Text::employee()."</th>
                   <th>".Text::comment()."</th>
+                  <th>".Text::requestList()."</th>
                   <th>".Text::dashboardRequisites()."</th>
                   <th data-toggle='tooltip' data-placement='bottom' title='".Text::dashboardMaskOrErrorTitle()."'>".Text::dashboardMaskOrError()."</th>
                   <th data-toggle='tooltip' data-placement='left' title='".Text::dashboardLastAlert()."'>".Text::last()."</th>
@@ -236,6 +246,7 @@ while($row = $query->fetch()) {
                 <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
                 <td class='alert-group-user-td'>".getUserChoice($alertGroup)."</td>
                 <td>".getComment($alertGroup)."</td>
+                <td>".getAlertLink($alertGroup)."</td>
                 <td>".$alertGroup->getHTMLAbout()."</td>
                 <td style='max-width: 400px'>".$alertGroup->getHTMLErrorTextMask()."</td>
                 <td><input type='hidden' value='".$alertGroup->lastAlert."'>".$lastAlertDateShow."</td>
@@ -316,7 +327,8 @@ if ( Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) > 0) {
 
 $additionalScript = "<script type='text/javascript'>
         $(document).ready(function() {
-            initJavascriptForDashboard();";
+            initJavascriptForDashboard();
+            ";
 foreach ($noConnectPiSystems as $piSystemName => $temp) {
     $piSystem = new PiSystem($piSystemName);
     $additionalScript .= "showNoAlertWarningBadge('" . $piSystem->getSID() . "');";

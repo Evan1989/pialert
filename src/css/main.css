@@ -73,6 +73,9 @@ table .hide {
 	min-width: 300px;
 	min-height: 88px;
 }
+.alert-group textarea.narrow {
+	min-width: 150px;
+}
 .alert-group textarea:focus {
 	min-height: 300px;
 }
@@ -86,6 +89,10 @@ table .hide {
 	width: 300px;
 	height: 88px;
 }
+.alert-group .alert-group-comment-html-div.narrow {
+	width: 150px;
+}
+
 .alert-table .alert-limit-td {
 	max-width: 150px;
 	max-height: 100px;
