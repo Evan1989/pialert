@@ -269,6 +269,7 @@ function initJavascriptForDashboard() {
     setInterval(function(){
         dashboardPageReload();
     }, 300000);
+    getSystemContact();
 }
 let reloadBlocked = false;
 function dashboardPageReload() {
@@ -500,33 +501,34 @@ function initJavascriptForSystems(document) {
         };
     }
 }
-///////////////////////////////////////////////
-// noinspection JSUnusedGlobalSymbols
-function getSystemContact()
-{
+
+let systemContactHidingTimout;
+function getSystemContact() {
     $('.system_contact').on('mouseover',function(){
-        var x=$(this).attr('code');
+        clearInterval(systemContactHidingTimout);
+        let _this =$(this);
         $.ajax({
             type:'post',
-            url:'system_contact.php',
-            data:{code : $(this).attr('code')},
+            url:'util/system_contact_ajax.php',
+            data:{code : _this.html()},
             success: function(data){
-                $('[code='+x+']').popover({
-                    container: 'body',
-                    html: true,
-                    title: 'Контактные данные',
-                    content: data
-                });
-                $('[code='+x+']').popover('show')
+                if ( data ) {
+                    _this.popover({
+                        container: 'body',
+                        html: true,
+                        title: 'Контактные данные',
+                        content: data
+                    }).popover('show');
+                }
             }
         });
-    })
-        .on('mouseleave', function () {
-            var _this = $(this);
-            setTimeout(function () {
-                if (!$('.popover:hover').length) {
-                    $(_this).popover('hide');
-                }
-            }, 1);
-        });
+    }).on('mouseleave', function () {
+        let _this = $(this);
+        systemContactHidingTimout = setInterval(function () {
+            if (!$('.popover:hover').length) {
+                $(_this).popover('hide');
+            }
+        }, 500);
+    });
 }
+///////////////////////////////////////////////

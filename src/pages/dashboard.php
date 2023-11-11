@@ -73,9 +73,9 @@ function getComment(PiAlertGroup $alertGroup): string {
 function getAlertLink(PiAlertGroup $alertGroup): string {
     $div = '';
     if ( $alertGroup->alert_link ) {
-        $div = "<div class='alert-group-comment-html-div' title='".Text::requestList()."'>".$alertGroup->getHTMLAlertLink()."</div>";
+        $div = "<div class='alert-group-comment-html-div narrow' title='".Text::requestList()."'>".$alertGroup->getHTMLAlertLink()."</div>";
     }
-    return "<textarea class='d-none' id='alertlink_".$alertGroup->group_id."' maxlength='2000' placeholder='".Text::dashboardAlertLinkPlaceholder()."'>".$alertGroup->alert_link."</textarea>".
+    return "<textarea class='d-none narrow' id='alertLink_".$alertGroup->group_id."' maxlength='2000' placeholder='".Text::dashboardAlertLinkPlaceholder()."'>".$alertGroup->alert_link."</textarea>".
         $div;
 }
 
@@ -328,7 +328,6 @@ if ( Settings::get(Settings::AVERAGE_ALERT_INTERVAL_RATIO) > 0) {
 $additionalScript = "<script type='text/javascript'>
         $(document).ready(function() {
             initJavascriptForDashboard();
-            getSystemContact();
             ";
 foreach ($noConnectPiSystems as $piSystemName => $temp) {
     $piSystem = new PiSystem($piSystemName);

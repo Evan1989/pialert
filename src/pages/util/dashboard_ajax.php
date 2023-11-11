@@ -42,7 +42,7 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
                 }
                 $result = getComment($alertGroup);
                 break;
-            case 'alertlink':
+            case 'alertLink':
                 if ( !is_null($value) ) {
                     $alertGroup->setAlertLink($value);
                 }
@@ -72,6 +72,10 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $grou
                       <tr>
                           <td>".Text::comment()."</td>
                           <td>".$alertGroup->getHTMLComment()."</td>
+                      </tr>
+                      <tr>
+                          <td>".Text::requestList()."</td>
+                          <td>".$alertGroup->getHTMLAlertLink()."</td>
                       </tr>
                       <tr>
                           <td>".Text::dashboardRequisites()."</td>

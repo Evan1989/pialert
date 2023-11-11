@@ -208,8 +208,8 @@ class PiAlertGroup {
             $object = ($this->channel?:'');
         }
         return nl2br($this->getPiSystemSID().PHP_EOL.
-           "<span  class='system_contact' code='$this->fromSystem'>". $this->fromSystem."</span>".
-          ($this->toSystem?' → '  ."<span class='system_contact' code='$this->toSystem'>".$this->toSystem:'')."</span>".PHP_EOL.
+           "<span  class='system_contact'>". $this->fromSystem."</span>".
+          ($this->toSystem?' → '  ."<span class='system_contact'>".$this->toSystem:'')."</span>".PHP_EOL.
             $object);
     }
 
