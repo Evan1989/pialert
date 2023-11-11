@@ -502,33 +502,36 @@ function initJavascriptForSystems(document) {
     }
 }
 
-let systemContactHidingTimout;
 function getSystemContact() {
     $('.system_contact').on('mouseover',function(){
-        clearInterval(systemContactHidingTimout);
         let _this =$(this);
         $.ajax({
             type:'post',
             url:'util/system_contact_ajax.php',
             data:{code : _this.html()},
-            success: function(data){
-                if ( data ) {
+            success: function(json){
+                if ( json ) {
+                    let data = JSON.parse(json)
                     _this.popover({
                         container: 'body',
                         html: true,
-                        title: 'Контактные данные',
-                        content: data
+                        title: data.name,
+                        content: data.contact
                     }).popover('show');
                 }
             }
         });
     }).on('mouseleave', function () {
-        let _this = $(this);
-        systemContactHidingTimout = setInterval(function () {
-            if (!$('.popover:hover').length) {
-                $(_this).popover('hide');
-            }
-        }, 500);
+        closePopupWithSystemContactLater( $(this) )
     });
+}
+function closePopupWithSystemContactLater(element) {
+    let popupID = element.attr('aria-describedby');
+    let interval = setInterval(function () {
+        if (!$('#' + popupID + ':hover').length) {
+            element.popover('hide');
+            clearInterval(interval);
+        }
+    }, 500);
 }
 ///////////////////////////////////////////////
