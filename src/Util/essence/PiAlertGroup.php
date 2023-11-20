@@ -308,25 +308,38 @@ class PiAlertGroup {
 
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     *  @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
      * @param int|null $timeLimit
      * @return int
      */
-    public static function getTotalAlertCount(string $piSystemName, int|null $timeLimit = null) : int {
+    public static function getTotalAlertCount(string $piSystemName, $extSystem, int|null $timeLimit = null) : int {
         if ( is_null($timeLimit) ) {
+            if(!empty($extSystem))
+            {
+                $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE (fromSystem = ? OR toSystem= ?)");
+                $query->execute(array($extSystem, $extSystem));
+            }
+            else {
             if ( $piSystemName ) {
                 $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE piSystemName = ?");
                 $query->execute(array($piSystemName));
             } else {
                 $query = DB::prepare("SELECT count(*) as c  FROM alerts");
                 $query->execute();
-            }
+            }}
         } else {
-            if ( $piSystemName ) {
-                $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
-                $query->execute(array($piSystemName, $timeLimit));
-            } else {
-                $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE timestamp > NOW() - INTERVAL ? SECOND ");
-                $query->execute(array($timeLimit));
+            if (!empty($extSystem)) {
+                $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
+                $query->execute(array($extSystem, $extSystem, $timeLimit));
+            }
+            else {
+                if ($piSystemName) {
+                    $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($piSystemName, $timeLimit));
+                } else {
+                    $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($timeLimit));
+                }
             }
         }
         if ($row = $query->fetch()) {
@@ -334,6 +347,51 @@ class PiAlertGroup {
         }
         return 0;
     }
+
+    /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
+     * @param int|null $timeLimit
+     * @return float
+     */
+    public static function getAlertPercent(string $piSystemName, string $extSystem, int|null $timeLimit = null) : float
+    {
+        if ( is_null($timeLimit) ) {
+            if(!empty($extSystem))
+            {
+                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/count(*))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) ");
+                $query->execute(array($extSystem, $extSystem, $extSystem, $extSystem));
+            }
+            else {
+                if ( $piSystemName ) {
+                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/count(*))*100 AS c FROM messages_stat WHERE piSystemName = ?");
+                    $query->execute(array($piSystemName, $piSystemName));
+                } else {
+                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/count(*))*100 AS c FROM messages_stat");
+                    $query->execute();
+                }}
+        } else {
+            if (!empty($extSystem)) {
+                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/count(*))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
+                $query->execute(array($extSystem, $extSystem, $extSystem, $extSystem, $timeLimit));
+            }
+            else {
+                if ($piSystemName) {
+                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/count(*))*100 AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($piSystemName,$piSystemName, $timeLimit));
+                } else {
+                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/count(*))*100 AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($timeLimit));
+                }
+            }
+        }
+        if ($row = $query->fetch()) {
+            return round((float)$row['c'],2);
+        }
+        return 0.0;
+    }
+
+
 
     /**
      * @param int $timeLimit
@@ -356,23 +414,34 @@ class PiAlertGroup {
      * @param int $timeLimit
      * @return PDOStatement Execute уже выполнен
      */
-    public static function getDailyAlertCountForDiagram(string $piSystemName, int $timeLimit = 1) : PDOStatement {
-        if ( $piSystemName ) {
+    public static function getDailyAlertCountForDiagram(string $piSystemName, $extSystem,  int $timeLimit = 1) : PDOStatement {
+        if (!empty($extSystem)){
             $query = DB::prepare("
+                SELECT count(*) as count, substring(timestamp, 1, 10) as date
+                FROM alerts
+                WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND
+                GROUP BY date
+            ");
+            $query->execute(array($extSystem, $extSystem, $timeLimit));
+        }
+        else {
+            if ($piSystemName) {
+                $query = DB::prepare("
                 SELECT count(*) as count, substring(timestamp, 1, 10) as date
                 FROM alerts
                 WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND
                 GROUP BY date
             ");
-            $query->execute(array($piSystemName, $timeLimit));
-        } else {
-            $query = DB::prepare("
+                $query->execute(array($piSystemName, $timeLimit));
+            } else {
+                $query = DB::prepare("
                 SELECT count(*) as count, substring(timestamp, 1, 10) as date
                 FROM alerts
                 WHERE timestamp > NOW() - INTERVAL ? SECOND
                 GROUP BY date
             ");
-            $query->execute(array( $timeLimit ));
+                $query->execute(array($timeLimit));
+            }
         }
         return $query;
     }
@@ -381,23 +450,34 @@ class PiAlertGroup {
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @return PDOStatement Execute уже выполнен
      */
-    public static function getHourAlertCountForDiagram(string $piSystemName) : PDOStatement {
-        if ( $piSystemName ) {
+    public static function getHourAlertCountForDiagram(string $piSystemName, $extSystem) : PDOStatement {
+        if (!empty($extSystem)){
             $query = DB::prepare("
+                SELECT count(*) as count, HOUR(timestamp) as h
+                FROM alerts
+                WHERE (toSystem = ? OR fromSystem = ?) AND timestamp >= CURDATE()
+                GROUP BY h
+            ");
+            $query->execute(array($extSystem, $extSystem));
+        }
+        else {
+            if ($piSystemName) {
+                $query = DB::prepare("
                 SELECT count(*) as count, HOUR(timestamp) as h
                 FROM alerts
                 WHERE piSystemName = ? AND timestamp >= CURDATE()
                 GROUP BY h
             ");
-            $query->execute(array($piSystemName));
-        } else {
-            $query = DB::prepare("
+                $query->execute(array($piSystemName));
+            } else {
+                $query = DB::prepare("
                 SELECT count(*) as count, HOUR(timestamp) as h
                 FROM alerts
                 WHERE timestamp >= CURDATE()
                 GROUP BY h
             ");
-            $query->execute(array());
+                $query->execute(array());
+            }
         }
         return $query;
     }
@@ -411,4 +491,7 @@ class PiAlertGroup {
         $query = DB::prepare("DELETE FROM alert_group WHERE group_id = ?");
         return $query->execute(array($this->group_id));
     }
+
+
+
 }
