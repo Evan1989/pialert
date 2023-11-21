@@ -308,11 +308,11 @@ class PiAlertGroup {
 
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
-     *  @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
+     * @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
      * @param int|null $timeLimit
      * @return int
      */
-    public static function getTotalAlertCount(string $piSystemName, $extSystem, int|null $timeLimit = null) : int {
+    public static function getTotalAlertCount(string $piSystemName, string $extSystem, int|null $timeLimit = null) : int {
         if ( is_null($timeLimit) ) {
             if(!empty($extSystem))
             {
@@ -353,34 +353,34 @@ class PiAlertGroup {
      * @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
      * @param int|null $timeLimit
      * @return float
+     * @noinspection PhpUnused
      */
-    public static function getAlertPercent(string $piSystemName, string $extSystem, int|null $timeLimit = null) : float
-    {
+    public static function getAlertPercent(string $piSystemName, string $extSystem, int|null $timeLimit = null) : float {
         if ( is_null($timeLimit) ) {
             if(!empty($extSystem))
             {
-                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/count(*))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) ");
+                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/sum(messageCount))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) ");
                 $query->execute(array($extSystem, $extSystem, $extSystem, $extSystem));
             }
             else {
                 if ( $piSystemName ) {
-                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/count(*))*100 AS c FROM messages_stat WHERE piSystemName = ?");
+                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/sum(messageCount))*100 AS c FROM messages_stat WHERE piSystemName = ?");
                     $query->execute(array($piSystemName, $piSystemName));
                 } else {
-                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/count(*))*100 AS c FROM messages_stat");
+                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/sum(messageCount))*100 AS c FROM messages_stat");
                     $query->execute();
                 }}
         } else {
             if (!empty($extSystem)) {
-                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/count(*))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
+                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/sum(messageCount))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
                 $query->execute(array($extSystem, $extSystem, $extSystem, $extSystem, $timeLimit));
             }
             else {
                 if ($piSystemName) {
-                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/count(*))*100 AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/sum(messageCount))*100 AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
                     $query->execute(array($piSystemName,$piSystemName, $timeLimit));
                 } else {
-                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/count(*))*100 AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/sum(messageCount))*100 AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
                     $query->execute(array($timeLimit));
                 }
             }
@@ -391,7 +391,47 @@ class PiAlertGroup {
         return 0.0;
     }
 
-
+    /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $extSystem Если заполнено, то возвращается статистика по внешней системе
+     * @param int|null $timeLimit
+     * @return float
+     */
+    public static function getMessageTimeProc(string $piSystemName, string $extSystem, int|null $timeLimit = null) : float {
+        if ( is_null($timeLimit) ) {
+            if(!empty($extSystem))
+            {
+                $query = DB::prepare("SELECT  sum(messageProcTime)/sum(messageCount) AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) ");
+                $query->execute(array($extSystem, $extSystem));
+            }
+            else {
+                if ( $piSystemName ) {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat WHERE piSystemName = ?");
+                    $query->execute(array($piSystemName));
+                } else {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat");
+                    $query->execute();
+                }}
+        } else {
+            if (!empty($extSystem)) {
+                $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
+                $query->execute(array($extSystem, $extSystem, $timeLimit));
+            }
+            else {
+                if ($piSystemName) {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($piSystemName, $timeLimit));
+                } else {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($timeLimit));
+                }
+            }
+        }
+        if ($row = $query->fetch()) {
+            return round((float)$row['c'],2);
+        }
+        return 0.0;
+    }
 
     /**
      * @param int $timeLimit
@@ -411,10 +451,11 @@ class PiAlertGroup {
 
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $extSystem Внешняя система
      * @param int $timeLimit
      * @return PDOStatement Execute уже выполнен
      */
-    public static function getDailyAlertCountForDiagram(string $piSystemName, $extSystem,  int $timeLimit = 1) : PDOStatement {
+    public static function getDailyAlertCountForDiagram(string $piSystemName, string $extSystem,  int $timeLimit = 1) : PDOStatement {
         if (!empty($extSystem)){
             $query = DB::prepare("
                 SELECT count(*) as count, substring(timestamp, 1, 10) as date
@@ -490,6 +531,63 @@ class PiAlertGroup {
     public function deleteAlertGroup() : bool {
         $query = DB::prepare("DELETE FROM alert_group WHERE group_id = ?");
         return $query->execute(array($this->group_id));
+    }
+
+    /**
+     * @param int $timeLimit
+     * @return PDOStatement Execute уже выполнен
+     */
+    public function getAlertPercentForDiagram(int $timeLimit = 1) : PDOStatement {
+        $query = DB::prepare("
+            SELECT ((SELECT count(*) as count FROM alerts as a WHERE group_id = ? AND a.timestamp > NOW() - INTERVAL ? SECOND)/sum(messageCount))*100 as percent, substring(m.timestamp, 1, 10) as date
+            FROM messages_stat as m WHERE
+            m.timestamp > NOW() - INTERVAL ? SECOND
+            GROUP BY date
+            ORDER BY date 
+        ");
+        $query->execute(array( $this->group_id, $timeLimit, $timeLimit));
+        return $query;
+    }
+
+    /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $extSystem Внешняя система
+     * @param int $timeLimit
+     * @return PDOStatement Execute уже выполнен
+     */
+    public static function getDailyAlertPercentForDiagram(string $piSystemName, string $extSystem,  int $timeLimit = 1) : PDOStatement {
+        if (!empty($extSystem)){
+            $query = DB::prepare("
+SELECT (t1.count/t2.mc)*100 as percent, t1.date FROM ((SELECT COUNT(*) as count,substring(a.timestamp, 1, 10) as date  FROM alerts as a WHERE (a.fromSystem = ? OR a.toSystem= ?) AND a.timestamp > NOW() - INTERVAL ? SECOND  GROUP BY DATE) AS t1 JOIN 
+	 ( SELECT sum(messageCount) AS mc, substring(m.timestamp, 1, 10) as date
+            FROM messages_stat as m WHERE
+            (m.fromSystem = ? OR m.toSystem= ?) AND m.timestamp > NOW() - INTERVAL ? SECOND
+            GROUP BY DATE ) AS t2 ON t1.date=t2.date)
+            ");
+            $query->execute(array($extSystem, $extSystem,$timeLimit, $extSystem, $extSystem, $timeLimit));
+        }
+        else {
+            if ($piSystemName) {
+                $query = DB::prepare("
+SELECT (t1.count/t2.mc)*100 as percent, t1.date FROM ((SELECT COUNT(*) as count,substring(a.timestamp, 1, 10) as date  FROM alerts as a WHERE a.piSystemName = ? AND a.timestamp > NOW() - INTERVAL ? SECOND  GROUP BY DATE) AS t1 JOIN 
+	 ( SELECT sum(messageCount) AS mc, substring(m.timestamp, 1, 10) as date
+            FROM messages_stat as m WHERE
+            m.piSystemName = ? AND m.timestamp > NOW() - INTERVAL ? SECOND
+            GROUP BY DATE ) AS t2 ON t1.date=t2.date)
+            ");
+                $query->execute(array($piSystemName, $timeLimit, $piSystemName, $timeLimit));
+            } else {
+                $query = DB::prepare("
+SELECT (t1.count/t2.mc)*100 as percent, t1.date FROM ((SELECT COUNT(*) as count, substring(a.timestamp, 1, 10) as date  FROM alerts as a WHERE a.timestamp > NOW() - INTERVAL ? SECOND  GROUP BY DATE) AS t1 JOIN 
+	 (SELECT sum(messageCount) AS mc, substring(m.timestamp, 1, 10) as date
+            FROM messages_stat as m WHERE
+            m.timestamp > NOW() - INTERVAL ? SECOND
+            GROUP BY DATE ) AS t2 ON t1.date=t2.date)
+            ");
+                $query->execute(array($timeLimit, $timeLimit));
+            }
+        }
+        return $query;
     }
 
 

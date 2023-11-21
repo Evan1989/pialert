@@ -5,11 +5,9 @@ require_once(__DIR__."/../autoload.php");
 use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
-use EvanPiAlert\Util\essence\PiSystem;
 use EvanPiAlert\Util\HTML\HTMLChart;
 use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use EvanPiAlert\Util\ManagePiSystem;
-use EvanPiAlert\Util\Settings;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();
@@ -119,14 +117,16 @@ echo $page->getPageHeader(Text::menuStatistics());
 
         $week_alert = PiAlertGroup::getTotalAlertCount($choseSystem, $choseBusinessSystem, ONE_WEEK);
         $month_alert = PiAlertGroup::getTotalAlertCount($choseSystem, $choseBusinessSystem, ONE_MONTH);
-        $week_alertPercent= PiAlertGroup::getAlertPercent($choseSystem, $choseBusinessSystem, ONE_WEEK);
-        $month_alertPercent= PiAlertGroup::getAlertPercent($choseSystem, $choseBusinessSystem, ONE_MONTH);
+        $week_alertPercent = PiAlertGroup::getAlertPercent($choseSystem, $choseBusinessSystem, ONE_WEEK);
+        $month_alertPercent = PiAlertGroup::getAlertPercent($choseSystem, $choseBusinessSystem, ONE_MONTH);
+        $message_ProcTimeWeek = PiAlertGroup::getMessageTimeProc($choseSystem, $choseBusinessSystem, ONE_WEEK);
+        $message_ProcTimeMonth = PiAlertGroup::getMessageTimeProc($choseSystem, $choseBusinessSystem, ONE_MONTH);
 
 echo "<div class='card mb-4 shadow'>
         <div class='card-header'>";
 $systemNames[''] = Text::statisticAllSystems();
 foreach ($systemNames as $systemCode => $systemName) {
-    echo "<a href='statistics.php?choseSystem=".$systemCode."' class='btn btn-primary ".($choseSystem==$systemCode?'disabled':'')."'>".$systemName."</a> ";
+    echo "<a href='statistics.php?choseSystem=".$systemCode."' class='btn btn-primary ".(($choseSystem==$systemCode)&&(empty($choseBusinessSystem))?'disabled':'')."'>".$systemName."</a> ";
 
     echo "";
 }
@@ -134,7 +134,7 @@ foreach ($systemNames as $systemCode => $systemName) {
 $query = DB::prepare("SELECT code from bs_systems");
 $query->execute();
 echo" <div class='btn-group'>
-  <button type='button' class='btn btn-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>".Text::externalSystems()."</button>
+  <button type='button' class='btn btn-primary dropdown-toggle'  data-bs-toggle='dropdown' aria-expanded='false'>".Text::externalSystems()."</button>
   <ul class='dropdown-menu'>";
     while ($row = $query->fetch()) {
         echo "<li><a class='dropdown-item' href='statistics.php?choseBusinessSystem=".$row['code']."'>".$row['code']."</a></li>";
@@ -146,8 +146,15 @@ $chart = new HTMLChart();
 echo "  </div>
         <div class='card-body overflow-auto'>
             <table class='table table-sm table-hover'>
-                <tbody> 
-                <tr>
+                <tbody>";
+                if(!empty($choseBusinessSystem))
+                {
+                    echo "<tr>
+                          <td>".Text::statistic4ExtSystem()."</td>
+                          <td>".$choseBusinessSystem."</td>
+                      </tr>";
+                }
+                     echo "<tr>
                           <td>" . Text::statisticAlert24HourCount() . "</td>
                           <td>" . PiAlertGroup::getTotalAlertCount($choseSystem, $choseBusinessSystem, ONE_DAY) . " " . Text::pieces() . "</td>
                       </tr>
@@ -181,8 +188,24 @@ echo "  </div>
                       </tr> 
                       <tr>
                           <td>" . Text::statisticAlertMonthPercent() . "</td>
-                          <td>" . $month_alertPercent . "%  ≈ " . round10($month_alertPercent / 7) . ' ' . Text::perDay() . "</td>
-                      </tr>     
+                          <td>" . $month_alertPercent . "%  ≈ " . round10($month_alertPercent / 30.5) . ' ' . Text::perDay() . "</td>
+                      </tr>  
+                      <tr>
+                            <td>" . Text::statisticAlertPercentMonthChart() . "</td>
+                            <td>" . $chart->getDailyAlertsPercentChart($choseSystem, $choseBusinessSystem) . "</td>
+                      </tr>
+                      <tr>
+                          <td>" . Text::statisticMessageTimeProc() . "</td>
+                          <td>" . PiAlertGroup::getMessageTimeProc($choseSystem, $choseBusinessSystem) . " мс</td>
+                      </tr>
+                      <tr>
+                          <td>" . Text::statisticMessageWeekTimeProc() . "</td>
+                          <td>" . $message_ProcTimeWeek . "мс ≈ " . round10($month_alertPercent / 7) . ' ' . Text::perDay() . "</td>
+                      </tr>  
+                      <tr>
+                          <td>" . Text::statisticMessageMonthTimeProc() . "</td>
+                          <td>" . $message_ProcTimeMonth . "мс  ≈ " . round10($month_alertPercent / 30.5) . ' ' . Text::perDay() . "</td>
+                      </tr>    
                       </tbody>
             </table>
             <div class='main-statistic'></div>

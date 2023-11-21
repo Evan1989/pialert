@@ -20,6 +20,7 @@ $texts = array(
     'pieces' => 'шт.',
     'perDay' => 'в сутки',
     'alertCount' => 'Алертов',
+    'alertPercent' => 'Процент ошибок',
     'today' => 'Сегодня',
     'name' => 'Название',
     'search' => 'Поиск',
@@ -98,9 +99,26 @@ $texts = array(
     'statisticAlert24HourCount' => 'Алертов за 24 часа',
     'statisticAlertTodayChart' => 'График алертов за сегодня',
     'statisticAlertWeekCount' => 'Алертов за неделю',
+
+    'statisticAlertWeekPercent' => 'Процент ошибок за неделю',
+
+    'statisticAlertMonthPercent' => 'Процент ошибок за месяц',
     'statisticAlertMonthCount' => 'Алертов за месяц',
     'statisticAlertMonthChart' => 'График алертов за месяц',
+    'statisticAlertPercentMonthChart' => 'График процента ошибок за месяц',
     'statisticAlertTotalCount' => 'Алертов за всю историю',
+
+    'statisticAlertTotalPercent' => 'Процент ошибок за всю историю',
+
+    'statisticMessageWeekCount' => 'Количество переданных сообщений за неделю',
+    'statisticMessageMonthCount' => 'Количество переданных сообщений за месяц',
+
+    'statisticMessageWeekTimeProc' => 'Среднее время полной обработки сообщений за неделю',
+    'statisticMessageMonthTimeProc' => 'Среднее время полной обработки сообщений за месяц',
+    'statisticMessageTimeProc' => 'Среднее время полной обработки сообщений за всю историю',
+
+    'statistic4ExtSystem' => 'Статистика для внешней системы',
+
 
     'chartsNormalForDay' => 'Норма для '.Text::REPLACE_PATTERN,
     'chartsAverageDay' => 'Средний календарный день',
@@ -263,5 +281,6 @@ $texts = array(
                             'Количество сообщений за последний интервал: '.Text::REPLACE_PATTERN,
     'messageAlertProcTime' => 'Ошибка: время обработки сообщений за интервал превышает пороговое значение для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Среднее время (мс) обработки сообщений: '.Text::REPLACE_PATTERN.PHP_EOL.
-                            'Время (мс) обработки сообщений за последний интервал: '.Text::REPLACE_PATTERN
+                            'Время (мс) обработки сообщений за последний интервал: '.Text::REPLACE_PATTERN,
+    'externalSystems' => 'Внешние системы'
 );
