@@ -15,7 +15,6 @@ $authorizationAdmin->ifNotAccessGoErrorPage();
 
 // Фильтрация только по одному SAP PI
 
-//var_dump($_GET);
 $choseSystem = $_GET['choseSystem']??'';
 $choseBusinessSystem= $_GET['choseBusinessSystem']??'';
 $piSystems = new ManagePiSystem();
