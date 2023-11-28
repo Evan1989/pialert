@@ -36,8 +36,8 @@ class MessageStatAlertGenerator {
                 curStat.interface=avgStat.interface AND
                 curStat.fromSystem=avgStat.fromSystem AND
                 curStat.toSystem=avgStat.toSystem  
-            WHERE  (curStat.messageCount IS NULL AND avgStat.avg_msg_cnt>? OR avgStat.avg_msg_cnt>?*curStat.messageCount OR curStat.messageCount>?*avgStat.avg_msg_cnt) AND curStat.piSystemName NOT IN (?)");
-        $query->execute(array($this->message_count_alert, $this->message_count_alert, $this->message_count_alert, $this->stat_enable_piSystem_list));
+            WHERE  curStat.messageCount>?*avgStat.avg_msg_cnt AND curStat.piSystemName NOT IN (?)");
+        $query->execute(array($this->message_count_alert, $this->stat_enable_piSystem_list));
         while($row = $query->fetch()) {
             if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatCountAlert for ".json_encode($row));

@@ -271,7 +271,7 @@ $texts = array(
     'systemsContact' => 'System contacts',
     'systemsComment' => 'Comments',
     'systemCard' => 'System Card',
-    'messageAlertCount' => 'Error: no message or message count per interval is different than average for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
+    'messageAlertCount' => 'Error: message count per interval is greater than average for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Average message count: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Message count per last interval: '.Text::REPLACE_PATTERN,
     'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: '.Text::REPLACE_PATTERN.PHP_EOL.

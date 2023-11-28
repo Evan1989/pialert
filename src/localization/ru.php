@@ -276,7 +276,7 @@ $texts = array(
     'systemsContact' => 'Контактная информация',
     'systemsComment' => 'Комментарий',
     'systemCard' => 'Карточка системы',
-    'messageAlertCount' => 'Ошибка: нет сообщений или их количество за интервал отличается от среднестатистического для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
+    'messageAlertCount' => 'Ошибка: количество сообщений за интервал превышает среднестатистическое для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Среднее количество сообщений: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Количество сообщений за последний интервал: '.Text::REPLACE_PATTERN,
     'messageAlertProcTime' => 'Ошибка: время обработки сообщений за интервал превышает пороговое значение для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
