@@ -10,11 +10,11 @@ class ManagePiSystem{
     public function __construct() {
         $systemInfo = json_decode(Settings::get(Settings::SYSTEMS_SETTINGS),true);
         $piSystem_array = array();
-        foreach($systemInfo as $key => $value) {
+        foreach ($systemInfo as $key => $value) {
             $piSystem = new PiSystem($key);
-            $piSystem->setHost($value['host']);
-            $piSystem->setStatisticEnable( $value['statEnable'] );
-            $piSystem->setSID($value['SID']);
+            $piSystem->setHost( $value['host']??'' );
+            $piSystem->setStatisticEnable( $value['statEnable']??false );
+            $piSystem->setSID( $value['SID']??'' );
             $piSystem_array[] = $piSystem;
         }
         $this->piSystems = $piSystem_array;

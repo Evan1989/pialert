@@ -16,13 +16,14 @@ class HTMLChart {
     /**
      * JavaScript код для отображения графика количества сообщений по дням
      * @param PiAlertGroup|string $param Либо группа ошибок, либо имя SAP PI, если пусто, то вернет по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета фильтра по SAP PI
      * @return string
      */
-    public function getDailyAlertsChart(PiAlertGroup|string $param) : string {
+    public function getDailyAlertsChart(PiAlertGroup|string $param, string $externalSystem = '') : string {
         if ( $param instanceof PiAlertGroup) {
             $query = $param->getAlertCountForDiagram(ONE_MONTH);
         } else {
-            $query = PiAlertGroup::getDailyAlertCountForDiagram($param, ONE_MONTH);
+            $query = PiAlertGroup::getDailyAlertCountForDiagram($param, $externalSystem, ONE_MONTH);
         }
         $data1= array();
         while($row = $query->fetch()) {
@@ -34,15 +35,33 @@ class HTMLChart {
     }
 
     /**
-     * JavaScript код для отображения графика количества сообщений по часам
-     * @param string $piSystemName
+     * JavaScript код для отображения графика количества сообщений по дням
+     * @param string $param Имя SAP PI, если пусто, то вернет по всем системам
+     * @param string $extSystem Имя внешней системы
      * @return string
      */
-    public function getHourAlertsChart(string $piSystemName) : string {
+    public function getDailyAlertsPercentChart(string $param, string $extSystem) : string {
+        $query = PiAlertGroup::getDailyAlertPercentForDiagram($param, $extSystem, ONE_MONTH);
+        $data1= array();
+        while($row = $query->fetch()) {
+            $data1[$row['date']] = $row['percent'];
+        }
+        $data = array(Text::alertPercent() => $data1);
+        return "<canvas class='w-100' id='alertPercentDailyHistory' style='display: block; max-height: 200px; max-width: 800px;'></canvas>".
+            $this->getLineChartJs('alertPercentDailyHistory', $data, false);
+    }
+
+    /**
+     * JavaScript код для отображения графика количества сообщений по часам
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @return string
+     */
+    public function getHourAlertsChart(string $piSystemName, string $externalSystem) : string {
         $weekDay = date("N")-1; // от 0 до 6
         $hour = date("H");
 
-        $query = PiAlertGroup::getHourAlertCountForDiagram($piSystemName);
+        $query = PiAlertGroup::getHourAlertCountForDiagram($piSystemName, $externalSystem);
         $data1= array();
         while($row = $query->fetch()) {
             $data1[$row['h']] = $row['count'];
@@ -62,7 +81,7 @@ class HTMLChart {
         $data3 = array();
         $alertAnalytics = new AlertAnalytics();
         foreach ( $systems as $system ) {
-            $avgCounts = $alertAnalytics->getAverageAlertCounts($system);
+            $avgCounts = $alertAnalytics->getAverageAlertCounts($system, $externalSystem);
             for ($i = 0; $i < 24; $i++) {
                 $data2[$i] = ($data2[$i]??0) + ($avgCounts[$weekDay*24+$i]??0);
             }
@@ -85,6 +104,7 @@ class HTMLChart {
         return "<canvas class='w-100' id='alertHourHistory' style='display: block; height:150px; max-height: 200px; min-width: 300px; max-width: 800px;'></canvas>".
             $this->getLineChartJs('alertHourHistory', $data, false);
     }
+
 
     /**
      * @param string $id Идентификатор элемента на странице

@@ -10,10 +10,12 @@ class AlertAnalytics {
     public function __construct() {}
 
     /**
+     * Среднее время между получением уведомлений об ошибках из системы.
+     * Может использоваться для "свидетельства канарейки"
      * @param string $system
      * @param int $weekDay От 0 до 6
      * @param int $hour
-     * @return int Стандартный интервал между алертами (если данных нет, то сутки)
+     * @return int Стандартный интервал между уведомлениями (если данных нет, то неделя)
      */
     public function getAverageAlertInterval(string $system, int $weekDay, int $hour) : int {
         $absHour = $weekDay * 24 + $hour;
@@ -28,7 +30,7 @@ class AlertAnalytics {
                 return $i * 3600;
             }
         }
-        return ONE_DAY;
+        return ONE_WEEK;
     }
 
     /**
@@ -52,22 +54,28 @@ class AlertAnalytics {
     /**
      * Функция возвращает массив среднего количества алертов.
      * Усреднение идет по дням недели и часам за месяц.
-     * @param string $system
+     * @param string $alertSourceSystem Фильтр по системе-источнику уведомления (SAP PI)
+     * @param string $externalSystem Фильтр по названию внешней системы. Если он указан, то первый параметр игнорируется
      * @return array absolute hour (часов от начала недели) => avg_count
      */
-    public function getAverageAlertCounts(string $system): array {
-        if ( $cache = Cache::get(static::CACHE_NAME_PREFIX.$system) ) {
+    public function getAverageAlertCounts(string $alertSourceSystem, string $externalSystem = ''): array {
+        if ( $cache = Cache::get(static::CACHE_NAME_PREFIX.$alertSourceSystem.$externalSystem) ) {
             return $cache;
         }
         $result = array();
-        $query = DB::prepare("SELECT count(*) as count, WEEKDAY(timestamp) as week_day, HOUR(timestamp) as hour, min(timestamp) as min_timestamp FROM alerts WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL 4 WEEK group by week_day, hour");
-        $query->execute(array($system));
+        if(empty($externalSystem)) {
+            $query = DB::prepare("SELECT count(*) as count, WEEKDAY(timestamp) as week_day, HOUR(timestamp) as hour, min(timestamp) as min_timestamp FROM alerts WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL 4 WEEK group by week_day, hour");
+            $query->execute(array($alertSourceSystem));
+        } else{
+            $query = DB::prepare("SELECT count(*) as count, WEEKDAY(timestamp) as week_day, HOUR(timestamp) as hour, min(timestamp) as min_timestamp FROM alerts WHERE (fromSystem = ? OR toSystem=?) AND timestamp > NOW() - INTERVAL 4 WEEK group by week_day, hour");
+            $query->execute(array($externalSystem, $externalSystem));
+        }
         while($row = $query->fetch()) {
             $hour = $row['week_day'] * 24 + $row['hour'];
             $weekCount = ceil( (time() - strtotime($row['min_timestamp'])) / ONE_WEEK );
             $result[ $hour ] = $row['count'] / $weekCount;
         }
-        Cache::save(static::CACHE_NAME_PREFIX.$system, $result, ONE_DAY);
+        Cache::save(static::CACHE_NAME_PREFIX.$alertSourceSystem.$externalSystem, $result, ONE_DAY);
         return $result;
     }
 }

@@ -20,6 +20,7 @@ $texts = array(
     'pieces' => 'pcs.',
     'perDay' => 'per day',
     'alertCount' => 'Alert count',
+    'alertPercent' => 'Alert percent',
     'today' => 'Today',
     'name' => 'Name',
     'search' => 'Search',
@@ -100,7 +101,19 @@ $texts = array(
     'statisticAlertWeekCount' => 'Alerts per week',
     'statisticAlertMonthCount' => 'Alerts per month',
     'statisticAlertMonthChart' => 'Alert chart for month',
+    'statisticAlertPercentMonthChart' => 'Alert percent chart for month',
     'statisticAlertTotalCount' => 'Total alerts',
+
+    'statisticMessageWeekCount' => 'Message count per week',
+    'statisticMessageMonthCount' => 'Message count per month',
+
+    'statisticMessageWeekTimeProc' => 'Message processing time per week',
+    'statisticMessageMonthTimeProc' => 'Message processing time per month',
+    'statisticMessageTimeProc' => 'Message processing time total',
+    'statisticAlertWeekPercent' => 'Error percent per week',
+    'statisticAlertMonthPercent' => 'Error percent per month',
+    'statisticAlertTotalPercent' => 'Error percent total',
+    'statistic4ExtSystem' => 'Statistic for external system',
 
     'chartsNormalForDay' => 'Normal for '.Text::REPLACE_PATTERN,
     'chartsAverageDay' => 'Average day ',
@@ -263,5 +276,6 @@ $texts = array(
                             'Message count per last interval: '.Text::REPLACE_PATTERN,
     'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Average message processing time (ms): '.Text::REPLACE_PATTERN.PHP_EOL.
-                            'Message processing time (ms) per last interval: '.Text::REPLACE_PATTERN
+                            'Message processing time (ms) per last interval: '.Text::REPLACE_PATTERN,
+    'externalSystems' => 'External systems'
 );
