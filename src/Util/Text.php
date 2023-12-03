@@ -19,6 +19,7 @@ namespace EvanPiAlert\Util;
  * @method static string delete()
  * @method static string summary()
  * @method static string pieces()
+ * @method static string msecs()
  * @method static string perDay()
  * @method static string alertCount()
  * @method static string alertPercent()

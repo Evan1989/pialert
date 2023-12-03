@@ -178,11 +178,11 @@ echo "  </div>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticAlertWeekPercent() . "</td>
-                          <td>" . $week_alertPercent . "%  ≈ " . round10($week_alertPercent / 7) . ' ' . Text::perDay() . "</td>
+                          <td>" . $week_alertPercent . "%  ≈ " . PiAlertGroup::getAverageDailyAlertsPercent($choosePiSystem, $chooseBusinessSystem,ONE_WEEK) . '% ' . Text::perDay() . "</td>
                       </tr> 
                       <tr>
                           <td>" . Text::statisticAlertMonthPercent() . "</td>
-                          <td>" . $month_alertPercent . "%  ≈ " . round10($month_alertPercent / 30.5) . ' ' . Text::perDay() . "</td>
+                          <td>" . $month_alertPercent . "%  ≈ " . PiAlertGroup::getAverageDailyAlertsPercent($choosePiSystem, $chooseBusinessSystem,ONE_MONTH) . '% ' . Text::perDay() . "</td>
                       </tr>  
                       <tr>
                             <td>" . Text::statisticAlertPercentMonthChart() . "</td>
@@ -190,15 +190,15 @@ echo "  </div>
                       </tr>
                       <tr>
                           <td>" . Text::statisticMessageTimeProc() . "</td>
-                          <td>" . PiAlertGroup::getMessageTimeProc($choosePiSystem, $chooseBusinessSystem) . " мс</td>
+                          <td>" . PiAlertGroup::getMessageTimeProc($choosePiSystem, $chooseBusinessSystem) . ' '.Text::msecs()."</td>
                       </tr>
                       <tr>
                           <td>" . Text::statisticMessageWeekTimeProc() . "</td>
-                          <td>" . $message_ProcTimeWeek . "мс ≈ " . round10($month_alertPercent / 7) . ' ' . Text::perDay() . "</td>
+                          <td>" . $message_ProcTimeWeek .' '.Text::msecs(). " ≈ " . PiAlertGroup::getAverageDailyTimeProc($choosePiSystem, $chooseBusinessSystem,ONE_WEEK).' '.Text::msecs().' ' . Text::perDay() . "</td>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticMessageMonthTimeProc() . "</td>
-                          <td>" . $message_ProcTimeMonth . "мс  ≈ " . round10($month_alertPercent / 30.5) . ' ' . Text::perDay() . "</td>
+                          <td>" . $message_ProcTimeMonth .Text::msecs(). " ≈ " . PiAlertGroup::getAverageDailyTimeProc($choosePiSystem, $chooseBusinessSystem,ONE_MONTH) . ' ' .Text::msecs().' '. Text::perDay() . "</td>
                       </tr>    
                 </tbody>
             </table>

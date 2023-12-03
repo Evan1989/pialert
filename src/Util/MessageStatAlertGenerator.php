@@ -102,14 +102,20 @@ class MessageStatAlertGenerator {
             'errCode' =>'',
             'UDSAttributes' =>''
         );
-        $piAlert=new PiAlert($newRow);
-        $alertGroup = AlertAggregationUtil::createOrFindGroupForAlert($piAlert);
-        if( $alertGroup->status == PiAlertGroup::NEW )  {
-            $alertGroup->errTextMask = TextAnalysisUtil::getMaskFromTexts($errText, $defaultText);
-            $alertGroup->saveToDatabase();
+        $query = DB::prepare("SELECT count(*) FROM alerts WHERE timestamp=? AND fromSystem=? AND toSystem=? AND interface=? AND piSystemName=?");
+        $query->execute(array($row['timestamp'], $row['fromSystem'],$row['toSystem'],$row['interface'],$row['piSystemName']));
+        if($query->fetchColumn()==0) {
+            $piAlert = new PiAlert($newRow);
+            $alertGroup = AlertAggregationUtil::createOrFindGroupForAlert($piAlert);
+            if ($alertGroup->status == PiAlertGroup::NEW) {
+                $alertGroup->errTextMask = TextAnalysisUtil::getMaskFromTexts($errText, $defaultText);
+                $alertGroup->saveToDatabase();
+            }
+            $piAlert->group_id = $alertGroup->group_id;
+            return $piAlert->saveNewToDatabase();
         }
-        $piAlert->group_id = $alertGroup->group_id;
-        return $piAlert->saveNewToDatabase();
+        else
+            return true;
     }
 
     protected function logError(?string $textToError): void {

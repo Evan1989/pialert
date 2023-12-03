@@ -18,6 +18,7 @@ $texts = array(
     'delete' => 'Delete',
     'summary' => 'Summary',
     'pieces' => 'pcs.',
+    'msecs' => 'ms.',
     'perDay' => 'per day',
     'alertCount' => 'Alert count',
     'alertPercent' => 'Alert percent',

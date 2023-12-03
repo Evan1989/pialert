@@ -18,6 +18,7 @@ $texts = array(
     'delete' => 'Удалить',
     'summary' => 'Итого',
     'pieces' => 'шт.',
+    'msecs' => 'мс.',
     'perDay' => 'в сутки',
     'alertCount' => 'Алертов',
     'alertPercent' => 'Процент ошибок',
