@@ -103,8 +103,8 @@ class MessageStatAlertGenerator {
             'UDSAttributes' =>''
         );
         $query = DB::prepare("SELECT count(*) FROM alerts WHERE timestamp=? AND fromSystem=? AND toSystem=? AND interface=? AND piSystemName=?");
-        $query->execute(array($row['timestamp'], $row['fromSystem'],$row['toSystem'],$row['interface'],$row['piSystemName']));
-        if($query->fetchColumn()==0) {
+        $query->execute(array($row['timestamp'], $row['fromSystem'], $row['toSystem'], $row['interface'], $row['piSystemName']));
+        if( $query->fetchColumn() == 0 ) {
             $piAlert = new PiAlert($newRow);
             $alertGroup = AlertAggregationUtil::createOrFindGroupForAlert($piAlert);
             if ($alertGroup->status == PiAlertGroup::NEW) {
@@ -114,8 +114,7 @@ class MessageStatAlertGenerator {
             $piAlert->group_id = $alertGroup->group_id;
             return $piAlert->saveNewToDatabase();
         }
-        else
-            return true;
+        return true;
     }
 
     protected function logError(?string $textToError): void {

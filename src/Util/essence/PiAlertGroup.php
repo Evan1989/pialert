@@ -383,7 +383,7 @@ class PiAlertGroup {
         if ($row = $query->fetch()) {
             return round((float)$row['c'],2);
         }
-        return 0.0;
+        return 0;
     }
 
     /**
@@ -430,7 +430,7 @@ class PiAlertGroup {
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
      * @param int|null $timeLimit фильтр по времени
-     * @return float
+     * @return PDOStatement Execute уже выполнен
      */
     public static function getDailyMessageTimeProc(string $piSystemName, string $externalSystem, int|null $timeLimit = null) : PDOStatement {
         if( empty($externalSystem) ) {
@@ -464,21 +464,21 @@ class PiAlertGroup {
     }
 
     /**
-     * @param string $piSystemName Имя SAP PI, если пусто, то вернет по всем системам
-     * @param string $extSystem Имя внешней системы
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param int $timeLimit
      * @return float
      */
-    public static function getAverageDailyTimeProc(string $piSystemName, string $extSystem, int $timeLimit) : float
-    {
-        $query = PiAlertGroup::getDailyMessageTimeProc($piSystemName, $extSystem, $timeLimit);
-        $res=0.0;
+    public static function getAverageDailyTimeProc(string $piSystemName, string $externalSystem, int $timeLimit) : float {
+        $query = PiAlertGroup::getDailyMessageTimeProc($piSystemName, $externalSystem, $timeLimit);
+        $res = 0;
         while ($row = $query->fetch()) {
             $res += $row['c'];
         }
-        if($query->rowCount()>0)
+        if($query->rowCount()>0) {
             return round($res/$query->rowCount(),2);
-        else
-            return 0.0;
+        }
+        return 0;
     }
 
     /**
@@ -630,21 +630,21 @@ class PiAlertGroup {
     }
 
     /**
-     * @param string $piSystemName Имя SAP PI, если пусто, то вернет по всем системам
-     * @param string $extSystem Имя внешней системы
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param int $timeLimit
      * @return float
      */
-    public static function getAverageDailyAlertsPercent(string $piSystemName, string $extSystem, int $timeLimit) : float
-    {
-        $query = PiAlertGroup::getDailyAlertPercentForDiagram($piSystemName, $extSystem, $timeLimit);
-        $res=0.0;
+    public static function getAverageDailyAlertsPercent(string $piSystemName, string $externalSystem, int $timeLimit) : float {
+        $query = PiAlertGroup::getDailyAlertPercentForDiagram($piSystemName, $externalSystem, $timeLimit);
+        $res = 0;
         while ($row = $query->fetch()) {
             $res += $row['percent'];
         }
-        if($query->rowCount()>0)
-        return round($res/$query->rowCount(),2);
-        else
-            return 0.0;
+        if ( $query->rowCount()>0 ) {
+            return round($res / $query->rowCount(), 2);
+        }
+        return 0.0;
     }
 
 }
