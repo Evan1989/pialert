@@ -272,16 +272,14 @@ $texts = array(
     'systemsContact' => 'System contacts',
     'systemsComment' => 'Comments',
     'systemCard' => 'System Card',
+    'messageAlertCountErr' => 'Error: message count',
     'messageAlertCount' => 'Error: message count per interval is greater than average for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Average message count: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Message count per last interval: '.Text::REPLACE_PATTERN,
+    'messageAlertProcTimeErr' => 'Error: message processing time',
     'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Average message processing time (ms): '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Message processing time (ms) per last interval: '.Text::REPLACE_PATTERN,
     'externalSystems' => 'External systems',
-
-    'messageAlertCountErr' => 'Error: message count',
-
-    'messageAlertProcTimeErr' => 'Error: message processing time'
 
 );
