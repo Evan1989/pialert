@@ -249,7 +249,7 @@ function initJavascriptForDashboard() {
             2: {sorter: false},
         },
         textExtraction: _getValue,
-        sortList: [[5, 1]]
+        sortList: [[6, 1]]
     });
     $('.new-alert-count').click(function(){
         let scrollTo = $('.new-alert-flag.bell-fill:visible').last();
