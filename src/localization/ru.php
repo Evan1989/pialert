@@ -18,6 +18,7 @@ $texts = array(
     'delete' => 'Удалить',
     'summary' => 'Итого',
     'pieces' => 'шт.',
+    'msecs' => 'мс.',
     'perDay' => 'в сутки',
     'alertCount' => 'Алертов',
     'alertPercent' => 'Процент ошибок',
@@ -276,11 +277,14 @@ $texts = array(
     'systemsContact' => 'Контактная информация',
     'systemsComment' => 'Комментарий',
     'systemCard' => 'Карточка системы',
-    'messageAlertCount' => 'Ошибка: нет сообщений или их количество за интервал отличается от среднестатистического для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
+    'messageAlertCountErr' => 'Ошибка: количество сообщений',
+    'messageAlertCount' => 'Ошибка: количество сообщений за интервал превышает среднестатистическое для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Среднее количество сообщений: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Количество сообщений за последний интервал: '.Text::REPLACE_PATTERN,
+    'messageAlertProcTimeErr' => 'Ошибка: время обработки сообщений',
     'messageAlertProcTime' => 'Ошибка: время обработки сообщений за интервал превышает пороговое значение для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Среднее время (мс) обработки сообщений: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Время (мс) обработки сообщений за последний интервал: '.Text::REPLACE_PATTERN,
-    'externalSystems' => 'Внешние системы'
+    'externalSystems' => 'Внешние системы',
+
 );

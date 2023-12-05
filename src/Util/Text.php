@@ -19,6 +19,7 @@ namespace EvanPiAlert\Util;
  * @method static string delete()
  * @method static string summary()
  * @method static string pieces()
+ * @method static string msecs()
  * @method static string perDay()
  * @method static string alertCount()
  * @method static string alertPercent()
@@ -189,7 +190,9 @@ namespace EvanPiAlert\Util;
  * @method static string genericExceptionTitle()
  * @method static string systemsPageHeader()
  * @method static string systemCard()
+ * @method static string messageAlertCountErr()
  * @method static string messageAlertCount(string $interface, string $averageCount, string $currentCount)
+ * @method static string messageAlertProcTimeErr()
  * @method static string messageAlertProcTime(string $interface, string $averageProcessingTime, string $currentProcessingTime)
  * @method static string externalSystems()
  **/

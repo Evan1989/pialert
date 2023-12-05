@@ -427,6 +427,61 @@ class PiAlertGroup {
     }
 
     /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param int|null $timeLimit фильтр по времени
+     * @return PDOStatement Execute уже выполнен
+     */
+    public static function getDailyMessageTimeProc(string $piSystemName, string $externalSystem, int|null $timeLimit = null) : PDOStatement {
+        if( empty($externalSystem) ) {
+            if ( is_null($timeLimit) ) {
+                if ( $piSystemName ) {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE piSystemName = ? GROUP BY DATE");
+                    $query->execute(array($piSystemName));
+                } else {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat GROUP BY DATE");
+                    $query->execute();
+                }
+            } else {
+                if ( $piSystemName ) {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                    $query->execute(array($piSystemName, $timeLimit));
+                } else {
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                    $query->execute(array($timeLimit));
+                }
+            }
+        } else {
+            if ( is_null($timeLimit) ) {
+                $query = DB::prepare("SELECT  sum(messageProcTime)/sum(messageCount) AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) GROUP BY DATE");
+                $query->execute(array($externalSystem, $externalSystem));
+            } else {
+                $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                $query->execute(array($externalSystem, $externalSystem, $timeLimit));
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param int $timeLimit
+     * @return float
+     */
+    public static function getAverageDailyTimeProc(string $piSystemName, string $externalSystem, int $timeLimit) : float {
+        $query = PiAlertGroup::getDailyMessageTimeProc($piSystemName, $externalSystem, $timeLimit);
+        $res = 0;
+        while ($row = $query->fetch()) {
+            $res += $row['c'];
+        }
+        if($query->rowCount()>0) {
+            return round($res/$query->rowCount(),2);
+        }
+        return 0;
+    }
+
+    /**
      * @param int $timeLimit
      * @return PDOStatement Execute уже выполнен
      */
@@ -572,6 +627,24 @@ class PiAlertGroup {
             $query->execute(array($externalSystem, $externalSystem,$timeLimit, $externalSystem, $externalSystem, $timeLimit));
         }
         return $query;
+    }
+
+    /**
+     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param int $timeLimit
+     * @return float
+     */
+    public static function getAverageDailyAlertsPercent(string $piSystemName, string $externalSystem, int $timeLimit) : float {
+        $query = PiAlertGroup::getDailyAlertPercentForDiagram($piSystemName, $externalSystem, $timeLimit);
+        $res = 0;
+        while ($row = $query->fetch()) {
+            $res += $row['percent'];
+        }
+        if ( $query->rowCount()>0 ) {
+            return round($res / $query->rowCount(), 2);
+        }
+        return 0.0;
     }
 
 }
