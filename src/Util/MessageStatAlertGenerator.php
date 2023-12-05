@@ -36,8 +36,10 @@ class MessageStatAlertGenerator {
                 curStat.interface=avgStat.interface AND
                 curStat.fromSystem=avgStat.fromSystem AND
                 curStat.toSystem=avgStat.toSystem  
-            WHERE  curStat.messageCount>?*avgStat.avg_msg_cnt AND curStat.piSystemName NOT IN (?)");
-        $query->execute(array($this->message_count_alert, $this->stat_enable_piSystem_list));
+            WHERE  curStat.messageCount>?*avgStat.avg_msg_cnt AND curStat.piSystemName NOT IN (?)
+             AND NOT EXISTS(SELECT 'found' FROM alerts WHERE TIMESTAMP=curStat.timestamp AND piSystemName=curStat.piSystemName AND interface=curStat.interface AND fromSystem=curStat.fromSystem AND toSystem=curStat.toSystem AND errText LIKE ?)
+            ");
+        $query->execute(array($this->message_count_alert, $this->stat_enable_piSystem_list, Text::messageAlertCountErr().'%'));
         while($row = $query->fetch()) {
             if ( !$this->savePiAlert($row, Text::messageAlertCount($row['interface'], $row['avg_msg_cnt'], $row['messageCount']), Text::messageAlertCount($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatCountAlert for ".json_encode($row));
@@ -61,8 +63,10 @@ class MessageStatAlertGenerator {
                 curStat.interface=avgStat.interface AND
                 curStat.fromSystem=avgStat.fromSystem AND
                 curStat.toSystem=avgStat.toSystem  
-            WHERE curStat.msg_proc_time > ? * avgStat.avg_msg_proc_time AND curStat.piSystemName NOT IN (?)");
-        $query->execute(array($this->message_procTime_alert, $this->stat_enable_piSystem_list));
+            WHERE curStat.msg_proc_time > ? * avgStat.avg_msg_proc_time AND curStat.piSystemName NOT IN (?)
+             AND NOT EXISTS(SELECT 'found' FROM alerts WHERE TIMESTAMP=curStat.timestamp AND piSystemName=curStat.piSystemName AND interface=curStat.interface AND fromSystem=curStat.fromSystem AND toSystem=curStat.toSystem AND errText LIKE ?)
+            ");
+        $query->execute(array($this->message_procTime_alert, $this->stat_enable_piSystem_list, Text::messageAlertProcTimeErr().'%'));
         while($row = $query->fetch()) {
             if ( !$this->savePiAlert($row,Text::messageAlertProcTime($row['interface'], $row['avg_msg_proc_time'], $row['msg_proc_time']), Text::messageAlertProcTime($row['interface'],'','')) ) {
                 $this->logError("Don't save newStatProcTimeAlert for ".json_encode($row));
@@ -102,9 +106,6 @@ class MessageStatAlertGenerator {
             'errCode' =>'',
             'UDSAttributes' =>''
         );
-        $query = DB::prepare("SELECT count(*) FROM alerts WHERE timestamp=? AND fromSystem=? AND toSystem=? AND interface=? AND piSystemName=?");
-        $query->execute(array($row['timestamp'], $row['fromSystem'], $row['toSystem'], $row['interface'], $row['piSystemName']));
-        if( $query->fetchColumn() == 0 ) {
             $piAlert = new PiAlert($newRow);
             $alertGroup = AlertAggregationUtil::createOrFindGroupForAlert($piAlert);
             if ($alertGroup->status == PiAlertGroup::NEW) {
@@ -113,8 +114,6 @@ class MessageStatAlertGenerator {
             }
             $piAlert->group_id = $alertGroup->group_id;
             return $piAlert->saveNewToDatabase();
-        }
-        return true;
     }
 
     protected function logError(?string $textToError): void {

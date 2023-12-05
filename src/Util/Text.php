@@ -193,6 +193,8 @@ namespace EvanPiAlert\Util;
  * @method static string messageAlertCount(string $interface, string $averageCount, string $currentCount)
  * @method static string messageAlertProcTime(string $interface, string $averageProcessingTime, string $currentProcessingTime)
  * @method static string externalSystems()
+ * @method static string messageAlertCountErr()
+ * @method static string messageAlertProcTimeErr()
  **/
 class Text {
 

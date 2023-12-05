@@ -283,5 +283,9 @@ $texts = array(
     'messageAlertProcTime' => 'Ошибка: время обработки сообщений за интервал превышает пороговое значение для интерфейса: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Среднее время (мс) обработки сообщений: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Время (мс) обработки сообщений за последний интервал: '.Text::REPLACE_PATTERN,
-    'externalSystems' => 'Внешние системы'
+    'externalSystems' => 'Внешние системы',
+
+    'messageAlertCountErr' => 'Ошибка: количество сообщений',
+
+    'messageAlertProcTimeErr' => 'Ошибка: время обработки сообщений'
 );

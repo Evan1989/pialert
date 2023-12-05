@@ -278,5 +278,10 @@ $texts = array(
     'messageAlertProcTime' => 'Error: message processing time per interval is high for interface: '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Average message processing time (ms): '.Text::REPLACE_PATTERN.PHP_EOL.
                             'Message processing time (ms) per last interval: '.Text::REPLACE_PATTERN,
-    'externalSystems' => 'External systems'
+    'externalSystems' => 'External systems',
+
+    'messageAlertCountErr' => 'Error: message count',
+
+    'messageAlertProcTimeErr' => 'Error: message processing time'
+
 );
