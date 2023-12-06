@@ -11,7 +11,6 @@ $texts = array(
     'status' => 'Status',
     'actions' => 'Actions',
     'user' => 'User',
-    'employee' => 'Employee',
     'responsibleEmployee' => 'Responsible employee',
     'addUser' => 'Add user',
     'save' => 'Save',

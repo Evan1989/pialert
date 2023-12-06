@@ -63,7 +63,7 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v34' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v35' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -95,7 +95,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=64'></script>".
+        <script src='/src/js/base.js?v=65'></script>".
         $additionalJavaScript.
     "</body>
 </html>";

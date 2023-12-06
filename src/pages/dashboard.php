@@ -55,9 +55,9 @@ function getUserChoice(PiAlertGroup $alertGroup): string {
     } else {
         $avatar = '';
     }
-    $result = $avatar."<select id='user_".$alertGroup->group_id."' class='alert-group-user-select form-control-plaintext ".($avatar?'has-avatar':'')." bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
+    $result = $avatar."<select id='user_".$alertGroup->group_id."' data-toggle='tooltip' title='".Text::responsibleEmployee()."' class='alert-group-user-select form-control-plaintext ".($avatar?'has-avatar':'')." bg-".$alertGroup->getUserColor($authorizationAdmin->getUserId())."'>".$result."</select>";
     if ( $alertGroup->last_user_id ) {
-        $result .= "<span class='alert-group-help-data' data-toggle='tooltip' title='".Text::dashboardLastUserId()."'>".$users[$alertGroup->last_user_id]->getCaption()."</span>";
+        $result .= "<div class='alert-group-help-data' data-toggle='tooltip' title='".Text::dashboardLastUserId()."'>".$users[$alertGroup->last_user_id]->getCaption()."</div>";
     }
     return $result;
 }
@@ -200,17 +200,16 @@ echo "      <div class='float-end mx-2 d-none no-alert-warning' data-toggle='too
             <thead>
               <tr>
                   <th>".Text::status()."</th>
-                  <th data-toggle='tooltip' data-placement='bottom' title='".Text::responsibleEmployee()."'>".Text::employee()."</th>
                   <th>".Text::comment()."</th>
                   <th>".Text::requestList()."</th>
                   <th>".Text::dashboardRequisites()."</th>
-                  <th data-toggle='tooltip' data-placement='bottom' title='".Text::dashboardMaskOrErrorTitle()."'>".Text::dashboardMaskOrError()."</th>
-                  <th data-toggle='tooltip' data-placement='left' title='".Text::dashboardLastAlert()."'>".Text::last()."</th>
-                  <th data-toggle='tooltip' data-placement='left' title='".Text::statisticAlertWeekCount()."'>Week</th>
+                  <th data-toggle='tooltip' title='".Text::dashboardMaskOrErrorTitle()."'>".Text::dashboardMaskOrError()."</th>
+                  <th data-toggle='tooltip' title='".Text::dashboardLastAlert()." + ".Text::statisticAlertWeekCount()."'>".Text::menuStatistics()."</th>
+                  <th></th>
               </tr>
             </thead> 
             <tbody>";
-$query2 = DB::prepare("SELECT *  FROM alert_group WHERE group_id != ? AND errTextMainPart = ? AND comment IS NOT NULL");
+$query2 = DB::prepare("SELECT *  FROM alert_group WHERE group_id != ? AND errTextMainPart = ? AND comment IS NOT NULL order by last_alert desc");
 $globalLastAlert = array();
 while($row = $query->fetch()) {
     $alertGroup = new PiAlertGroup($row);
@@ -242,17 +241,22 @@ while($row = $query->fetch()) {
     if ( $showOnlyImportant && !$important) {
         continue;
     }
-    echo "<tr filter-value=''>
-                <td>".getStatusChoice($alertGroup).$newAlertFlag."</td>
-                <td class='alert-group-user-td'>".getUserChoice($alertGroup)."</td>
+    echo "<tr filter-value=''>  
+                <td>
+                    <div>".getStatusChoice($alertGroup)."</div>
+                    <div class='alert-group-user'>".getUserChoice($alertGroup)."</div>
+                    ".$newAlertFlag."
+                </td>
                 <td>".getComment($alertGroup)."</td>
                 <td>".getAlertLink($alertGroup)."</td>
                 <td>".$alertGroup->getHTMLAbout()."</td>
-                <td style='max-width: 400px'>".$alertGroup->getHTMLErrorTextMask()."</td>
-                <td><input type='hidden' value='".$alertGroup->lastAlert."'>".$lastAlertDateShow."</td>
-                <td>".
-                    ($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0).$growIcon."
+                <td style='max-width: 350px'>".$alertGroup->getHTMLErrorTextMask()."</td>
+                <td>
+                    ".$lastAlertDateShow."
                     <br>
+                    ".($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0)." ".Text::pieces()." ".$growIcon."
+                </td>
+                <td>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
                     <a href=\"javascript:loadAlertGroupFullInfo(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardShowStatisticButton()."'>".$page->getIcon('graph-up')."</a>
                     <a href='dashboard.php?id=".$alertGroup->group_id."' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".$page->getIcon('share')."</a>";

@@ -244,13 +244,6 @@ function initJavascriptForDashboard() {
     $('.alert-group select, .alert-group textarea').each(function() {
         addAjaxFunctionForInputInAlertGroupTable($(this));
     });
-    $('.tablesorter.alert-group').tablesorter({
-        headers: {
-            2: {sorter: false},
-        },
-        textExtraction: _getValue,
-        sortList: [[6, 1]]
-    });
     $('.new-alert-count').click(function(){
         let scrollTo = $('.new-alert-flag.bell-fill:visible').last();
         if ( scrollTo.length === 0 ) {

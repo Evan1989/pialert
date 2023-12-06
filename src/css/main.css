@@ -54,7 +54,7 @@ table .hide {
 }
 
 
-.alert-group .alert-group-user-td {
+.alert-group .alert-group-user {
 	overflow: hidden;
 	position: relative;
 }
@@ -117,6 +117,7 @@ table .hide {
 .alert-group-help-data {
 	font-size: 10px;
 	color: #5c636a;
+	white-space: nowrap;
 }
 
 .admin-users input {
