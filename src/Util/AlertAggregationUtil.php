@@ -75,13 +75,19 @@ class AlertAggregationUtil {
      * @param PiAlertGroup $alertGroupTarget
      * @return bool
      */
-    public static function unionAlertGroups(PiAlertGroup $alertGroupFrom, PiAlertGroup $alertGroupTarget) : bool
-    {
+    public static function unionAlertGroups(PiAlertGroup $alertGroupFrom, PiAlertGroup $alertGroupTarget) : bool {
         if (!is_null($alertGroupFrom->comment)) {
             if (is_null($alertGroupTarget->comment)) {
                 $alertGroupTarget->comment = $alertGroupFrom->comment;
             } elseif ($alertGroupTarget->comment != $alertGroupFrom->comment) {
-                $alertGroupTarget->comment = $alertGroupFrom->comment.PHP_EOL.PHP_EOL.'Старый коммент: '.$alertGroupTarget->comment;
+                $alertGroupTarget->comment = $alertGroupFrom->comment.PHP_EOL.PHP_EOL.$alertGroupTarget->comment;
+            }
+        }
+        if (!is_null($alertGroupFrom->alert_link)) {
+            if (is_null($alertGroupTarget->alert_link)) {
+                $alertGroupTarget->alert_link = $alertGroupFrom->alert_link;
+            } elseif ($alertGroupTarget->alert_link != $alertGroupFrom->alert_link) {
+                $alertGroupTarget->alert_link = $alertGroupFrom->alert_link.PHP_EOL.$alertGroupTarget->alert_link;
             }
         }
         if (is_null($alertGroupTarget->user_id)) {
