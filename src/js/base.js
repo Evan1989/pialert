@@ -78,6 +78,15 @@ function loadSystemAbout() {
 }
 
 
+function br2nl(str, replaceMode) {
+    let replaceStr = (replaceMode) ? "\n" : '';
+    // Includes <br>, <BR>, <br />, </br>
+    return str.replace(/<\s*\/?br\s*\/?>/gi, replaceStr);
+}
+
+
+
+
 //////////  Block input system   //////////////
 const BLOCK_SYSTEM_TIME_INTERVAL = 1000;
 let BLOCK_SYSTEM_INITIALIZED = false;
@@ -473,6 +482,10 @@ function initJavascriptForOnline() {
 
 ///////////////////////////////////////////////
 
+
+
+
+
 //////////////      Systems   ////////////////
 // noinspection JSUnusedGlobalSymbols
 function initJavascriptForSystems(document) {
@@ -488,8 +501,8 @@ function initJavascriptForSystems(document) {
            document.getElementById('code').value = document.getElementById("systems").rows[rIndex].cells[1].innerHTML;
            $('#prev_code').val( document.getElementById('code').value );
            document.getElementById('name').value = document.getElementById("systems").rows[rIndex].cells[2].innerHTML;
-           document.getElementById('contact').value = document.getElementById("systems").rows[rIndex].cells[3].innerHTML;
-           document.getElementById('comment').value = document.getElementById("systems").rows[rIndex].cells[4].innerHTML;
+           document.getElementById('contact').value = br2nl(document.getElementById("systems").rows[rIndex].cells[3].innerHTML);
+           document.getElementById('comment').value = br2nl(document.getElementById("systems").rows[rIndex].cells[4].innerHTML);
 
         };
     }
@@ -500,7 +513,7 @@ function getSystemContact() {
         let _this =$(this);
         $.ajax({
             type:'post',
-            url:'util/system_contact_ajax.php',
+            url:'dashboard.php',
             data:{code : _this.html()},
             success: function(json){
                 if ( json ) {

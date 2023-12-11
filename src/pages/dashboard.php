@@ -82,6 +82,19 @@ function getAlertLink(PiAlertGroup $alertGroup): string {
 $page = new HTMLPageAlerts($authorizationAdmin);
 
 { // Ajax обработка
+
+    if ( isset($_POST['code']) ) {
+        $query = DB::prepare("SELECT name, contact FROM bs_systems WHERE code = ?");
+        $query->execute(array($_POST['code']));
+        while($row = $query->fetch()) {
+            echo json_encode(array(
+                'name' => $row['name'],
+                'contact' => nl2br($row['contact'])
+            ), JSON_UNESCAPED_UNICODE);
+        }
+        exit();
+    }
+
     if ( isset($_POST['element']) ) {
         list($type, $group_id) = explode('_', $_POST['element']);
         echo saveInputNewValueToAlertGroup( $type, $group_id, $_POST['value']??null);
