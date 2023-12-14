@@ -364,11 +364,11 @@ class PiAlertGroup {
                 }
             } else {
                 if ( $piSystemName ) {
-                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ?)/sum(messageCount))*100 AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
-                    $query->execute(array($piSystemName,$piSystemName, $timeLimit));
+                    $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND )/sum(messageCount))*100 AS c FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($piSystemName, $timeLimit, $piSystemName, $timeLimit));
                 } else {
-                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts)/sum(messageCount))*100 AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
-                    $query->execute(array($timeLimit));
+                    $query = DB::prepare("SELECT ((SELECT count(*)  FROM alerts WHERE timestamp > NOW() - INTERVAL ? SECOND)/sum(messageCount))*100 AS c FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND ");
+                    $query->execute(array($timeLimit, $timeLimit));
                 }
             }
         } else {
@@ -376,8 +376,8 @@ class PiAlertGroup {
                 $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/sum(messageCount))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) ");
                 $query->execute(array($externalSystem, $externalSystem, $externalSystem, $externalSystem));
             } else {
-                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?))/sum(messageCount))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
-                $query->execute(array($externalSystem, $externalSystem, $externalSystem, $externalSystem, $timeLimit));
+                $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts  WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND)/sum(messageCount))*100 AS c FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND ");
+                $query->execute(array($externalSystem, $externalSystem, $timeLimit, $externalSystem, $externalSystem, $timeLimit));
             }
         }
         if ($row = $query->fetch()) {
@@ -390,7 +390,7 @@ class PiAlertGroup {
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
      * @param int|null $timeLimit фильтр по времени
-     * @return float
+     * @return float мс
      */
     public static function getMessageTimeProc(string $piSystemName, string $externalSystem, int|null $timeLimit = null) : float {
         if( empty($externalSystem) ) {
@@ -421,7 +421,7 @@ class PiAlertGroup {
             }
         }
         if ($row = $query->fetch()) {
-            return round((float)$row['c'],2);
+            return round((float)$row['c'] / 1000,2);
         }
         return 0;
     }
@@ -466,8 +466,8 @@ class PiAlertGroup {
     /**
      * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
      * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
-     * @param int $timeLimit
-     * @return float
+     * @param int $timeLimit сек
+     * @return float мс
      */
     public static function getAverageDailyTimeProc(string $piSystemName, string $externalSystem, int $timeLimit) : float {
         $query = PiAlertGroup::getDailyMessageTimeProc($piSystemName, $externalSystem, $timeLimit);
@@ -476,7 +476,7 @@ class PiAlertGroup {
             $res += $row['c'];
         }
         if($query->rowCount()>0) {
-            return round($res/$query->rowCount(),2);
+            return round($res/(1000*$query->rowCount()),2);
         }
         return 0;
     }
