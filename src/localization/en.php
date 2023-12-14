@@ -21,6 +21,7 @@ $texts = array(
     'perDay' => 'per day',
     'alertCount' => 'Alert count',
     'alertPercent' => 'Alert percent',
+    'messageTimeProc' => 'Message processing time',
     'today' => 'Today',
     'name' => 'Name',
     'search' => 'Search',
@@ -110,6 +111,7 @@ $texts = array(
     'statisticMessageWeekTimeProc' => 'Message processing time, per week',
     'statisticMessageMonthTimeProc' => 'Message processing time, per month',
     'statisticMessageTimeProc' => 'Message processing time, total',
+    'statisticMessageTimeProcMonthChart' => 'Message processing time chart, for month',
 
     'statisticAlertWeekPercent' => 'Error percent, per week',
     'statisticAlertMonthPercent' => 'Error percent, per month',

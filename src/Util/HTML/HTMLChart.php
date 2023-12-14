@@ -37,11 +37,11 @@ class HTMLChart {
     /**
      * JavaScript код для отображения графика количества сообщений по дням
      * @param string $param Имя SAP PI, если пусто, то вернет по всем системам
-     * @param string $extSystem Имя внешней системы
+     * @param string $externalSystem Имя внешней системы
      * @return string
      */
-    public function getDailyAlertsPercentChart(string $param, string $extSystem) : string {
-        $query = PiAlertGroup::getDailyAlertPercentForDiagram($param, $extSystem, ONE_MONTH);
+    public function getDailyAlertsPercentChart(string $param, string $externalSystem) : string {
+        $query = PiAlertGroup::getDailyAlertPercentForDiagram($param, $externalSystem, ONE_MONTH);
         $data1= array();
         while($row = $query->fetch()) {
             $data1[$row['date']] = $row['percent'];
@@ -49,6 +49,23 @@ class HTMLChart {
         $data = array(Text::alertPercent() => $data1);
         return "<canvas class='w-100' id='alertPercentDailyHistory' style='display: block; max-height: 200px; max-width: 800px;'></canvas>".
             $this->getLineChartJs('alertPercentDailyHistory', $data, false);
+    }
+
+    /**
+     * JavaScript код для отображения графика скорости обработки сообщений
+     * @param string $param Имя SAP PI, если пусто, то вернет по всем системам
+     * @param string $externalSystem Имя внешней системы
+     * @return string
+     */
+    public function getDailyMessageTimeProcChart(string $param, string $externalSystem) : string {
+        $query = PiAlertGroup::getDailyMessageTimeProc($param, $externalSystem, ONE_MONTH);
+        $data1= array();
+        while($row = $query->fetch()) {
+            $data1[$row['date']] = $row['timeProc'];
+        }
+        $data = array(Text::messageTimeProc() => $data1);
+        return "<canvas class='w-100' id='alertMessageTimeProcDailyHistory' style='display: block; max-height: 200px; max-width: 800px;'></canvas>".
+            $this->getLineChartJs('alertMessageTimeProcDailyHistory', $data, false);
     }
 
     /**

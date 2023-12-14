@@ -21,6 +21,7 @@ $texts = array(
     'perDay' => 'в сутки',
     'alertCount' => 'Алертов',
     'alertPercent' => 'Процент ошибок',
+    'messageTimeProc' => 'Время обработки сообщений',
     'today' => 'Сегодня',
     'name' => 'Название',
     'search' => 'Поиск',
@@ -116,6 +117,7 @@ $texts = array(
     'statisticMessageWeekTimeProc' => 'Среднее время полной обработки сообщения, за неделю',
     'statisticMessageMonthTimeProc' => 'Среднее время полной обработки сообщения, за месяц',
     'statisticMessageTimeProc' => 'Среднее время полной обработки сообщения, за всю историю',
+    'statisticMessageTimeProcMonthChart' => 'График времени обработки, за месяц',
 
     'statistic4ExtSystem' => 'Статистика для внешней системы',
 

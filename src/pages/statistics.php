@@ -178,11 +178,11 @@ echo "  </div>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticAlertWeekPercent() . "</td>
-                          <td>" . $week_alertPercent . "%,  ".Text::chartsAverageDay()." ".PiAlertGroup::getAverageDailyAlertsPercent($choosePiSystem, $chooseBusinessSystem,ONE_WEEK)."% </td>
+                          <td>" . $week_alertPercent . "%</td>
                       </tr> 
                       <tr>
                           <td>" . Text::statisticAlertMonthPercent() . "</td>
-                          <td>" . $month_alertPercent . "%,  ".Text::chartsAverageDay()." ".PiAlertGroup::getAverageDailyAlertsPercent($choosePiSystem, $chooseBusinessSystem,ONE_MONTH)."% </td>
+                          <td>" . $month_alertPercent . "%</td>
                       </tr>  
                       <tr>
                             <td>" . Text::statisticAlertPercentMonthChart() . "</td>
@@ -194,11 +194,15 @@ echo "  </div>
                       </tr>
                       <tr>
                           <td>" . Text::statisticMessageWeekTimeProc() . "</td>
-                          <td>" . $message_ProcTimeWeek .' '.Text::msecs(). ", ".Text::chartsAverageDay()." ".PiAlertGroup::getAverageDailyTimeProc($choosePiSystem, $chooseBusinessSystem,ONE_WEEK).' '.Text::msecs()."</td>
+                          <td>" . $message_ProcTimeWeek .' '.Text::msecs()."</td>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticMessageMonthTimeProc() . "</td>
-                          <td>" . $message_ProcTimeMonth .Text::msecs(). ", ".Text::chartsAverageDay()." ".PiAlertGroup::getAverageDailyTimeProc($choosePiSystem, $chooseBusinessSystem,ONE_MONTH) . ' ' .Text::msecs()."</td>
+                          <td>" . $message_ProcTimeMonth .' '.Text::msecs()."</td>
+                      </tr>  
+                      <tr>
+                          <td>" . Text::statisticMessageTimeProcMonthChart() . "</td>
+                          <td>" . $chart->getDailyMessageTimeProcChart($choosePiSystem, $chooseBusinessSystem)."</td>
                       </tr>    
                 </tbody>
             </table>
