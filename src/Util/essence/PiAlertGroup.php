@@ -381,7 +381,7 @@ class PiAlertGroup {
             }
         }
         if ($row = $query->fetch()) {
-            return round((float)$row['c'],2);
+            return round($row['c'],2);
         }
         return 0;
     }
@@ -421,7 +421,7 @@ class PiAlertGroup {
             }
         }
         if ($row = $query->fetch()) {
-            return round((float)$row['c'] / 1000,2);
+            return round($row['c'] / 1000);
         }
         return 0;
     }

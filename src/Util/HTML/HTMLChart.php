@@ -61,7 +61,7 @@ class HTMLChart {
         $query = PiAlertGroup::getDailyMessageTimeProc($param, $externalSystem, ONE_MONTH);
         $data1= array();
         while($row = $query->fetch()) {
-            $data1[$row['date']] = $row['timeProc'];
+            $data1[$row['date']] = round($row['timeProc'] / 1000);
         }
         $data = array(Text::messageTimeProc() => $data1);
         return "<canvas class='w-100' id='alertMessageTimeProcDailyHistory' style='display: block; max-height: 200px; max-width: 800px;'></canvas>".
