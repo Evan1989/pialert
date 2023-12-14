@@ -436,27 +436,27 @@ class PiAlertGroup {
         if( empty($externalSystem) ) {
             if ( is_null($timeLimit) ) {
                 if ( $piSystemName ) {
-                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE piSystemName = ? GROUP BY DATE");
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE piSystemName = ? GROUP BY DATE");
                     $query->execute(array($piSystemName));
                 } else {
-                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat GROUP BY DATE");
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat GROUP BY DATE");
                     $query->execute();
                 }
             } else {
                 if ( $piSystemName ) {
-                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE piSystemName = ? AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
                     $query->execute(array($piSystemName, $timeLimit));
                 } else {
-                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                    $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
                     $query->execute(array($timeLimit));
                 }
             }
         } else {
             if ( is_null($timeLimit) ) {
-                $query = DB::prepare("SELECT  sum(messageProcTime)/sum(messageCount) AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) GROUP BY DATE");
+                $query = DB::prepare("SELECT  sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) GROUP BY DATE");
                 $query->execute(array($externalSystem, $externalSystem));
             } else {
-                $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c, substring(timestamp, 1, 10) AS DATE FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
+                $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE (fromSystem = ? OR toSystem= ?) AND timestamp > NOW() - INTERVAL ? SECOND GROUP BY DATE");
                 $query->execute(array($externalSystem, $externalSystem, $timeLimit));
             }
         }
