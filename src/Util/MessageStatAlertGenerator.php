@@ -75,9 +75,8 @@ class MessageStatAlertGenerator {
     }
 
     protected function getStatEnablePiSystemList() : string {
-        $piSystems = new ManagePiSystem();
         $res = '';
-        foreach ($piSystems->getPiSystems() as $piSystem) {
+        foreach (ManagePiSystem::getPiSystems() as $piSystem) {
             if ( !$piSystem->getStatisticEnable() )
             {
                 $res = $res.$piSystem->getSystemName().',';

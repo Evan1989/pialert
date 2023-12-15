@@ -15,7 +15,7 @@ class AlertAggregationUtil {
     public static function createOrFindGroupForAlert(PiAlert $alert) : PiAlertGroup {
         $maybe_need_union = 0;
         $query = DB::prepare("SELECT *  FROM alert_group WHERE piSystemName=? AND fromSystem=? AND toSystem=? AND (channel=? OR interface=?)");
-        $query->execute(array($alert->piSystemName, $alert->fromSystem??'', $alert->toSystem??'', $alert->channel??'', $alert->interface??''));
+        $query->execute(array($alert->piSystemName, $alert->fromSystem??'', $alert->toSystem??'', $alert->channel??'#not specified#', $alert->interface??''));
         while($row = $query->fetch()) {
             $alertGroup = new PiAlertGroup($row);
             if ( TextAnalysisUtil::isSimilarText($alertGroup->errText, $alert->errText) || TextAnalysisUtil::isTextFitToMask($alert->errText, $alertGroup->errTextMask) ) {

@@ -72,9 +72,8 @@ class MessageStatisticServiceCall {
     }
 
     public function updateStatisticForAllSystem() : bool {
-        $piSystems = new ManagePiSystem();
         $res = false;
-        foreach ($piSystems->getPiSystems() as $piSystem) {
+        foreach (ManagePiSystem::getPiSystems() as $piSystem) {
             if ( !$piSystem->getStatisticEnable() ) {
                 continue;
             }

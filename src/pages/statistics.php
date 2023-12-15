@@ -13,9 +13,8 @@ use EvanPiAlert\Util\Text;
 $authorizationAdmin = new AuthorizationAdmin();
 $authorizationAdmin->ifNotAccessGoErrorPage();
 
-$piSystems = new ManagePiSystem();
 $systemNames = array();
-foreach ($piSystems->getPiSystems() as $piSystem) {
+foreach (ManagePiSystem::getPiSystems() as $piSystem) {
     $systemNames[$piSystem->getSystemName()] = $piSystem->getSID();
 }
 // Фильтрация только по SAP PI или внешней системе

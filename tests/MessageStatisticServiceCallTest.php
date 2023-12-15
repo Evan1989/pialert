@@ -19,8 +19,7 @@ class MessageStatisticServiceCallTest extends TestCase {
         $this->assertTrue($msgStatServiceCall->updateStatisticForAllSystem(), 'Вызов сервиса не выполнен');
         $end = date("Y-m-d H:00:00.0");
         $begin = date("Y-m-d H:00:0.0", strtotime($end) - 3600);
-        $piSystems = new ManagePiSystem();
-        $list = $piSystems->getPiSystems();
+        $list = ManagePiSystem::getPiSystems();
         $firstSystem = array_shift($list);
         if ( $firstSystem->getStatisticEnable() ) {
             $this->assertEquals(200, $msgStatServiceCall->serviceCallPerSystem($firstSystem->getSystemName(), $firstSystem->getHost(), $begin, $end), 'Успешный вызов сервиса');

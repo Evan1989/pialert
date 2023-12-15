@@ -1,0 +1,6 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+
+UPDATE `settings` SET `value` = '2.9' WHERE `settings`.`code` = 'DATABASE VERSION';
+
+COMMIT;

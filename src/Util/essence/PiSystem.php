@@ -35,13 +35,6 @@ class PiSystem {
     }
 
     public function getSID() : string {
-       /* $systemNames = Settings::get(Settings::SYSTEMS_NAMES);
-        if ( $systemNames !== false ) {
-            $systemNames = json_decode($systemNames, true);
-            if ( isset($systemNames[$this->piSystemName]) ) {
-                return $systemNames[$this->piSystemName];
-            }
-        }*/
         if( isset($this->piSID) ) {
             return $this->piSID;
         }
