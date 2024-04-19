@@ -71,7 +71,11 @@ class PiAlert {
         $this->errText = $alert->ErrText;
 
         if ( isset($alert->UDSAttrs) ) {
-            $this->UDSAttributes = json_encode($alert->UDSAttrs);
+            if ( is_string($alert->UDSAttrs) ) {
+                $this->UDSAttributes = $alert->UDSAttrs;
+            } else {
+                $this->UDSAttributes = json_encode($alert->UDSAttrs);
+            }
         } else {
             $this->UDSAttributes = null;
         }
