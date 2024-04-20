@@ -66,7 +66,7 @@ if ( $_POST ) {
         }
     } else {
         $value = $_POST['value'];
-        list($user_id, $menu_id) = explode('_', $_POST['right']);
+        list($user_id, $menu_id) = explode('_', $_POST['right'], 2);
         // Есть ли у нас такой пользователь
         $query = DB::prepare("SELECT * FROM users WHERE user_id = ?");
         $query->execute(array($user_id));
