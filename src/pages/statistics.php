@@ -126,7 +126,7 @@ echo "<div class='card mb-4 shadow'>
         <div class='card-header'>";
 $systemNames[''] = Text::statisticAllSystems();
 foreach ($systemNames as $systemName => $systemSID) {
-    if ( isset($userSystems[$systemName]) ) {
+    if ( isset($userSystems[$systemName]) || $systemName == '' ) {
         echo "<a href='statistics.php?choosePiSystem=" . $systemName . "' class='btn btn-primary " . ($choosePiSystem == $systemName ? 'disabled' : '') . "'>" . $systemSID . "</a> ";
     }
 }
