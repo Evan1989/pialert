@@ -62,7 +62,6 @@ namespace EvanPiAlert\Util;
  * @method static string menuStatistics()
  * @method static string menuSettings()
  * @method static string menuReports()
- * @method static string menuRules()
  * @method static string menuProfile()
  * @method static string menuOnline()
  * @method static string menuMassAlerts()

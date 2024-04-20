@@ -385,7 +385,7 @@ class PiAlertGroup {
             }
         }
         if ($row = $query->fetch()) {
-            return round($row['c'],2);
+            return round($row['c']??0,2);
         }
         return 0;
     }

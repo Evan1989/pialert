@@ -17,6 +17,8 @@ $systemNames = array();
 foreach (ManagePiSystem::getPiSystems() as $piSystem) {
     $systemNames[$piSystem->getSystemName()] = $piSystem->getSID();
 }
+$userSystems = $authorizationAdmin->getAccessedSystems();
+
 // Фильтрация только по SAP PI или внешней системе
 $choosePiSystem = $_GET['choosePiSystem']??'';
 if ( !isset($systemNames[$choosePiSystem]) ) {
@@ -39,16 +41,22 @@ if ( isset($_GET['loadMainStatistics']) ) {
         ");
         $query->execute(array( $chooseBusinessSystem, $chooseBusinessSystem));
     } elseif ( empty($choosePiSystem) ) {
-        // По SAP PI
+        // Вся статистика
+        $sqlParams = array();
+        foreach ($userSystems as $systemName => $temp) {
+            $sqlParams[] = $systemName;
+        }
+        $sqlSystemFilter = '('.str_repeat('g.piSystemName = ? OR ', count($sqlParams)).' false)';
         $query = DB::prepare("
             SELECT count(*) as alert_count, count(DISTINCT a.group_id) as group_count, status
             FROM alerts a LEFT JOIN alert_group g ON a.group_id=g.group_id
+            WHERE $sqlSystemFilter
             GROUP BY status
             ORDER BY group_count 
         ");
-        $query->execute(array());
+        $query->execute($sqlParams);
     } else {
-        // Вся статистика
+        // По конкретной интеграционной платформе
         $query = DB::prepare("
             SELECT count(*) as alert_count, count(DISTINCT a.group_id) as group_count, status
             FROM alerts a LEFT JOIN alert_group g ON a.group_id=g.group_id
@@ -117,14 +125,15 @@ $message_ProcTimeMonth = PiAlertGroup::getMessageTimeProc($choosePiSystem, $choo
 echo "<div class='card mb-4 shadow'>
         <div class='card-header'>";
 $systemNames[''] = Text::statisticAllSystems();
-foreach ($systemNames as $systemCode => $systemName) {
-    echo "<a href='statistics.php?choosePiSystem=".$systemCode."' class='btn btn-primary ".($choosePiSystem==$systemCode?'disabled':'')."'>".$systemName."</a> ";
+foreach ($systemNames as $systemName => $systemSID) {
+    if ( isset($userSystems[$systemName]) ) {
+        echo "<a href='statistics.php?choosePiSystem=" . $systemName . "' class='btn btn-primary " . ($choosePiSystem == $systemName ? 'disabled' : '') . "'>" . $systemSID . "</a> ";
+    }
 }
 
 // Выбор фильтра по внешней системе
 $query = DB::prepare("SELECT code from bs_systems");
 $query->execute();
-
 $caption = $chooseBusinessSystem?:Text::externalSystems();
 echo" <div class='btn-group'>
   <button type='button' class='btn btn-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>".$caption."</button>

@@ -10,7 +10,6 @@ use PDOException;
 class Settings {
 
     const COMPANY_NAME = 'COMPANY NAME';
-    const LINK_TO_SUPPORT_RULES = 'LINK TO SUPPORT RULES';
 
     const SYSTEMS_NAMES = 'SYSTEMS NAMES';
 

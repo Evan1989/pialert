@@ -28,6 +28,12 @@ if ( isset($_POST['errorText']) ) {
     $errorText = '';
 }
 
+$sqlParams = array();
+foreach ($authorizationAdmin->getAccessedSystems() as $systemName => $temp) {
+    $sqlParams[] = $systemName;
+}
+$sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
+
 $groups = array();
 if ( $errorText ) {
     $status = $_POST['status']??null;
@@ -42,6 +48,7 @@ if ( $errorText ) {
         SELECT *
         FROM alert_group
         WHERE
+            $sqlSystemFilter AND
             last_alert > NOW() - INTERVAL 14 DAY
             AND (fromSystem LIKE ? OR toSystem LIKE ?)
             AND errTextMask LIKE ?
@@ -50,7 +57,10 @@ if ( $errorText ) {
     ");
     $systemForSearch = '%'.str_replace('*', '%',$system).'%';
     $errorTextForSearch = '%'.str_replace('*', '%',$errorText).'%';
-    $query->execute(array($systemForSearch, $systemForSearch, $errorTextForSearch, PiAlertGroup::CLOSE));
+    $query->execute(array_merge(
+        $sqlParams,
+        array($systemForSearch, $systemForSearch, $errorTextForSearch, PiAlertGroup::CLOSE)
+    ));
     while ($row = $query->fetch()) {
         $alertGroup = new PiAlertGroup($row);
         if ( isset($_POST['comment']) ) {
@@ -70,24 +80,25 @@ $groupCount = count($groups);
 
 echo $page->getPageHeader(Text::massAlertsPageHeader());
 
+$sqlParams[] = PiAlertGroup::CLOSE;
 $systems = array();
-$query = DB::prepare("SELECT fromSystem, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? AND fromSystem IS NOT NULL AND fromSystem != '' GROUP BY fromSystem order by count desc LIMIT 3");
-$query->execute(array(PiAlertGroup::CLOSE));
+$query = DB::prepare("SELECT fromSystem, count(*) as count FROM alert_group WHERE $sqlSystemFilter AND last_alert > NOW() - INTERVAL 14 DAY AND status != ? AND fromSystem IS NOT NULL AND fromSystem != '' GROUP BY fromSystem order by count desc LIMIT 3");
+$query->execute($sqlParams);
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 ) {
         $systems[ $row['fromSystem'] ] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-system m-1'>".$row['fromSystem']."</span>";
     }
 }
-$query = DB::prepare("SELECT toSystem, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? AND toSystem IS NOT NULL AND toSystem != '' GROUP BY toSystem order by count desc LIMIT 3");
-$query->execute(array(PiAlertGroup::CLOSE));
+$query = DB::prepare("SELECT toSystem, count(*) as count FROM alert_group WHERE $sqlSystemFilter AND last_alert > NOW() - INTERVAL 14 DAY AND status != ? AND toSystem IS NOT NULL AND toSystem != '' GROUP BY toSystem order by count desc LIMIT 3");
+$query->execute($sqlParams);
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 && !isset($systems[$row['toSystem']]) ) {
         $systems[] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-system m-1'>".$row['toSystem']."</span>";
     }
 }
 $errors = array();
-$query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY AND status != ? GROUP BY errTextMainPart order by count desc LIMIT 5");
-$query->execute(array(PiAlertGroup::CLOSE));
+$query = DB::prepare("SELECT errTextMainPart, count(*) as count FROM alert_group WHERE $sqlSystemFilter AND last_alert > NOW() - INTERVAL 14 DAY AND status != ? GROUP BY errTextMainPart order by count desc LIMIT 5");
+$query->execute($sqlParams);
 while ($row = $query->fetch()) {
     if ( $row['count'] > 1 ) {
         $errors[] = "<span class='btn btn-sm btn-secondary mass-alert-help-button-error m-1'>".$row['errTextMainPart']."</span>";

@@ -63,7 +63,6 @@ $texts = array(
     'menuStatistics' => 'Statistics',
     'menuSettings' => 'Settings',
     'menuReports' => 'Reports',
-    'menuRules' => 'Support rules',
     'menuProfile' => 'Profile',
     'menuOnline' => 'Support online',
     'menuMassAlerts' => 'Mass Incidents',
@@ -129,7 +128,7 @@ $texts = array(
 
     'alertsPageHeader' => 'Last 1000 alerts',
 
-    'dashboardPageHeader' => 'Aggregated alerts from SAP PI',
+    'dashboardPageHeader' => 'Aggregated integration alerts',
     'dashboardCommentPlaceholder' => 'Steps that have already been taken or that need to be completed if alert repeated',
     'dashboardAlertLinkPlaceholder' => 'List of created requests',
     'dashboardCheckAlertGroupAsCompleteButton' => 'The group received a new alert. Click if required action is completed',

@@ -63,7 +63,6 @@ $texts = array(
     'menuStatistics' => 'Статистика',
     'menuSettings' => 'Параметры',
     'menuReports' => 'Отчеты',
-    'menuRules' => 'Регламент поддержки',
     'menuProfile' => 'Профиль',
     'menuOnline' => 'Поддержка online',
     'menuMassAlerts' => 'Массовые инциденты',
@@ -133,7 +132,7 @@ $texts = array(
 
     'alertsPageHeader' => 'Последние 1000 алертов',
 
-    'dashboardPageHeader' => 'Агрегированные алерты из SAP PI',
+    'dashboardPageHeader' => 'Агрегированные интеграционные алерты',
     'dashboardCommentPlaceholder' => 'Шаги, которые уже выполнены, либо который надо выполнить при повторении алерта',
     'dashboardAlertLinkPlaceholder' => 'Список созданных запросов',
     'dashboardCheckAlertGroupAsCompleteButton' => 'По группе пришел новый алерт. Кликните, если необходимые действия выполнены',

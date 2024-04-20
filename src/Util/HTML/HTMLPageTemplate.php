@@ -68,9 +68,9 @@ class HTMLPageTemplate {
     </head>
     <body>".
         $this->getPagesMenu().
-        "<div class='container-fluid'>
+        "<div class='container-fluid p-0 p-md-2'>
             <main role='main'>
-                <div class='container-fluid'>";
+                <div class='container-fluid p-0'>";
     }
 
     public function getPageFooter(string $additionalJavaScript = '') :string {
@@ -161,14 +161,6 @@ class HTMLPageTemplate {
             } else {
                 $text .= $this->getPagesSubMenu($groupCaption, $data);
             }
-        }
-        $linkToSupportRules = Settings::get(Settings::LINK_TO_SUPPORT_RULES);
-        if ( $linkToSupportRules ) {
-            $text .= "	<li class='nav-item'>
-                            <a href='".$linkToSupportRules."' class='nav-link' target='_blank'>
-                                ".$this->getIcon('file-earmark-richtext')." ".Text::menuRules()."
-                            </a>
-                        </li>";
         }
         $text .= "		<li class='nav-item'>
                             <a href='profile.php' class='nav-link'>
