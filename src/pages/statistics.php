@@ -148,13 +148,13 @@ echo "  </div>
         <div class='card-body overflow-auto'>
             <table class='table table-sm table-hover'>
                 <tbody>";
-                if( !empty($chooseBusinessSystem) ) {
-                    echo "<tr>
+if( !empty($chooseBusinessSystem) ) {
+    echo "            <tr>
                           <td>".Text::statistic4ExtSystem()."</td>
                           <td><b>".$chooseBusinessSystem."</b></td>
                       </tr>";
-                }
-                echo "<tr>
+}
+echo "                <tr>
                           <td>" . Text::statisticAlert24HourCount() . "</td>
                           <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_DAY) . " " . Text::pieces() . "</td>
                       </tr>
@@ -177,8 +177,17 @@ echo "  </div>
                       <tr>
                           <td>" . Text::statisticAlertTotalCount() . "</td>
                           <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem) . " " . Text::pieces() . "</td>
-                      </tr>
-                      <tr>
+                      </tr>";
+$enableExtStatistic = false;
+if ( is_null($choosePiSystem) ) {
+    foreach ($userPiSystems as $systemName) {
+        $enableExtStatistic = $enableExtStatistic || ManagePiSystem::getPiSystems()[$systemName]->getStatisticEnable();
+    }
+} else {
+    $enableExtStatistic = ManagePiSystem::getPiSystems()[$choosePiSystem]->getStatisticEnable();
+}
+if ( $enableExtStatistic ) {
+    echo "            <tr>
                           <td>" . Text::statisticAlertTotalPercent() . "</td>
                           <td>" . PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem) . "%</td>
                       </tr>  
@@ -209,8 +218,9 @@ echo "  </div>
                       <tr>
                           <td>" . Text::statisticMessageTimeProcMonthChart() . "</td>
                           <td>" . $chart->getDailyMessageTimeProcChart($piSystemFilterForStat, $chooseBusinessSystem)."</td>
-                      </tr>    
-                </tbody>
+                      </tr>";
+}
+echo "          </tbody>
             </table>
             <div class='main-statistic'></div>
         </div>
