@@ -202,7 +202,7 @@ class AuthorizationAdmin {
     /**
      * @return PiSystem[]
      */
-    public function getAccessedSystems() : array {
+    protected function getAccessedSystems() : array {
         $allSystems = ManagePiSystem::getPiSystems();
         $userSystems = array();
         $query = DB::prepare("SELECT system_name FROM user_systems WHERE user_id = ?");
@@ -214,6 +214,18 @@ class AuthorizationAdmin {
             return $allSystems;
         }
         return $userSystems;
+    }
+
+    protected array $_accessedSystemNames = array();
+    public function getAccessedSystemNames() : array {
+        if ( isset($this->_accessedSystemNames) ) {
+            return $this->_accessedSystemNames;
+        }
+        $this->_accessedSystemNames = array();
+        foreach ($this->getAccessedSystems() as $systemName => $temp) {
+            $this->_accessedSystemNames[] = $systemName;
+        }
+        return $this->_accessedSystemNames;
     }
 
     /** @noinspection PhpSameParameterValueInspection */

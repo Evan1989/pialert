@@ -28,10 +28,7 @@ if ( isset($_POST['errorText']) ) {
     $errorText = '';
 }
 
-$sqlParams = array();
-foreach ($authorizationAdmin->getAccessedSystems() as $systemName => $temp) {
-    $sqlParams[] = $systemName;
-}
+$sqlParams = $authorizationAdmin->getAccessedSystemNames();
 $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
 
 $groups = array();

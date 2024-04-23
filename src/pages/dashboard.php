@@ -152,10 +152,7 @@ $last_work_day = date("Y-m-d 16:00", $last_work_day); // Предыдущий р
 //  Фильтры выборки //
 $defaultSearch = '';
 $additionalHeader = '';
-$sqlParams = array();
-foreach ($authorizationAdmin->getAccessedSystems() as $systemName => $temp) {
-    $sqlParams[] = $systemName;
-}
+$sqlParams = $authorizationAdmin->getAccessedSystemNames();
 $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
 if ( isset($_GET['id']) ) {
     $group_id = (int) $_GET['id'];
