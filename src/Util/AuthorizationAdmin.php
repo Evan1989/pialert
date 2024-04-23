@@ -216,7 +216,7 @@ class AuthorizationAdmin {
         return $userSystems;
     }
 
-    protected array $_accessedSystemNames = array();
+    protected array $_accessedSystemNames;
     public function getAccessedSystemNames() : array {
         if ( isset($this->_accessedSystemNames) ) {
             return $this->_accessedSystemNames;
