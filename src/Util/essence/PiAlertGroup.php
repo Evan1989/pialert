@@ -322,7 +322,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if ( empty($externalSystem) ) {
             if ( is_null($timeLimit) ) {
                 $query = DB::prepare("SELECT count(*) as c FROM alerts WHERE $sqlSystemFilter");
@@ -359,7 +359,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if ( empty($externalSystem) ) {
             if ( is_null($timeLimit) ) {
                 $query = DB::prepare("SELECT ((SELECT count(*) FROM alerts WHERE $sqlSystemFilter)/sum(messageCount))*100 AS c FROM messages_stat WHERE $sqlSystemFilter");
@@ -397,7 +397,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if( empty($externalSystem) ) {
             if ( is_null($timeLimit) ) {
                 $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount)  AS c FROM messages_stat WHERE $sqlSystemFilter");
@@ -434,7 +434,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if( empty($externalSystem) ) {
             if ( is_null($timeLimit) ) {
                 $query = DB::prepare("SELECT sum(messageProcTime)/sum(messageCount) AS timeProc, substring(timestamp, 1, 10) AS date FROM messages_stat WHERE $sqlSystemFilter GROUP BY DATE");
@@ -483,7 +483,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if ( empty($externalSystem) ){
             $sqlParams[] = $timeLimit;
             $query = DB::prepare("
@@ -518,7 +518,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if ( empty($externalSystem) ) {
             $query = DB::prepare("
                 SELECT count(*) as count, HOUR(timestamp) as h
@@ -562,7 +562,7 @@ class PiAlertGroup {
         } else {
             $sqlParams = $piSystemName;
         }
-        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($piSystemName)).' false)';
+        $sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
         if ( empty($externalSystem) ){
             $sqlParams[] = $timeLimit;
             $query = DB::prepare("

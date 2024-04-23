@@ -83,7 +83,7 @@ class HTMLChart {
             $data1[$row['h']] = $row['count'];
         }
 
-        if ( $piSystemName ) {
+        if ( is_string($piSystemName) ) {
             $systems[] = $piSystemName;
         } else {
             $systems = $piSystemName;
