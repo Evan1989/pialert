@@ -89,12 +89,14 @@ table .hide {
 	width: 300px;
 	height: 88px;
 }
-.alert-group .alert-group-comment-html-div.narrow {
-	width: 150px;
-}
-.alert-group .alert-group-comment-html-div.large {
+.alert-group .alert-group-comment-html-div.flex-large {
+	width: auto;
+	height: auto;
 	max-width: 350px;
 	max-height: 150px;
+}
+.alert-group .alert-group-comment-html-div.narrow {
+	width: 150px;
 }
 
 .alert-table .alert-limit-td {

@@ -265,7 +265,7 @@ while($row = $query->fetch()) {
                 <td>".getComment($alertGroup)."</td>
                 <td>".getAlertLink($alertGroup)."</td>
                 <td>".$alertGroup->getHTMLAbout()."</td>
-                <td><div class='alert-group-comment-html-div large'>".$alertGroup->getHTMLErrorTextMask()."</div></td>
+                <td><div class='alert-group-comment-html-div flex-large'>".$alertGroup->getHTMLErrorTextMask()."</div></td>
                 <td>
                     ".$lastAlertDateShow."
                     <br>
