@@ -92,7 +92,7 @@ table .hide {
 .alert-group .alert-group-comment-html-div.narrow {
 	width: 150px;
 }
-.alert-table .alert-group-comment-html-div.large {
+.alert-group .alert-group-comment-html-div.large {
 	max-width: 350px;
 	max-height: 150px;
 }
