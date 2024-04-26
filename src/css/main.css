@@ -92,14 +92,14 @@ table .hide {
 .alert-group .alert-group-comment-html-div.narrow {
 	width: 150px;
 }
+.alert-table .alert-group-comment-html-div.large {
+	max-width: 350px;
+	max-height: 150px;
+}
 
 .alert-table .alert-limit-td {
 	max-width: 150px;
 	max-height: 100px;
-}
-.alert-table .alert-limit-td.middle {
-	max-width: 350px;
-	max-height: 150px;
 }
 .alert-table .alert-limit-td.large {
 	max-width: 460px;
