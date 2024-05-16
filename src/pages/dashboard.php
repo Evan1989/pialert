@@ -64,7 +64,7 @@ function getUserChoice(PiAlertGroup $alertGroup): string {
 function getComment(PiAlertGroup $alertGroup): string {
     $div = '';
     if ( $alertGroup->comment ) {
-        $div = "<div class='alert-group-comment-html-div' data-toggle='tooltip' title='".Text::dashboardEditDate($alertGroup->comment_datetime)."'>".$alertGroup->getHTMLComment()."</div>";
+        $div = "<div class='alert-group-comment-html-div' title='".Text::dashboardEditDate($alertGroup->comment_datetime)."'>".$alertGroup->getHTMLComment()."</div>";
     }
     return "<textarea class='d-none' id='comment_".$alertGroup->group_id."' maxlength='2000' placeholder='".Text::dashboardCommentPlaceholder()."'>".$alertGroup->comment."</textarea>".
         $div;
