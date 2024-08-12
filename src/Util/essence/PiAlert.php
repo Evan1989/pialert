@@ -68,7 +68,7 @@ class PiAlert {
 
         $this->errCategory = $alert->ErrCat??null;
         $this->errCode = $alert->ErrCode??null;
-        $this->errText = $alert->ErrText;
+        $this->errText = $alert->ErrText??'...empty error text...';
 
         if ( isset($alert->UDSAttrs) ) {
             if ( is_string($alert->UDSAttrs) ) {
