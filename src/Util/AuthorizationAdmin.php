@@ -2,6 +2,7 @@
 
 namespace EvanPiAlert\Util;
 
+use EvanPiAlert\Util\essence\PiSystem;
 use EvanPiAlert\Util\essence\User;
 use EvanPiAlert\Util\HTML\HTMLPageTemplate;
 use JetBrains\PhpStorm\NoReturn;
@@ -197,6 +198,35 @@ class AuthorizationAdmin {
         $this->last_error = 403;
 		return false;
 	}
+
+    /**
+     * @return PiSystem[]
+     */
+    protected function getAccessedSystems() : array {
+        $allSystems = ManagePiSystem::getPiSystems();
+        $userSystems = array();
+        $query = DB::prepare("SELECT system_name FROM user_systems WHERE user_id = ?");
+        $query->execute(array( $this->getUserId() ));
+        while ($row = $query->fetch()) {
+            $userSystems[ $row['system_name'] ] = $allSystems[ $row['system_name'] ];
+        }
+        if ( empty($userSystems) ) {
+            return $allSystems;
+        }
+        return $userSystems;
+    }
+
+    protected array $_accessedSystemNames;
+    public function getAccessedSystemNames() : array {
+        if ( isset($this->_accessedSystemNames) ) {
+            return $this->_accessedSystemNames;
+        }
+        $this->_accessedSystemNames = array();
+        foreach ($this->getAccessedSystems() as $systemName => $temp) {
+            $this->_accessedSystemNames[] = $systemName;
+        }
+        return $this->_accessedSystemNames;
+    }
 
     /** @noinspection PhpSameParameterValueInspection */
     private function isUserNotBlock(User $user, bool $setUserOnlineNow ) : bool {

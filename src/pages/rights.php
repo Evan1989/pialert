@@ -6,6 +6,7 @@ use EvanPiAlert\Util\AuthorizationAdmin;
 use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\User;
 use EvanPiAlert\Util\HTML\HTMLPageTemplate;
+use EvanPiAlert\Util\ManagePiSystem;
 use EvanPiAlert\Util\Text;
 
 $authorizationAdmin = new AuthorizationAdmin();
@@ -43,6 +44,11 @@ while ($row = $query->fetch()) {
     $adminsRights[ $row['user_id'] ]['user'] = $row;
     $adminsRights[ $row['user_id'] ]['pages'][$row['menu_id']] = true;
 }
+$query = DB::prepare("SELECT user_id, system_name FROM user_systems");
+$query->execute(array());
+while ($row = $query->fetch()) {
+    $adminsRights[ $row['user_id'] ]['pages'][$row['system_name']] = true;
+}
 if ( $_POST ) {
     if ( isset($_POST['newUser']) ) {
         $search = $_POST['newUser'];
@@ -60,17 +66,26 @@ if ( $_POST ) {
         }
     } else {
         $value = $_POST['value'];
-        list($user_id, $menu_id) = explode('_', $_POST['right']);
-        // Есть ли у нас есть такая страница
-        if (isset($pages[$menu_id])) {
-            // Есть ли у нас такой пользователь
-            $query = DB::prepare("SELECT * FROM users WHERE user_id = ?");
-            $query->execute(array($user_id));
-            if ($row = $query->fetch()) {
+        list($user_id, $menu_id) = explode('_', $_POST['right'], 2);
+        // Есть ли у нас такой пользователь
+        $query = DB::prepare("SELECT * FROM users WHERE user_id = ?");
+        $query->execute(array($user_id));
+        if ($row = $query->fetch()) {
+            // Есть ли у нас есть такая страница
+            if (isset($pages[$menu_id])) {
                 if ($_POST['value'] == 'true') {
                     $query = DB::prepare("INSERT INTO user_rights (user_id, menu_id) VALUES (?, ?)");
                 } else {
                     $query = DB::prepare("DELETE FROM user_rights WHERE user_id = ? AND menu_id = ?");
+                }
+                $query->execute(array($user_id, $menu_id));
+            }
+            // Может у нас есть такая система
+            if (isset(ManagePiSystem::getPiSystems()[$menu_id])) {
+                if ($_POST['value'] == 'true') {
+                    $query = DB::prepare("INSERT INTO user_systems (user_id, system_name) VALUES (?, ?)");
+                } else {
+                    $query = DB::prepare("DELETE FROM user_systems WHERE user_id = ? AND system_name = ?");
                 }
                 $query->execute(array($user_id, $menu_id));
             }
@@ -91,17 +106,21 @@ echo "<div class='card mb-4 shadow'>
                       <th rowspan='2'>".Text::user()."</th>";
 foreach ($groups as $caption => $count ) {
     if ( $count == -1) {
-        echo "<th rowspan='2'>".Text::$caption()."</th>";
+        echo "        <th rowspan='2'>".Text::$caption()."</th>";
     } else {
-        echo "<th colspan='".$count."'>".Text::$caption()."</th>";
+        echo "        <th colspan='".$count."'>".Text::$caption()."</th>";
     }
 }
+echo "                <th colspan='".count( ManagePiSystem::getPiSystems() )."'>".Text::menuSystems()."</th>";
 echo "            </tr>
                   <tr>";
 foreach ($pages as $menu_id => $caption ) {
     if ( $caption ) {
-        echo "<th>".Text::$caption()."</th>";
+        echo "        <th>".Text::$caption()."</th>";
     }
+}
+foreach (ManagePiSystem::getPiSystems() as $piSystem) {
+    echo "            <th>".$piSystem->getSID()."</th>";
 }
 echo "            </tr>
                 </thead> 
@@ -111,13 +130,24 @@ foreach ( $adminsRights as $user_id => $data ) {
     echo "<tr>
             <td>".$user->getAvatarImg('rights-user-avatar').$user->getHTMLCaption()."</td>";
     foreach ($pages as $menu_id => $temp ) {
+        $dataName = $user_id."_".$menu_id;
         echo "<td class='center'>
-                <input type='checkbox' class='form-check-input' id='".$user_id."_".$menu_id."'";
+                <input type='checkbox' class='form-check-input' id='".$dataName."' data-name='".$dataName."'";
         if ( $data['pages'][$menu_id] ?? false ) {
             echo ' checked';
         }
         if ( $user_id==$authorizationAdmin->getUserId() ) {
             echo ' disabled';
+        }
+        echo ">
+            </td>";
+    }
+    foreach (ManagePiSystem::getPiSystems() as $piSystem) {
+        $dataName = $user_id."_".$piSystem->getSystemName();
+        echo "<td class='center'>
+                <input type='checkbox' class='form-check-input' id='".md5($dataName)."' data-name='".$dataName."'";
+        if ( $data['pages'][$piSystem->getSystemName()] ?? false ) {
+            echo ' checked';
         }
         echo ">
             </td>";
@@ -146,7 +176,7 @@ $additionalScript = "
               $.ajax({
                 type: 'POST',
                 url: 'rights.php',
-                data: 'right='+id+'&value='+$(this).prop('checked'),
+                data: 'right='+$(this).attr('data-name')+'&value='+$(this).prop('checked'),
                 'success': function(data) {
                     $('#'+id).removeAttr('disabled');
                     console.log(data);

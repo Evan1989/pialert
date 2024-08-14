@@ -17,10 +17,12 @@ $systemNames = array();
 foreach (ManagePiSystem::getPiSystems() as $piSystem) {
     $systemNames[$piSystem->getSystemName()] = $piSystem->getSID();
 }
+$userPiSystems = $authorizationAdmin->getAccessedSystemNames();
+
 // Фильтрация только по SAP PI или внешней системе
 $choosePiSystem = $_GET['choosePiSystem']??'';
-if ( !isset($systemNames[$choosePiSystem]) ) {
-    $choosePiSystem = '';
+if ( !isset($systemNames[$choosePiSystem]) || !in_array($choosePiSystem, $userPiSystems) ) {
+    $choosePiSystem = null;
 }
 $chooseBusinessSystem= $_GET['chooseBusinessSystem']??'';
 
@@ -28,27 +30,31 @@ $page = new HTMLPageTemplate($authorizationAdmin);
 
 if ( isset($_GET['loadMainStatistics']) ) {
 
+    $sqlParams = $userPiSystems;
+    $sqlSystemFilter = '('.str_repeat('g.piSystemName = ? OR ', count($sqlParams)).' false)';
     if ( $chooseBusinessSystem ) {
         // По внешней системе
+        $sqlParams[] = $chooseBusinessSystem;
+        $sqlParams[] = $chooseBusinessSystem;
         $query = DB::prepare("
             SELECT count(*) as alert_count, count(DISTINCT a.group_id) as group_count, status
             FROM alerts a LEFT JOIN alert_group g ON a.group_id=g.group_id
-            WHERE  a.fromSystem = ? OR a.toSystem = ?
+            WHERE  $sqlSystemFilter AND (a.fromSystem = ? OR a.toSystem = ?)
             GROUP BY status
             ORDER BY group_count 
         ");
-        $query->execute(array( $chooseBusinessSystem, $chooseBusinessSystem));
     } elseif ( empty($choosePiSystem) ) {
-        // По SAP PI
+        // Вся статистика
         $query = DB::prepare("
             SELECT count(*) as alert_count, count(DISTINCT a.group_id) as group_count, status
             FROM alerts a LEFT JOIN alert_group g ON a.group_id=g.group_id
+            WHERE $sqlSystemFilter
             GROUP BY status
             ORDER BY group_count 
         ");
-        $query->execute(array());
     } else {
-        // Вся статистика
+        // По конкретной интеграционной платформе
+        $sqlParams = array($choosePiSystem);
         $query = DB::prepare("
             SELECT count(*) as alert_count, count(DISTINCT a.group_id) as group_count, status
             FROM alerts a LEFT JOIN alert_group g ON a.group_id=g.group_id
@@ -56,11 +62,10 @@ if ( isset($_GET['loadMainStatistics']) ) {
             GROUP BY status
             ORDER BY group_count 
         ");
-        $query->execute(array( $choosePiSystem ));
     }
-
     $data = array();
     $total_alert_count = 0;
+    $query->execute($sqlParams);
     while ($row = $query->fetch()) {
         $data[] = $row;
         $total_alert_count += $row['alert_count'];
@@ -106,25 +111,27 @@ if ( isset($_GET['loadMainStatistics']) ) {
 
 echo $page->getPageHeader(Text::menuStatistics());
 
-$week_alert = PiAlertGroup::getTotalAlertCount($choosePiSystem, $chooseBusinessSystem, ONE_WEEK);
-$month_alert = PiAlertGroup::getTotalAlertCount($choosePiSystem, $chooseBusinessSystem, ONE_MONTH);
-$week_alertPercent = PiAlertGroup::getAlertPercent($choosePiSystem, $chooseBusinessSystem, ONE_WEEK);
-$month_alertPercent = PiAlertGroup::getAlertPercent($choosePiSystem, $chooseBusinessSystem, ONE_MONTH);
-$message_ProcTimeWeek = PiAlertGroup::getMessageTimeProc($choosePiSystem, $chooseBusinessSystem, ONE_WEEK);
-$message_ProcTimeMonth = PiAlertGroup::getMessageTimeProc($choosePiSystem, $chooseBusinessSystem, ONE_MONTH);
+$piSystemFilterForStat = $choosePiSystem??$userPiSystems;
+$week_alert = PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
+$month_alert = PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_MONTH);
+$week_alertPercent = PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
+$month_alertPercent = PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem, ONE_MONTH);
+$message_ProcTimeWeek = PiAlertGroup::getMessageTimeProc($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
+$message_ProcTimeMonth = PiAlertGroup::getMessageTimeProc($piSystemFilterForStat, $chooseBusinessSystem, ONE_MONTH);
 
 // Выбор фильтра по системе SAP PI
 echo "<div class='card mb-4 shadow'>
         <div class='card-header'>";
 $systemNames[''] = Text::statisticAllSystems();
-foreach ($systemNames as $systemCode => $systemName) {
-    echo "<a href='statistics.php?choosePiSystem=".$systemCode."' class='btn btn-primary ".($choosePiSystem==$systemCode?'disabled':'')."'>".$systemName."</a> ";
+foreach ($systemNames as $systemName => $systemSID) {
+    if ( in_array($systemName, $userPiSystems) || $systemName == '' ) {
+        echo "<a href='statistics.php?choosePiSystem=" . $systemName . "' class='btn btn-primary " . ($choosePiSystem == $systemName ? 'disabled' : '') . "'>" . $systemSID . "</a> ";
+    }
 }
 
 // Выбор фильтра по внешней системе
 $query = DB::prepare("SELECT code from bs_systems");
 $query->execute();
-
 $caption = $chooseBusinessSystem?:Text::externalSystems();
 echo" <div class='btn-group'>
   <button type='button' class='btn btn-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>".$caption."</button>
@@ -141,19 +148,19 @@ echo "  </div>
         <div class='card-body overflow-auto'>
             <table class='table table-sm table-hover'>
                 <tbody>";
-                if( !empty($chooseBusinessSystem) ) {
-                    echo "<tr>
+if( !empty($chooseBusinessSystem) ) {
+    echo "            <tr>
                           <td>".Text::statistic4ExtSystem()."</td>
                           <td><b>".$chooseBusinessSystem."</b></td>
                       </tr>";
-                }
-                echo "<tr>
+}
+echo "                <tr>
                           <td>" . Text::statisticAlert24HourCount() . "</td>
-                          <td>" . PiAlertGroup::getTotalAlertCount($choosePiSystem, $chooseBusinessSystem, ONE_DAY) . " " . Text::pieces() . "</td>
+                          <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_DAY) . " " . Text::pieces() . "</td>
                       </tr>
                       <tr>
                             <td>" . Text::statisticAlertTodayChart() . "</td>
-                            <td>" . $chart->getHourAlertsChart($choosePiSystem, $chooseBusinessSystem) . "</td>
+                            <td>" . $chart->getHourAlertsChart($piSystemFilterForStat, $chooseBusinessSystem) . "</td>
                       </tr>
                       <tr>
                           <td>" . Text::statisticAlertWeekCount() . "</td>
@@ -165,15 +172,24 @@ echo "  </div>
                       </tr>
                       <tr>
                             <td>" . Text::statisticAlertMonthChart() . "</td>
-                            <td>" . $chart->getDailyAlertsChart($choosePiSystem, $chooseBusinessSystem) . "</td>
+                            <td>" . $chart->getDailyAlertsChart($piSystemFilterForStat, $chooseBusinessSystem) . "</td>
                       </tr>
                       <tr>
                           <td>" . Text::statisticAlertTotalCount() . "</td>
-                          <td>" . PiAlertGroup::getTotalAlertCount($choosePiSystem, $chooseBusinessSystem) . " " . Text::pieces() . "</td>
-                      </tr>
-                      <tr>
+                          <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem) . " " . Text::pieces() . "</td>
+                      </tr>";
+$enableExtStatistic = false;
+if ( is_null($choosePiSystem) ) {
+    foreach ($userPiSystems as $systemName) {
+        $enableExtStatistic = $enableExtStatistic || ManagePiSystem::getPiSystems()[$systemName]->getStatisticEnable();
+    }
+} else {
+    $enableExtStatistic = ManagePiSystem::getPiSystems()[$choosePiSystem]->getStatisticEnable();
+}
+if ( $enableExtStatistic ) {
+    echo "            <tr>
                           <td>" . Text::statisticAlertTotalPercent() . "</td>
-                          <td>" . PiAlertGroup::getAlertPercent($choosePiSystem, $chooseBusinessSystem) . "%</td>
+                          <td>" . PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem) . "%</td>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticAlertWeekPercent() . "</td>
@@ -185,11 +201,11 @@ echo "  </div>
                       </tr>  
                       <tr>
                             <td>" . Text::statisticAlertPercentMonthChart() . "</td>
-                            <td>" . $chart->getDailyAlertsPercentChart($choosePiSystem, $chooseBusinessSystem) . "</td>
+                            <td>" . $chart->getDailyAlertsPercentChart($piSystemFilterForStat, $chooseBusinessSystem) . "</td>
                       </tr>
                       <tr>
                           <td>" . Text::statisticMessageTimeProc() . "</td>
-                          <td>" . PiAlertGroup::getMessageTimeProc($choosePiSystem, $chooseBusinessSystem) . ' '.Text::msecs()."</td>
+                          <td>" . PiAlertGroup::getMessageTimeProc($piSystemFilterForStat, $chooseBusinessSystem) . ' '.Text::msecs()."</td>
                       </tr>
                       <tr>
                           <td>" . Text::statisticMessageWeekTimeProc() . "</td>
@@ -201,9 +217,10 @@ echo "  </div>
                       </tr>  
                       <tr>
                           <td>" . Text::statisticMessageTimeProcMonthChart() . "</td>
-                          <td>" . $chart->getDailyMessageTimeProcChart($choosePiSystem, $chooseBusinessSystem)."</td>
-                      </tr>    
-                </tbody>
+                          <td>" . $chart->getDailyMessageTimeProcChart($piSystemFilterForStat, $chooseBusinessSystem)."</td>
+                      </tr>";
+}
+echo "          </tbody>
             </table>
             <div class='main-statistic'></div>
         </div>

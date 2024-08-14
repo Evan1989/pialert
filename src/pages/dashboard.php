@@ -152,18 +152,20 @@ $last_work_day = date("Y-m-d 16:00", $last_work_day); // Предыдущий р
 //  Фильтры выборки //
 $defaultSearch = '';
 $additionalHeader = '';
+$sqlParams = $authorizationAdmin->getAccessedSystemNames();
+$sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
 if ( isset($_GET['id']) ) {
     $group_id = (int) $_GET['id'];
+    $sqlParams[] = $group_id;
     $showOnlyImportant = false;
     $showOnlyNewAlerts = false;
     if (isset($_GET['showSameErrors'])) {
         $additionalHeader = ' <i>(GroupID='.$group_id.' and same alerts)</i>';
-        $query = DB::prepare("SELECT *  FROM alert_group WHERE errTextMainPart = (SELECT errTextMainPart FROM alert_group WHERE group_id = ?)");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE errTextMainPart = (SELECT errTextMainPart FROM alert_group WHERE $sqlSystemFilter AND group_id = ?)");
     } else {
         $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
-        $query = DB::prepare("SELECT *  FROM alert_group WHERE group_id = ?");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE $sqlSystemFilter AND group_id = ?");
     }
-    $query->execute(array( $group_id ));
 } else {
     if (isset($_GET['search'])) {
         $defaultSearch = htmlspecialchars($_GET['search']);
@@ -174,13 +176,13 @@ if ( isset($_GET['id']) ) {
     }
     if (isset($_GET['showHistoryAlerts']) && $_GET['showHistoryAlerts'] == 1) {
         $showOnlyNewAlerts = false;
-        $query = DB::prepare("SELECT *  FROM alert_group order by last_alert desc");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE $sqlSystemFilter order by last_alert desc");
     } else {
         $showOnlyNewAlerts = true;
-        $query = DB::prepare("SELECT *  FROM alert_group WHERE last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc");
+        $query = DB::prepare("SELECT *  FROM alert_group WHERE $sqlSystemFilter AND last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc");
     }
-    $query->execute(array());
 }
+$query->execute($sqlParams);
 //  Фильтры выборки //
 
 
@@ -263,7 +265,7 @@ while($row = $query->fetch()) {
                 <td>".getComment($alertGroup)."</td>
                 <td>".getAlertLink($alertGroup)."</td>
                 <td>".$alertGroup->getHTMLAbout()."</td>
-                <td style='max-width: 350px'>".$alertGroup->getHTMLErrorTextMask()."</td>
+                <td><div class='alert-group-comment-html-div flex-large'>".$alertGroup->getHTMLErrorTextMask()."</div></td>
                 <td>
                     ".$lastAlertDateShow."
                     <br>

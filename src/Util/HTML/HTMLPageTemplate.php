@@ -63,14 +63,14 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v35' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v39' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
         $this->getPagesMenu().
-        "<div class='container-fluid'>
+        "<div class='container-fluid p-0 p-md-2'>
             <main role='main'>
-                <div class='container-fluid'>";
+                <div class='container-fluid p-0'>";
     }
 
     public function getPageFooter(string $additionalJavaScript = '') :string {
@@ -161,14 +161,6 @@ class HTMLPageTemplate {
             } else {
                 $text .= $this->getPagesSubMenu($groupCaption, $data);
             }
-        }
-        $linkToSupportRules = Settings::get(Settings::LINK_TO_SUPPORT_RULES);
-        if ( $linkToSupportRules ) {
-            $text .= "	<li class='nav-item'>
-                            <a href='".$linkToSupportRules."' class='nav-link' target='_blank'>
-                                ".$this->getIcon('file-earmark-richtext')." ".Text::menuRules()."
-                            </a>
-                        </li>";
         }
         $text .= "		<li class='nav-item'>
                             <a href='profile.php' class='nav-link'>

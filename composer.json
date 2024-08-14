@@ -1,9 +1,9 @@
 {
   "name": "pialert/pialert",
-  "description": "Automate aggregation tools to standard alerts from SAP PI/PO (CBMA) for internal support team.",
-  "keywords": ["sap", "sap pi", "sap po", "cbma", "alerts", "support team"],
+  "description": "Automate aggregation tools to standard alerts from SAP PI/PO (CBMA) and local integration engine as ABAP for internal support teams.",
+  "keywords": ["sap", "sap pi", "sap po", "cbma", "alerts", "support team", "local integration engine"],
   "homepage": "https://pialert.orpein.com",
-  "version": "2.9.1",
+  "version": "3.1.3",
   "license": "Apache-2.0",
   "authors": [
     {

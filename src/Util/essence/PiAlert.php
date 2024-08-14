@@ -68,10 +68,14 @@ class PiAlert {
 
         $this->errCategory = $alert->ErrCat??null;
         $this->errCode = $alert->ErrCode??null;
-        $this->errText = $alert->ErrText;
+        $this->errText = $alert->ErrText??'...empty error text...';
 
         if ( isset($alert->UDSAttrs) ) {
-            $this->UDSAttributes = json_encode($alert->UDSAttrs);
+            if ( is_string($alert->UDSAttrs) ) {
+                $this->UDSAttributes = $alert->UDSAttrs;
+            } else {
+                $this->UDSAttributes = json_encode($alert->UDSAttrs);
+            }
         } else {
             $this->UDSAttributes = null;
         }

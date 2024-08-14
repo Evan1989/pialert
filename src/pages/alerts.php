@@ -21,8 +21,10 @@ echo "<div class='card mb-4 shadow'>
             </div>
 	    </div>
         <div class='card-body overflow-auto main-table-for-filter'>";
-$query = DB::prepare(" SELECT *  FROM alerts ORDER BY id desc LIMIT 1000");
-$query->execute(array());
+$sqlParams = $authorizationAdmin->getAccessedSystemNames();
+$sqlSystemFilter = '('.str_repeat('piSystemName = ? OR ', count($sqlParams)).' false)';
+$query = DB::prepare(" SELECT * FROM alerts WHERE $sqlSystemFilter ORDER BY id desc LIMIT 1000");
+$query->execute($sqlParams);
 echo $page->getAlertTable($query);
 echo "  </div>
 	</div>";

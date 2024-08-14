@@ -3,7 +3,6 @@
 namespace EvanPiAlert\Util\HTML;
 
 use EvanPiAlert\Util\AlertAnalytics;
-use EvanPiAlert\Util\DB;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use EvanPiAlert\Util\Text;
 
@@ -15,11 +14,11 @@ class HTMLChart {
 
     /**
      * JavaScript код для отображения графика количества сообщений по дням
-     * @param PiAlertGroup|string $param Либо группа ошибок, либо имя SAP PI, если пусто, то вернет по всем системам
-     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета фильтра по SAP PI
+     * @param PiAlertGroup|string|array $param Либо группа ошибок, либо фильтр по системам источникам алертов
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе
      * @return string
      */
-    public function getDailyAlertsChart(PiAlertGroup|string $param, string $externalSystem = '') : string {
+    public function getDailyAlertsChart(PiAlertGroup|string|array $param, string $externalSystem = '') : string {
         if ( $param instanceof PiAlertGroup) {
             $query = $param->getAlertCountForDiagram(ONE_MONTH);
         } else {
@@ -36,12 +35,12 @@ class HTMLChart {
 
     /**
      * JavaScript код для отображения графика количества сообщений по дням
-     * @param string $param Имя SAP PI, если пусто, то вернет по всем системам
+     * @param string|array $piSystemName Фильтр по системам источникам алертов
      * @param string $externalSystem Имя внешней системы
      * @return string
      */
-    public function getDailyAlertsPercentChart(string $param, string $externalSystem) : string {
-        $query = PiAlertGroup::getDailyAlertPercentForDiagram($param, $externalSystem, ONE_MONTH);
+    public function getDailyAlertsPercentChart(string|array $piSystemName, string $externalSystem) : string {
+        $query = PiAlertGroup::getDailyAlertPercentForDiagram($piSystemName, $externalSystem, ONE_MONTH);
         $data1= array();
         while($row = $query->fetch()) {
             $data1[$row['date']] = $row['percent'];
@@ -53,12 +52,12 @@ class HTMLChart {
 
     /**
      * JavaScript код для отображения графика скорости обработки сообщений
-     * @param string $param Имя SAP PI, если пусто, то вернет по всем системам
+     * @param string|array $piSystemName Фильтр по системам источникам алертов
      * @param string $externalSystem Имя внешней системы
      * @return string
      */
-    public function getDailyMessageTimeProcChart(string $param, string $externalSystem) : string {
-        $query = PiAlertGroup::getDailyMessageTimeProc($param, $externalSystem, ONE_MONTH);
+    public function getDailyMessageTimeProcChart(string|array $piSystemName, string $externalSystem) : string {
+        $query = PiAlertGroup::getDailyMessageTimeProc($piSystemName, $externalSystem, ONE_MONTH);
         $data1= array();
         while($row = $query->fetch()) {
             $data1[$row['date']] = round($row['timeProc'] / 1000);
@@ -70,11 +69,11 @@ class HTMLChart {
 
     /**
      * JavaScript код для отображения графика количества сообщений по часам
-     * @param string $piSystemName Если значение пусто, то возвращается статистика по всем системам
-     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе, без учета первого параметра
+     * @param string|array $piSystemName Фильтр по системам источникам алертов
+     * @param string $externalSystem Если заполнено, то возвращается статистика по внешней системе
      * @return string
      */
-    public function getHourAlertsChart(string $piSystemName, string $externalSystem) : string {
+    public function getHourAlertsChart(string|array $piSystemName, string $externalSystem) : string {
         $weekDay = date("N")-1; // от 0 до 6
         $hour = date("H");
 
@@ -84,15 +83,10 @@ class HTMLChart {
             $data1[$row['h']] = $row['count'];
         }
 
-        $systems = array();
-        if ( $piSystemName ) {
+        if ( is_string($piSystemName) ) {
             $systems[] = $piSystemName;
         } else {
-            $query = DB::prepare("SELECT DISTINCT piSystemName FROM alerts WHERE timestamp > NOW() - INTERVAL 4 WEEK");
-            $query->execute(array());
-            while($row = $query->fetch()) {
-                $systems[] = $row['piSystemName'];
-            }
+            $systems = $piSystemName;
         }
         $data2 = array();
         $data3 = array();
