@@ -47,9 +47,11 @@ class MessageStatisticServiceCall {
                 $db_input_array=array();
                 foreach ($xml->Data->DataRows->Row as $row) { //строка содержащая информацию о статистике обработки сообщений
                     $pi_proc_time = $row->Entry[20]; //вычисляем время обработки в SAP PI
-                    foreach ($row->Entry[22]->MeasuringPoints->MP as $MP) { //находим время обработки в Адаптере
-                        if (mb_substr_count($MP->Name, 'module_') > 0) {
-                            $pi_proc_time -= ($MP->Avg);
+                    if(is_iterable($row->Entry[22]->MeasuringPoints->MP)) {
+                        foreach ($row->Entry[22]->MeasuringPoints->MP as $MP) { //находим время обработки в Адаптере
+                            if (mb_substr_count($MP->Name, 'module_') > 0) {
+                                $pi_proc_time -= ($MP->Avg);
+                            }
                         }
                     }
                     $key=$systemName.$row->Entry[6].$row->Entry[8]. $row->Entry[9];
@@ -60,14 +62,14 @@ class MessageStatisticServiceCall {
                             $db_input_array[$key]['toSystem'] = $row->Entry[8];
                             $db_input_array[$key]['interface'] = $row->Entry[9];
                             $db_input_array[$key]['timestamp'] = $end;
-                            $db_input_array[$key]['messageCount'] = (int)$row->Entry[13];
-                            $db_input_array[$key]['messageProcTime'] = (int)$row->Entry[20];
+                            $db_input_array[$key]['messageCount'] = (int)$row->Entry[14];
+                            $db_input_array[$key]['messageProcTime'] = (int)$row->Entry[22];
                             $db_input_array[$key]['messageProcTimePI'] = (int)($pi_proc_time);
                         }
                         else
                         {
-                            $db_input_array[$key]['messageCount'] += (int)$row->Entry[13];
-                            $db_input_array[$key]['messageProcTime'] += (int)$row->Entry[20];
+                            $db_input_array[$key]['messageCount'] += (int)$row->Entry[14];
+                            $db_input_array[$key]['messageProcTime'] += (int)$row->Entry[22];
                             $db_input_array[$key]['messageProcTimePI'] += (int)($pi_proc_time);
 
                         }
