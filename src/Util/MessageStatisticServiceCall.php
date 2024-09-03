@@ -45,31 +45,65 @@ class MessageStatisticServiceCall {
             $xml = simplexml_load_string($response['http_body']);
             if (isset($xml->Data->DataRows->Row)) {
                 $db_input_array=array();
+                $entries = iterator_to_array($xml->Data->ColumnNames->Column, false);
+                $FROM_SERVICE_NAME_idx=null;
+                $TO_SERVICE_NAME_idx=null;
+                $SCENARIO_IDENTIFIER_idx=null;
+                $ACTION_NAME_idx=null;
+                $MESSAGE_COUNTER_idx=null;
+                $MEASURING_POINTS_idx=null;
+                $TOTAL_PROCESSING_TIME_idx=null;
+                foreach ($entries as $index => $val)
+                {
+                    switch ($val) {
+                        case "FROM_SERVICE_NAME":
+                            $FROM_SERVICE_NAME_idx=$index;
+                            break;
+                        case "TO_SERVICE_NAME":
+                            $TO_SERVICE_NAME_idx=$index;
+                            break;
+                        case "SCENARIO_IDENTIFIER":
+                            $SCENARIO_IDENTIFIER_idx=$index;
+                            break;
+                        case "ACTION_NAME":
+                            $ACTION_NAME_idx=$index;
+                            break;
+                        case "MESSAGE_COUNTER":
+                            $MESSAGE_COUNTER_idx=$index;
+                            break;
+                        case "MEASURING_POINTS":
+                            $MEASURING_POINTS_idx=$index;
+                            break;
+                        case "TOTAL_PROCESSING_TIME":
+                            $TOTAL_PROCESSING_TIME_idx=$index;
+                            break;
+                    }
+                }
                 foreach ($xml->Data->DataRows->Row as $row) { //строка содержащая информацию о статистике обработки сообщений
-                    $pi_proc_time = $row->Entry[20]; //вычисляем время обработки в SAP PI
-                    if(is_iterable($row->Entry[22]->MeasuringPoints->MP)) {
-                        foreach ($row->Entry[22]->MeasuringPoints->MP as $MP) { //находим время обработки в Адаптере
+                    $pi_proc_time = $row->Entry[$TOTAL_PROCESSING_TIME_idx]; //вычисляем время обработки в SAP PI
+                    if(is_iterable($row->Entry[$MEASURING_POINTS_idx]->MeasuringPoints->MP)) {
+                        foreach ($row->Entry[$MEASURING_POINTS_idx]->MeasuringPoints->MP as $MP) { //находим время обработки в Адаптере
                             if (mb_substr_count($MP->Name, 'module_') > 0) {
                                 $pi_proc_time -= ($MP->Avg);
                             }
                         }
                     }
-                    $key=$systemName.$row->Entry[6].$row->Entry[8]. $row->Entry[9];
-                    if (!empty((string)$row->Entry[8]) && !empty((string)$row->Entry[11])) { //исключаем ошибочные сообщения с неизвестным получателем
+                    $key=$systemName.$row->Entry[$FROM_SERVICE_NAME_idx].$row->Entry[$TO_SERVICE_NAME_idx]. $row->Entry[$ACTION_NAME_idx];
+                    if (!empty((string)$row->Entry[$TO_SERVICE_NAME_idx]) && !empty((string)$row->Entry[$SCENARIO_IDENTIFIER_idx])) { //исключаем ошибочные сообщения с неизвестным получателем
                         if(!isset( $db_input_array[$key])) {
                             $db_input_array[$key]['systemName'] = $systemName;
-                            $db_input_array[$key]['fromSystem'] = $row->Entry[6];
-                            $db_input_array[$key]['toSystem'] = $row->Entry[8];
-                            $db_input_array[$key]['interface'] = $row->Entry[9];
+                            $db_input_array[$key]['fromSystem'] = $row->Entry[$FROM_SERVICE_NAME_idx];
+                            $db_input_array[$key]['toSystem'] = $row->Entry[$TO_SERVICE_NAME_idx];
+                            $db_input_array[$key]['interface'] = $row->Entry[$ACTION_NAME_idx];
                             $db_input_array[$key]['timestamp'] = $end;
-                            $db_input_array[$key]['messageCount'] = (int)$row->Entry[14];
-                            $db_input_array[$key]['messageProcTime'] = (int)$row->Entry[22];
+                            $db_input_array[$key]['messageCount'] = (int)$row->Entry[$MESSAGE_COUNTER_idx];
+                            $db_input_array[$key]['messageProcTime'] = (int)$row->Entry[$TOTAL_PROCESSING_TIME_idx];
                             $db_input_array[$key]['messageProcTimePI'] = (int)($pi_proc_time);
                         }
                         else
                         {
-                            $db_input_array[$key]['messageCount'] += (int)$row->Entry[14];
-                            $db_input_array[$key]['messageProcTime'] += (int)$row->Entry[22];
+                            $db_input_array[$key]['messageCount'] += (int)$row->Entry[$MESSAGE_COUNTER_idx];
+                            $db_input_array[$key]['messageProcTime'] += (int)$row->Entry[$TOTAL_PROCESSING_TIME_idx];
                             $db_input_array[$key]['messageProcTimePI'] += (int)($pi_proc_time);
 
                         }
