@@ -33,6 +33,10 @@ class TextAnalysisUtilTest extends TestCase {
         $a = "Failed to put message into DB store. Reason: com.sap.engine.services.ts.transaction.TxRollbackException: Current transaction is marked for rollback";
         $b = "Current transaction is marked for rollback";
         $this->assertEquals(TextAnalysisUtil::getMainPartOfPiErrorText($a), $b, 'Некорректно извлекли основную часть ошибки');
+
+        $a = "Для поставки 3000102233 материал 1409407 отсутствует в завершении комплектации";
+        $b = "Для поставки * материал * отсутствует в завершении комплектации";
+        $this->assertEquals(TextAnalysisUtil::getMainPartOfPiErrorText($a), $b, 'Некорректно извлекли основную часть ошибки');
     }
     
     public function testIsSimilarText() {
