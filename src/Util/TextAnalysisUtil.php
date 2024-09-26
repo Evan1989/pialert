@@ -14,6 +14,8 @@ class TextAnalysisUtil {
         $text = self::replaceMessageIdToMask($text);
         // Уберем порты
         $text = self::replacePortNumberToMask($text);
+        // Уберем номера документов
+        $text = self::replaceDocumentNumberToMask($text);
         // Уберем название каналов
         $text = preg_replace('/Channel Name: [^ ]+/', '*', $text);
         // Уберем ip адреса, хосты
@@ -36,6 +38,10 @@ class TextAnalysisUtil {
     public static function replacePortNumberToMask(string $text) : string {
         // port 10232
         return preg_replace('/port \d+/', 'port *', $text);
+    }
+    public static function replaceDocumentNumberToMask(string $text) : string {
+        // 1409407
+        return preg_replace('/\d{7,}/', '*', $text);
     }
 
     private static function getTextAfterLastColon(string $text, bool $skipLastColon = false) : string {

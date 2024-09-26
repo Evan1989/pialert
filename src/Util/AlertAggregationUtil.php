@@ -42,6 +42,7 @@ class AlertAggregationUtil {
         $alertGroup->errText = $alert->errText;
         $mask = TextAnalysisUtil::replaceMessageIdToMask($alert->errText);
         $mask = TextAnalysisUtil::replacePortNumberToMask($mask);
+        $mask = TextAnalysisUtil::replaceDocumentNumberToMask($mask);
         $alertGroup->errTextMask = $mask;
         $alertGroup->firstAlert = $alert->timestamp;
         $alertGroup->lastAlert = $alert->timestamp;
