@@ -166,6 +166,7 @@ if ( isset($_GET['id']) ) {
         $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
         $query = DB::prepare("SELECT *  FROM alert_group WHERE $sqlSystemFilter AND group_id = ?");
     }
+    $additionalHeader .= "<input type='hidden' id='getFilterGroupID' value='".$group_id."'>";
 } else {
     if (isset($_GET['search'])) {
         $defaultSearch = htmlspecialchars($_GET['search']);

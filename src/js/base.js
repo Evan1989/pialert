@@ -279,6 +279,11 @@ function dashboardPageReload() {
         return;
     }
     let url = 'dashboard.php?'
+    let group_id = $('#getFilterGroupID');
+    if ( group_id.length > 0 && group_id.val() > 0 ) {
+        location.href = url+'id='+group_id.val();
+        return;
+    }
     if ( !$('#showOnlyNewAlerts').is(':checked') ) {
         url = url+'showHistoryAlerts=1&';
     }
