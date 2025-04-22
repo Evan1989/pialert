@@ -7,7 +7,7 @@ use EvanPiAlert\Util\essence\MessageStatistic;
 
 class JobDeleteMessageStatistic extends JobAbstract {
 
-    const JOB_INTERVAL = 86400; // Раз в сутки
+    const int JOB_INTERVAL = 86400; // Раз в сутки
 
     protected function executeJobInternal(): void {
 

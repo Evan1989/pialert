@@ -10,7 +10,7 @@ use EvanPiAlert\Util\Settings;
 
 class JobCacheRefresh extends JobAbstract {
 
-    const JOB_INTERVAL = 86400; // Раз в сутки
+    const int JOB_INTERVAL = 86400; // Раз в сутки
 
     protected function executeJobInternal(): void {
         AuthorizationAdmin::deleteAllOldToken();

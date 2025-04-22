@@ -8,7 +8,7 @@ use EvanPiAlert\Util\Text;
 
 class HTMLChart {
 
-    const DIAGRAM_COLORS = array('green','Orange','grey','blue','purple','red','Cyan','yellow','Maroon','Chocolate','Lime','Indigo','Khaki', 'SALMON', 'black');
+    const array DIAGRAM_COLORS = array('green','Orange','grey','blue','purple','red','Cyan','yellow','Maroon','Chocolate','Lime','Indigo','Khaki', 'SALMON', 'black');
 
     public function __construct() {}
 

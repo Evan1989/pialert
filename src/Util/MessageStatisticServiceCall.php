@@ -148,7 +148,7 @@ class MessageStatisticServiceCall {
                     $begin = $end - 3600; //Данные за часовой интервал
                 }
                 if( $end - $begin > ONE_DAY) {
-                    $begin = $end - ONE_DAY; // За последние сутки, т.к. данные по часовым интервалам хранятся 24 часа
+                    $begin = $end - ONE_DAY; // За последние сутки, данные по часовым интервалам хранятся 24 часа
                 }
                 while( $end - $begin >= 3600 ) {
                     $temp_end = $begin + 3600;

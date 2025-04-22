@@ -7,7 +7,7 @@ use EvanPiAlert\Util\Settings;
 
 class JobSaveMessageStatistic extends JobAbstract {
 
-    const JOB_INTERVAL = 3600; // Раз в час
+    const int JOB_INTERVAL = 3600; // Раз в час
 
     protected function executeJobInternal(): void {
        $msgStat=new MessageStatisticServiceCall();

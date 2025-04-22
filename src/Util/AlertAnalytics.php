@@ -4,8 +4,8 @@ namespace EvanPiAlert\Util;
 
 class AlertAnalytics {
 
-    const CACHE_NAME_PREFIX = 'AlertAnalyticsCache_';
-    const HOUR_IN_WEEK = 168;
+    const string CACHE_NAME_PREFIX = 'AlertAnalyticsCache_';
+    const int HOUR_IN_WEEK = 168;
 
     public function __construct() {}
 

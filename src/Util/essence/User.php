@@ -69,7 +69,7 @@ class User {
     /**
      * Если пользователя не было более указанного количества секунд, то считаем, что он offline
      */
-    const ONLINE_SECOND_LIMIT = 300;
+    const int ONLINE_SECOND_LIMIT = 300;
 
     public function isOnline() : bool {
         return $this->getIntervalFromLastAction() < self::ONLINE_SECOND_LIMIT;

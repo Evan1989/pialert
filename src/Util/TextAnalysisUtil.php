@@ -22,7 +22,7 @@ class TextAnalysisUtil {
         $text = preg_replace('/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/', '*', $text);
         $text = preg_replace('/[a-z\d\-.]+\.(net|com|ru|local)(:\d+)?/', '*', $text);
         $text = str_replace('**', '*', $text);
-        // Возьмем конец текста, тк.к. в начале обычно название классов и Exception
+        // Возьмем конец текста, в начале обычно название классов и Exception
         $result = static::getTextAfterLastColon($text);
         if ( $result && mb_strlen($result) < 15 ) {
             $result = static::getTextAfterLastColon($text, true);
@@ -172,7 +172,7 @@ class TextAnalysisUtil {
         return $result;
     }
 
-    const REGEXP_META_SYMBOLS = array(
+    const array REGEXP_META_SYMBOLS = array(
         '\\', '.', '|', '(', ')', '[', ']', '+', '+', '^', '$', '{', '}', '=', '\''
     );
     protected static array $regexpMetaSymbolsWithEscape = array();

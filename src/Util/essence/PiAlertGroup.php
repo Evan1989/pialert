@@ -11,12 +11,12 @@ use PDOStatement;
 
 class PiAlertGroup {
 
-    const NEW = 0;
-    const IGNORE = 1;
-    const MANUAL = 2;
-    const WAIT = 3;
-    const CLOSE = 4;
-    const REOPEN = 5;
+    const int NEW = 0;
+    const int IGNORE = 1;
+    const int MANUAL = 2;
+    const int WAIT = 3;
+    const int CLOSE = 4;
+    const int REOPEN = 5;
 
     private static ?array $statusNames = null;
     public static function getStatusName(int $statusCode = -1) : string|array {
@@ -36,7 +36,7 @@ class PiAlertGroup {
         return self::$statusNames;
     }
 
-    const STATUS_COLORS = array(
+    const array STATUS_COLORS = array(
         self::NEW => "danger",
         self::IGNORE => "success",
         self::MANUAL => "warning",

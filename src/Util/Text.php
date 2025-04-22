@@ -199,12 +199,12 @@ namespace EvanPiAlert\Util;
  **/
 class Text {
 
-    const RU = 'ru';
-    const EN = 'en';
+    const string RU = 'ru';
+    const string EN = 'en';
 
-    const LANGUAGES = [self::EN, self::RU];
+    const array LANGUAGES = [self::EN, self::RU];
 
-    const REPLACE_PATTERN = '%%%%';
+    const string REPLACE_PATTERN = '%%%%';
 
     private static ?Text $instance = null;
 

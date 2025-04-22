@@ -23,7 +23,7 @@ const GITHUB_RAW_LINK = "https://raw.githubusercontent.com/Evan1989/pialert";
  * @param string|null $zero
  * @return string
  */
-function getIntervalRoundLength($interval, string $code_filter = null, ?string $zero = null): string {
+function getIntervalRoundLength($interval, ?string $code_filter = null, ?string $zero = null): string {
 	$time_unit = array(
 		'year' => array('border' => ONE_MONTH * 24, 'step' => ONE_MONTH * 12, 'names' => Text::yearsArray()),
 		'month' => array('border' => ONE_MONTH * 2, 'step' => ONE_MONTH, 'names' => Text::monthsArray()),

@@ -9,37 +9,37 @@ use PDOException;
  */
 class Settings {
 
-    const COMPANY_NAME = 'COMPANY NAME';
+    const string COMPANY_NAME = 'COMPANY NAME';
 
-    const SYSTEMS_NAMES = 'SYSTEMS NAMES';
+    const string SYSTEMS_NAMES = 'SYSTEMS NAMES';
 
-    const SYSTEMS_SETTINGS = 'SYSTEMS SETTINGS';
+    const string SYSTEMS_SETTINGS = 'SYSTEMS SETTINGS';
 
-    const SYSTEMS_NETWORK_CHECK = 'SYSTEMS NETWORK CHECK';
+    const string SYSTEMS_NETWORK_CHECK = 'SYSTEMS NETWORK CHECK';
 
-    const AVERAGE_ALERT_INTERVAL_RATIO = 'AVERAGE ALERT INTERVAL RATIO';
+    const string AVERAGE_ALERT_INTERVAL_RATIO = 'AVERAGE ALERT INTERVAL RATIO';
 
-    const CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
+    const string CBMA_SERVICE_PASSWORD = 'CBMA SERVICE PASSWORD';
 
-    const MESSAGE_STAT_SERVICE_PASSWORD = 'MESSAGE STATISTIC SERVICE PASSWORD';
+    const string MESSAGE_STAT_SERVICE_PASSWORD = 'MESSAGE STATISTIC SERVICE PASSWORD';
 
-    const MESSAGE_STAT_SERVICE_USER = 'MESSAGE STATISTIC SERVICE USER';
+    const string MESSAGE_STAT_SERVICE_USER = 'MESSAGE STATISTIC SERVICE USER';
 
-    const DATABASE_VERSION = 'DATABASE VERSION';
+    const string DATABASE_VERSION = 'DATABASE VERSION';
 
-    const JOB_CACHE_REFRESH_TIME = 'JOB CACHE REFRESH TIME';
+    const string JOB_CACHE_REFRESH_TIME = 'JOB CACHE REFRESH TIME';
 
-    const JOB_MESSAGE_STAT_REFRESH_TIME = 'JOB MESSAGE STATISTIC REFRESH TIME'; //время обновления задания статистики
+    const string JOB_MESSAGE_STAT_REFRESH_TIME = 'JOB MESSAGE STATISTIC REFRESH TIME'; //время обновления задания статистики
 
-    const MESSAGE_STAT_STORE_DAYS = 'MESSAGE STATISTIC STORE DAYS'; //время хранения в днях статистики
+    const string MESSAGE_STAT_STORE_DAYS = 'MESSAGE STATISTIC STORE DAYS'; //время хранения в днях статистики
 
-    const JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGE STATISTIC DELETE REFRESH TIME'; //время обновления задания очистки статистики
+    const string JOB_MESSAGE_STAT_DELETE_REFRESH_TIME = 'JOB MESSAGE STATISTIC DELETE REFRESH TIME'; //время обновления задания очистки статистики
 
-    const ALERT_MESSAGE_COUNT = 'ALERT MESSAGE COUNT'; //пороговое значение для алерта по количеству сообщений
+    const string ALERT_MESSAGE_COUNT = 'ALERT MESSAGE COUNT'; //пороговое значение для алерта по количеству сообщений
 
-    const ALERT_PROC_TIME = 'ALERT MESSAGE PROCESSING TIME'; //пороговое значение для алерта по времени обработки
+    const string ALERT_PROC_TIME = 'ALERT MESSAGE PROCESSING TIME'; //пороговое значение для алерта по времени обработки
 
-    const JOB_MESSAGE_STAT_ALERT_REFRESH_TIME = 'JOB MESSAGE STATISTIC ALERT REFRESH TIME'; //время обновления задания очистки статистики
+    const string JOB_MESSAGE_STAT_ALERT_REFRESH_TIME = 'JOB MESSAGE STATISTIC ALERT REFRESH TIME'; //время обновления задания очистки статистики
 
     private static ?Settings $_instance = null;
     private array $cache = array();

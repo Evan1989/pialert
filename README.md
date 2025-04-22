@@ -10,7 +10,7 @@ Language support:
 
 # 💻 Server requirements for PiAlert
 1. 1 CPU, 1 GB HDD, 1 GB RAM
-2. PHP 8.1
+2. PHP 8.4
 3. PHP dependencies via composer.json:
    1. extension  = curl
    2. extension  = mbstring

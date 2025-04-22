@@ -19,7 +19,7 @@ class AuthorizationAdmin {
 
 	public function __construct() {}
 
-    const PAGES_WHITE_LIST = array(
+    const array PAGES_WHITE_LIST = array(
         '/src/pages/profile.php'
     );
 
