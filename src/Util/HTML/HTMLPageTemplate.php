@@ -10,6 +10,8 @@ use EvanPiAlert\Util\Text;
 
 class HTMLPageTemplate {
 
+    const int CSS_JS_VERSION = 70;
+
     protected ?AuthorizationAdmin $authorizationAdmin;
 
     public function __construct(?AuthorizationAdmin $authorizationAdmin = null) {
@@ -63,7 +65,7 @@ class HTMLPageTemplate {
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
         <link rel='shortcut icon' href='/favicon.png?v2' id='favicon'>
         <link href='/src/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-        <link href='/src/css/main.css?v39' rel='stylesheet' type='text/css'>
+        <link href='/src/css/main.css?v".static::CSS_JS_VERSION."' rel='stylesheet' type='text/css'>
         <script src='/src/js/jquery-3.6.0.min.js'></script>
     </head>
     <body>".
@@ -95,7 +97,7 @@ class HTMLPageTemplate {
         <script src='/src/js/popper.min.js'></script>
         <script src='/src/js/bootstrap.min.js'></script>
         <script src='/src/js/chart.min.js'></script>
-        <script src='/src/js/base.js?v=67'></script>".
+        <script src='/src/js/base.js?v".static::CSS_JS_VERSION."'></script>".
         $additionalJavaScript.
     "</body>
 </html>";

@@ -247,12 +247,51 @@ function initJavascriptForUsers() {
 
 ///////////////  Dashboard   //////////////////
 // noinspection JSUnusedGlobalSymbols
-function initJavascriptForDashboard() {
+function ajaxUploadDashboardPages(page) {
+    $('.page-ajax-load-loader').html('Loading page '+page);
+    let url = getDashboardPageURL()+'&page='+page;
+    $.ajax({
+        type: 'GET',
+        url: url,
+        xhrFields: {
+            withCredentials: true
+        },
+        'success': function(data) {
+            $('.page-ajax-load-data').append(data);
+        }
+    });
+}
+function ajaxUploadDashboardPagesFinish() {
+    let loader = $('.page-ajax-load-loader');
+    loader.html('Javascript initialization');
+    setTimeout(function() {
+        initJavascriptForDashboardStep2();
+        loader.html('');
+    }, 250);
+}
+function initJavascriptForDashboardStep1() {
+    $('#showOnlyNewAlerts').change(function(){
+        dashboardPageReload();
+    });
+    $('#showOnlyImportant').change(function(){
+        dashboardPageReload();
+    });
+}
+function initJavascriptForDashboardStep2() {
     initBlockSystem( 1, 'updateInputFieldInAlertGroupTable' );
     updateNewAlertFlagCount();
-    $('.alert-group select, .alert-group textarea').each(function() {
+
+    let editFields = $('.alert-group select, .alert-group textarea');
+    let editFieldsCount = editFields.length;
+    let num = 0;
+    editFields.each(function() {
         addAjaxFunctionForInputInAlertGroupTable($(this));
+        num++;
+        if ( num % 400 === 0 ) {
+            console.log( Math.ceil(100*num / editFieldsCount) + '%' )
+        }
     });
+
     $('.new-alert-count').click(function(){
         let scrollTo = $('.new-alert-flag.bell-fill:visible').last();
         if ( scrollTo.length === 0 ) {
@@ -262,27 +301,18 @@ function initJavascriptForDashboard() {
             scrollTop: scrollTo.offset().top - scrollTo.parents('tr').height()
         }, 200);
     });
-    $('#showOnlyNewAlerts').change(function(){
-        dashboardPageReload();
-    });
-    $('#showOnlyImportant').change(function(){
-        dashboardPageReload();
-    });
     setInterval(function(){
         dashboardPageReload();
     }, 300000);
     getSystemContact();
 }
-let reloadBlocked = false;
-function dashboardPageReload() {
-    if ( reloadBlocked ) {
-        return;
-    }
+let dashboardPageURL = '';
+function getDashboardPageURL() {
     let url = 'dashboard.php?'
     let group_id = $('#getFilterGroupID');
     if ( group_id.length > 0 && group_id.val() > 0 ) {
-        location.href = url+'id='+group_id.val();
-        return;
+        dashboardPageURL = url+'id='+group_id.val();
+        return dashboardPageURL;
     }
     if ( !$('#showOnlyNewAlerts').is(':checked') ) {
         url = url+'showHistoryAlerts=1&';
@@ -291,7 +321,15 @@ function dashboardPageReload() {
         url = url+'showNotImportant=1&';
     }
     let search = $('#mainTableSearch').val()
-    location.href = url+'search='+search;
+    dashboardPageURL = url+'search='+search;
+    return dashboardPageURL;
+}
+let reloadBlocked = false;
+function dashboardPageReload() {
+    if ( reloadBlocked ) {
+        return;
+    }
+    location.href = getDashboardPageURL();
 }
 function addAjaxFunctionForInputInAlertGroupTable(field) {
     field.change(function(){
