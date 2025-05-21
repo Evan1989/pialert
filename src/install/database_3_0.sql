@@ -14,6 +14,9 @@ ALTER TABLE `user_systems`
 ALTER TABLE `user_systems`
     ADD CONSTRAINT `user_systems_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
+INSERT INTO `user_systems` (`user_id`, `system_name`) VALUES
+(1, 'af.pip.pip-db1');
+
 UPDATE `settings` SET `value` = '3.0' WHERE `settings`.`code` = 'DATABASE VERSION';
 
 COMMIT;
