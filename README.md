@@ -16,8 +16,9 @@ Language support:
    2. extension  = mbstring
    3. extension  = pdo_mysql
    4. extension  = simplexml
-4. MySQL/MariaDB
-5. Nginx
+4. Composer
+5. MySQL/MariaDB
+6. Nginx
 
 # 👷 Installation steps (EN)
 1. Download PiAlert
@@ -29,8 +30,9 @@ Language support:
 5. Enter system settings into /src/pages/settings.php
 6. Create the required users in /src/pages/users.php
 7. Grant new users rights via /src/pages/rights.php
-8. _(optional)_ For the semi-automatic PiAlert upgrade system to work, need permissions to write into / (under php user)
-9. _(optional)_ Add script /src/main_job.php to cron settings every 5 minutes (it is recommended to add error log redirection to php log, for example, 2>>/var/log/php-fpm/error.log)
+8. _(optional)_ Network connection from PiAlert server to the Internet (for semi-automatic updates and GeoIP)
+9. _(optional)_ For PiAlert semi-automatic update to work, you need write permissions to / (under the php user)
+10. _(optional)_ Add script /src/main_job.php to cron settings every 5 minutes (it is recommended to add error log redirection to php log, for example, 2>>/var/log/php-fpm/error.log)
 
 # 👷 Installation steps (RU)
 1. Скачать систему PiAlert
@@ -42,8 +44,9 @@ Language support:
 5. Вбить параметры системы в /src/pages/settings.php
 6. Завести необходимых пользователей в /src/pages/users.php
 7. Предоставить новым пользователям права через /src/pages/rights.php
-8. _(необязательно)_ Для работы полуавтоматического обновления PiAlert, нужны права на запись в / (под пользователем php)
-9. _(необязательно)_ Добавить скрипт /src/main_job.php в настройки cron раз в 5 минут (рекомендуется добавить перенаправление лога ошибок в лог php, например, 2>>/var/log/php-fpm/error.log)
+8. _(необязательно)_ Сетевое соединение от сервера PiAlert в интернет (для полуавтоматического обновления и GeoIP)
+9. _(необязательно)_ Для работы полуавтоматического обновления PiAlert, нужны права на запись в / (под пользователем php)
+10. _(необязательно)_ Добавить скрипт /src/main_job.php в настройки cron раз в 5 минут (рекомендуется добавить перенаправление лога ошибок в лог php, например, 2>>/var/log/php-fpm/error.log)
 
 # 🚧 Requirements in SAP PI/PO
 1. ⚠️Network access from SAP PI/PO to PiAlert (HTTP/HTTPS)
