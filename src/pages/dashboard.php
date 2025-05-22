@@ -117,7 +117,12 @@ if ( isset($_GET['id']) ) {
     }
     if (isset($_GET['showHistoryAlerts']) && $_GET['showHistoryAlerts'] == 1) {
         $showOnlyNewAlerts = false;
-        $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter order by last_alert desc";
+        if ( $defaultSearch ) {
+            $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter AND errText LIKE ? order by last_alert desc";
+            $sqlParams[] = '%'.$defaultSearch.'%';
+        } else {
+            $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter order by last_alert desc";
+        }
     } else {
         $showOnlyNewAlerts = true;
         $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter AND last_alert > NOW() - INTERVAL 14 DAY order by last_alert desc";
@@ -281,9 +286,13 @@ echo "<div class='card mb-4 shadow'>
 	        </div><div class='float-end mx-2 form-check form-switch' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowOnlyImportantAlerts()."'>
                 ".HTMLPageAlerts::getIcon( ($showOnlyImportant?'cup-hot':'cup') )."
                 <input class='form-check-input' type='checkbox' id='showOnlyImportant' ".($showOnlyImportant?'checked':'').">
-	        </div><div class='float-end mx-2'>
-	            <input class='d-inline form-control form-control-sm' id='mainTableSearch' type='text' placeholder='".Text::search()."...' value='".$defaultSearch."'>
-            </div>";
+	        </div><div class='float-end mx-2'>";
+if ( $defaultSearch ) {
+    echo "      <input class='d-inline form-control form-control-sm' disabled id='mainTableSearch' type='text' value='".$defaultSearch."'>";
+} else {
+    echo "      <input class='d-inline form-control form-control-sm' id='mainTableSearch' type='text' placeholder='".Text::search()."...' value=''>";
+}
+echo "      </div>";
 if ( $support_online ) {
     echo "  <div class='float-end mx-2'>
 	            <span class='badge bg-success' data-toggle='tooltip' data-placement='top' title='".Text::dashboardSupportOnline()."'>support online</span>
