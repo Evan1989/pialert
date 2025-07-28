@@ -48,7 +48,14 @@ class PiAlert {
         }
 
         $this->alertRuleId = $alert->RuleId;
-        $this->piSystemName = $alert->Component;
+
+        if(!isset($alert->Severity) && !isset($alert->AdapterType))
+        {
+            $this->piSystemName = 'Other systems';
+        }
+        else {
+            $this->piSystemName = $alert->Component;
+        }
         $this->priority = $alert->Severity??null;
         $this->timestamp = date("Y-m-d H:i:s", strtotime($alert->Timestamp));
 
