@@ -7,6 +7,8 @@ class ManagePiSystem {
 
     static protected ?array $piSystems;
 
+    const string OTHER_SYSTEM_NAME = 'Other';
+
     public static function internalInit() : void {
         if ( isset(ManagePiSystem::$piSystems) ) {
             return;
@@ -21,6 +23,7 @@ class ManagePiSystem {
             $piSystem_array[ $key ] = $piSystem;
         }
         ManagePiSystem::$piSystems = $piSystem_array;
+        ManagePiSystem::$piSystems[static::OTHER_SYSTEM_NAME] = new PiSystem(static::OTHER_SYSTEM_NAME);
     }
 
     public static function deletePiSystem($systemName) : bool{

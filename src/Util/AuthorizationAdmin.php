@@ -25,7 +25,7 @@ class AuthorizationAdmin {
 
     /**
      * Получить ID авторизованного пользователя
-     * @return int ID пользователя или 0, если авторизации не пройдена
+     * @return int ID пользователя или 0, если авторизация не пройдена
      */
 	public function getUserId(): int {
         if ( is_null($this->user) ) {

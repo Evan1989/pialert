@@ -3,6 +3,7 @@
 namespace EvanPiAlert\Util\essence;
 
 use EvanPiAlert\Util\DB;
+use EvanPiAlert\Util\ManagePiSystem;
 
 class PiAlert {
 
@@ -49,11 +50,9 @@ class PiAlert {
 
         $this->alertRuleId = $alert->RuleId;
 
-        if(!isset($alert->Severity) && !isset($alert->AdapterType))
-        {
-            $this->piSystemName = 'Other systems';
-        }
-        else {
+        if( empty($alert->Severity) && empty($alert->AdapterType) && mb_strpos($alert->RuleId, "Certificate") ) {
+            $this->piSystemName = ManagePiSystem::OTHER_SYSTEM_NAME;
+        } else {
             $this->piSystemName = $alert->Component;
         }
         $this->priority = $alert->Severity??null;

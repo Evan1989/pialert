@@ -5,6 +5,9 @@ ALTER TABLE `alerts` CHANGE `adapterType` `adapterType` VARCHAR(50) CHARACTER SE
 
 ALTER TABLE `alerts` CHANGE `priority` `priority` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
 
+INSERT INTO `user_systems` (`user_id`, `system_name`) VALUES
+    (1, 'Other');
+
 UPDATE `settings` SET `value` = '4.1' WHERE `settings`.`code` = 'DATABASE VERSION';
 
 COMMIT;
