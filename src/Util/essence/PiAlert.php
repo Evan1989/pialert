@@ -42,7 +42,14 @@ class PiAlert {
         }
     }
 
+    function fixTrailingComma(string $json): string {
+        // Удаляет запятую перед последней закрывающей фигурной скобкой
+        // B2B Addon присылает невалидный JSON с запятой перед закрывающей скобкой
+        return preg_replace('/,(\s*})\s*$/', '$1', $json);
+    }
+
     private function createFromJson(string $jsonFromPi) : void {
+        $jsonFromPi = $this->fixTrailingComma($jsonFromPi);
         $alert = json_decode($jsonFromPi, null, 10);
         if ( is_null($alert) ) {
             return;
@@ -50,7 +57,7 @@ class PiAlert {
 
         $this->alertRuleId = $alert->RuleId;
 
-        if( empty($alert->Severity) && empty($alert->AdapterType) && mb_strpos($alert->RuleId, "Certificate") ) {
+        if( empty($alert->Severity) && empty($alert->AdapterType) && mb_strpos($alert->RuleId, "Certificate") !== false ) {
             $this->piSystemName = ManagePiSystem::OTHER_SYSTEM_NAME;
         } else {
             $this->piSystemName = $alert->Component;
