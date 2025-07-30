@@ -3,6 +3,7 @@
 namespace EvanPiAlert\Util\essence;
 
 use EvanPiAlert\Util\DB;
+use EvanPiAlert\Util\ManagePiSystem;
 
 class PiAlert {
 
@@ -48,7 +49,12 @@ class PiAlert {
         }
 
         $this->alertRuleId = $alert->RuleId;
-        $this->piSystemName = $alert->Component;
+
+        if( empty($alert->Severity) && empty($alert->AdapterType) && mb_strpos($alert->RuleId, "Certificate") ) {
+            $this->piSystemName = ManagePiSystem::OTHER_SYSTEM_NAME;
+        } else {
+            $this->piSystemName = $alert->Component;
+        }
         $this->priority = $alert->Severity??null;
         $this->timestamp = date("Y-m-d H:i:s", strtotime($alert->Timestamp));
 
