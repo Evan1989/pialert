@@ -5,7 +5,7 @@ namespace EvanPiAlert\Util\essence;
 class PiSystem {
     protected string $piSystemName; // equal value from alert
     protected string $piHost;
-    protected bool $piStatisticEnable;
+    protected bool $piStatisticEnable = false;
     protected string $piSID;
 
     public function __construct(string $piSystemName) {
