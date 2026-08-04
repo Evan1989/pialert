@@ -445,7 +445,7 @@ function updateNewAlertFlagCount() {
     }
     let bell = $('.new-alert-flag.bell:visible').length;
     let bell_fill = $('.new-alert-flag.bell-fill:visible').length;
-    if ( bell_fill > 0 ) {
+    if ( bell_fill > 0 || showNoAlertWarningBadge_count > 0 ) {
         $('.new-alert-count .count').html(bell_fill+bell);
         $('.new-alert-count .bell').hide();
         $('.new-alert-count').removeClass('d-none');
