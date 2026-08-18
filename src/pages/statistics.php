@@ -112,8 +112,11 @@ if ( isset($_GET['loadMainStatistics']) ) {
 echo $page->getPageHeader(Text::menuStatistics());
 
 $piSystemFilterForStat = $choosePiSystem??$userPiSystems;
-$week_alert = PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
-$month_alert = PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_MONTH);
+$alertCounts = PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem);
+$day_alert   = $alertCounts['day'];
+$week_alert  = $alertCounts['week'];
+$month_alert = $alertCounts['month'];
+$total_alert = $alertCounts['total'];
 $week_alertPercent = PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
 $month_alertPercent = PiAlertGroup::getAlertPercent($piSystemFilterForStat, $chooseBusinessSystem, ONE_MONTH);
 $message_ProcTimeWeek = PiAlertGroup::getMessageTimeProc($piSystemFilterForStat, $chooseBusinessSystem, ONE_WEEK);
@@ -156,7 +159,7 @@ if( !empty($chooseBusinessSystem) ) {
 }
 echo "                <tr>
                           <td>" . Text::statisticAlert24HourCount() . "</td>
-                          <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem, ONE_DAY) . " " . Text::pieces() . "</td>
+                          <td>" . $day_alert . " " . Text::pieces() . "</td>
                       </tr>
                       <tr>
                             <td>" . Text::statisticAlertTodayChart() . "</td>
@@ -176,7 +179,7 @@ echo "                <tr>
                       </tr>
                       <tr>
                           <td>" . Text::statisticAlertTotalCount() . "</td>
-                          <td>" . PiAlertGroup::getTotalAlertCount($piSystemFilterForStat, $chooseBusinessSystem) . " " . Text::pieces() . "</td>
+                          <td>" . $total_alert . " " . Text::pieces() . "</td>
                       </tr>";
 $enableExtStatistic = false;
 if ( is_null($choosePiSystem) ) {
@@ -228,7 +231,7 @@ echo "          </tbody>
 
 $additionalScript = "<script type='text/javascript'>
         $(document).ready(function() {
-            $.get( 'statistics.php?loadMainStatistics=1&choosePiSystem=".$choosePiSystem.".&chooseBusinessSystem=".$chooseBusinessSystem."', function( data ) {
+            $.get( 'statistics.php?loadMainStatistics=1&choosePiSystem=".$choosePiSystem."&chooseBusinessSystem=".$chooseBusinessSystem."', function( data ) {
                 $('.main-statistic').html( data );
             });
         })
