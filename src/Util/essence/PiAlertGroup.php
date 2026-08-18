@@ -277,6 +277,29 @@ class PiAlertGroup {
         return 1;
     }
 
+    /**
+     * @param array $group_ids
+     * @param int $timeLimit
+     * @return array [group_id => int]
+     */
+    static public function getAlertsCount(array $group_ids, int $timeLimit) : array {
+        if ( empty($group_ids) ) {
+            return [];
+        }
+        $query = DB::prepare("
+            SELECT group_id, COUNT(*) AS c FROM alerts
+            WHERE group_id IN (".DB::getQuestionMarkForPDO($group_ids).") AND timestamp > NOW() - INTERVAL ? SECOND
+            GROUP BY group_id
+        ");
+        $group_ids[] = $timeLimit;
+        $query->execute($group_ids);
+        $result = array();
+        while ($weekRow = $query->fetch()) {
+            $result[$weekRow['group_id']] = (int)$weekRow['c'];
+        }
+        return $result;
+    }
+
     public function getAlertCount(int|null $timeLimit = null) : int {
         if ( is_null($timeLimit) ) {
             $query = DB::prepare("SELECT count(*) as c  FROM alerts WHERE group_id = ?");

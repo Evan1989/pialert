@@ -37,4 +37,11 @@ class DB {
 		return call_user_func_array(array(static::instance(), $method), $args);
 	}
 
+    public static function getQuestionMarkForPDO( int|array $count ): string {
+        if ( is_array($count) ) {
+            $count = count($count);
+        }
+        return implode(", ", array_fill(0, $count, "?"));
+    }
+
 }

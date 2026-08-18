@@ -138,8 +138,12 @@ function showDashboardPage(int $pageNum) : void {
     $query2 = DB::prepare("SELECT * FROM alert_group WHERE group_id != ? AND errTextMainPart = ? AND comment IS NOT NULL ORDER BY last_alert DESC");
     $query = DB::prepare($query." LIMIT ".(ALERT_GROUP_PER_INSTANT_LOAD*($pageNum-1)).','.ALERT_GROUP_PER_INSTANT_LOAD);
     $query->execute($sqlParams);
+    $rows = $query->fetchAll();
+    $group_ids = array_column($rows, 'group_id');
+    $weekCounts = PiAlertGroup::getAlertsCount($group_ids, ONE_WEEK);
+
     $find = false;
-    while($row = $query->fetch()) {
+    foreach ($rows as $row) {
         $find = true;
         $alertGroup = new PiAlertGroup($row);
         $intervalFromLastError = time() - strtotime($alertGroup->lastAlert);
@@ -164,7 +168,7 @@ function showDashboardPage(int $pageNum) : void {
         } else {
             $newAlertFlag = '';
         }
-        $weekCount = $alertGroup->getAlertCount(ONE_WEEK);
+        $weekCount = $weekCounts[$alertGroup->group_id]??0;
         $growIcon = '';
         if ( $weekCount > 0 ) {
             $compareResult = $alertGroup->getAlert24HourCountCompareVsAverage();
