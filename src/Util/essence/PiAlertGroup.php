@@ -466,6 +466,7 @@ class PiAlertGroup {
             FROM alerts
             WHERE group_id = ? AND timestamp > NOW() - INTERVAL ? SECOND
             GROUP BY date
+            ORDER BY date
         ");
         $query->execute(array( $this->group_id, $timeLimit ));
         return $query;

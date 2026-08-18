@@ -144,6 +144,12 @@ function showDashboardPage(int $pageNum) : void {
         $alertGroup = new PiAlertGroup($row);
         $intervalFromLastError = time() - strtotime($alertGroup->lastAlert);
         $globalLastAlert[$alertGroup->piSystemName] = min($globalLastAlert[$alertGroup->piSystemName]??time(), $intervalFromLastError);
+
+        $important = ( $alertGroup->status != PiAlertGroup::IGNORE && $alertGroup->status != PiAlertGroup::CLOSE ) || !empty($growIcon);
+        if ( $showOnlyImportant && !$important) {
+            continue;
+        }
+
         if ($intervalFromLastError > 8*3600 ) {
             $lastAlertDateShow = $alertGroup->lastAlert;
         } else {
@@ -166,10 +172,6 @@ function showDashboardPage(int $pageNum) : void {
                 $growIcon = "<span style='color:red;font-size:150%' data-toggle='tooltip' title='".Text::dashboardAvgBigCount()."'>".str_repeat('↑', $compareResult)."</span>";
             }
         }
-        $important = ( $alertGroup->status != PiAlertGroup::IGNORE && $alertGroup->status != PiAlertGroup::CLOSE ) || !empty($growIcon);
-        if ( $showOnlyImportant && !$important) {
-            continue;
-        }
         echo "<tr filter-value=''>  
                 <td>
                     <div>".getStatusChoice($alertGroup)."</div>
@@ -183,7 +185,7 @@ function showDashboardPage(int $pageNum) : void {
                 <td>
                     ".$lastAlertDateShow."
                     <br>
-                    ".($intervalFromLastError<=ONE_WEEK?$alertGroup->getAlertCount(ONE_WEEK):0)." ".Text::pieces()." ".$growIcon."
+                    ".($intervalFromLastError<=ONE_WEEK?$weekCount:0)." ".Text::pieces()." ".$growIcon."
                 </td>
                 <td>
                     <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".$page->getIcon('envelope')."</a>
