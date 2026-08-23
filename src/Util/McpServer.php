@@ -11,25 +11,29 @@ use Throwable;
 /** Read-only MCP protocol adapter for PiAlert domain objects. */
 class McpServer {
 
-    protected const string PROTOCOL_VERSION = '2025-06-18';
+    protected const string PROTOCOL_VERSION = '2026-07-28';
     protected const int DASHBOARD_MENU_ID = 1;
     protected const int MAX_LIST_LIMIT = 100;
     protected const int MAX_ALERTS_LIMIT = 300;
 
     public function handle(): void {
+        $this->validateOrigin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Allow: POST');
             $this->httpError(405, 'Only POST is supported by this stateless MCP endpoint.');
         }
-        $identity = $this->authenticate();
         $request = json_decode(file_get_contents('php://input'), true);
         if (!is_array($request) || ($request['jsonrpc'] ?? null) !== '2.0' || !isset($request['method'])) {
-            $this->error(null, -32600, 'Invalid JSON-RPC request.');
+            $this->error(null, -32600, 'Invalid JSON-RPC request.', 400);
             return;
         }
         $id = $request['id'] ?? null;
+        if (!$this->validateRequestMetadata($request, $id)) {
+            return;
+        }
+        $identity = $this->authenticate();
         if ( !array_key_exists('id', $request) ) {
-            // No responses for notifications in RPC/MCP, so early answer for readonly API
+            // No responses for notifications in RPC/MCP.
             http_response_code(202);
             return;
         }
@@ -38,12 +42,88 @@ class McpServer {
             $result = $this->dispatch($request['method'], $params, $identity['systems']);
             $this->response($id, $result);
         } catch (InvalidArgumentException $exception) {
-            $this->error($id, -32602, $exception->getMessage());
+            $this->error($id, -32602, $exception->getMessage(), 400);
         } catch (LogicException $exception) {
-            $this->error($id, -32601, $exception->getMessage());
+            $this->error($id, -32601, $exception->getMessage(), 404);
         } catch (Throwable) {
             $this->error($id, -32603, 'Internal server error.');
         }
+    }
+
+    /**
+     * The Origin header is optional for non-browser clients. When it is sent,
+     * Streamable HTTP requires it to identify this endpoint's own origin.
+     */
+    protected function validateOrigin(): void {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if ($origin === '') {
+            return;
+        }
+        $originParts = parse_url($origin);
+        // Do not use HTTP_HOST here: an attacker can control it during a DNS
+        // rebinding attempt. SERVER_NAME is the endpoint's configured name.
+        $host = $_SERVER['SERVER_NAME'] ?? '';
+        $requestParts = $host === '' ? false : parse_url('//' . $host);
+        $scheme = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+            ? 'https'
+            : 'http';
+        if (is_array($requestParts) && !isset($requestParts['port']) && isset($_SERVER['SERVER_PORT'])) {
+            $requestParts['port'] = (int) $_SERVER['SERVER_PORT'];
+        }
+
+        if (!is_array($originParts) || !is_array($requestParts)
+            || !isset($originParts['scheme'], $originParts['host'], $requestParts['host'])
+            || isset($originParts['user'], $originParts['pass'], $originParts['query'], $originParts['fragment'])
+            || (($originParts['path'] ?? '') !== '')
+            || !in_array(strtolower($originParts['scheme']), ['http', 'https'], true)
+            || strtolower($originParts['scheme']) !== $scheme
+            || strtolower($originParts['host']) !== strtolower($requestParts['host'])
+            || $this->normalizedPort($originParts, strtolower($originParts['scheme'])) !== $this->normalizedPort($requestParts, $scheme)) {
+            $this->httpError(403, 'The Origin header is not allowed for this MCP endpoint.');
+        }
+    }
+
+    protected function normalizedPort(array $parts, string $scheme): int {
+        return isset($parts['port']) ? (int) $parts['port'] : ($scheme === 'https' ? 443 : 80);
+    }
+
+    /** @param array<string, mixed> $request */
+    protected function validateRequestMetadata(array $request, mixed $id): bool {
+        $params = $request['params'] ?? null;
+        $meta = is_array($params) ? ($params['_meta'] ?? null) : null;
+        $headerVersion = $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] ?? '';
+        if ($headerVersion === '' || ($_SERVER['HTTP_MCP_METHOD'] ?? '') !== $request['method']) {
+            $this->headerMismatch($id, 'MCP-Protocol-Version or Mcp-Method header is missing or does not match the request body.');
+            return false;
+        }
+        if ($headerVersion !== self::PROTOCOL_VERSION) {
+            $this->error($id, -32022, 'Unsupported protocol version', 400, [
+                'supported' => [self::PROTOCOL_VERSION],
+                'requested' => $headerVersion,
+            ]);
+            return false;
+        }
+        if (is_array($meta) && ($meta['io.modelcontextprotocol/protocolVersion'] ?? null) !== $headerVersion) {
+            $this->headerMismatch($id, 'MCP-Protocol-Version header does not match the request metadata.');
+            return false;
+        }
+        if (!is_array($meta)
+            || !array_key_exists('io.modelcontextprotocol/protocolVersion', $meta)
+            || !array_key_exists('io.modelcontextprotocol/clientCapabilities', $meta)
+            || !is_array($meta['io.modelcontextprotocol/clientCapabilities'])) {
+            $this->error($id, -32602, 'Missing or invalid required MCP request metadata.', 400);
+            return false;
+        }
+        if (in_array($request['method'], ['tools/call', 'resources/read', 'prompts/get'], true)
+            && ($_SERVER['HTTP_MCP_NAME'] ?? '') !== ($params['name'] ?? $params['uri'] ?? null)) {
+            $this->headerMismatch($id, 'Mcp-Name header is missing or does not match the request body.');
+            return false;
+        }
+        return true;
+    }
+
+    protected function headerMismatch(mixed $id, string $message): void {
+        $this->error($id, -32020, 'Header mismatch: ' . $message, 400);
     }
 
     /** @return array{user_id: int, systems: array<int, string>} */
@@ -76,13 +156,22 @@ class McpServer {
 
     protected function dispatch(string $method, array $params, array $systems): array|null {
         return match ($method) {
-            'initialize' => ['protocolVersion' => self::PROTOCOL_VERSION, 'capabilities' => ['tools' => ['listChanged' => false]], 'serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()], 'instructions' => 'Read-only access to PiAlert AlertGroups and source Alerts.'],
-            'notifications/initialized' => null,
+            'server/discover' => $this->discover(),
             'ping' => [],
             'tools/list' => ['tools' => $this->tools()],
             'tools/call' => $this->callTool($params, $systems),
             default => throw new LogicException('Method not found: ' . $method),
         };
+    }
+
+    protected function discover(): array {
+        return [
+            'resultType' => 'complete',
+            'supportedVersions' => [self::PROTOCOL_VERSION],
+            'capabilities' => ['tools' => ['listChanged' => false]],
+            '_meta' => ['io.modelcontextprotocol/serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()]],
+            'instructions' => 'Read-only access to PiAlert AlertGroups and source Alerts.',
+        ];
     }
 
     protected function callTool(array $params, array $systems): array {
@@ -199,15 +288,33 @@ class McpServer {
     }
 
     protected function response(mixed $id, mixed $result): void {
-        header('Content-Type: application/json; charset=utf-8'); header('MCP-Protocol-Version: ' . self::PROTOCOL_VERSION);
+        if (is_array($result)) {
+            $result['resultType'] ??= 'complete';
+            $result['_meta']['io.modelcontextprotocol/serverInfo'] ??= ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()];
+        }
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['jsonrpc' => '2.0', 'id' => $id, 'result' => $result], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
-    protected function error(mixed $id, int $code, string $message): void {
+    protected function error(mixed $id, int $code, string $message, int $status = 200, ?array $data = null): void {
+        http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['jsonrpc' => '2.0', 'id' => $id, 'error' => ['code' => $code, 'message' => $message]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $error = ['code' => $code, 'message' => $message];
+        if ($data !== null) {
+            $error['data'] = $data;
+        }
+        echo json_encode(['jsonrpc' => '2.0', 'id' => $id, 'error' => $error], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
-    protected function unauthorized(): never { header('WWW-Authenticate: Basic realm="PiAlert MCP", charset="UTF-8"'); $this->httpError(401, 'Authentication is required.'); }
-    protected function httpError(int $status, string $message): never { http_response_code($status); header('Content-Type: application/json; charset=utf-8'); echo json_encode(['error' => $message]); exit; }
+    protected function unauthorized(): never {
+        header('WWW-Authenticate: Basic realm="PiAlert MCP", charset="UTF-8"');
+        $this->httpError(401, 'Authentication is required.');
+    }
+
+    protected function httpError(int $status, string $message): never {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => $message]);
+        exit;
+    }
 }
