@@ -1,0 +1,8 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+
+ALTER TABLE `users` ADD UNIQUE(`email`);
+
+UPDATE `settings` SET `value` = '4.4' WHERE `settings`.`code` = 'DATABASE VERSION';
+
+COMMIT;

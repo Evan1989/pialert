@@ -110,6 +110,21 @@ class PiAlertGroup {
         $this->alert_link = $row['alert_link'];
     }
 
+    /** Data representation for APIs. */
+    public function toArray(): array {
+        return [
+            'group_id' => $this->group_id,
+            'status' => ['code' => $this->status, 'name' => self::getStatusName($this->status)],
+            'comment' => $this->comment, 'comment_datetime' => $this->comment_datetime,
+            'assigned_user_id' => $this->user_id, 'last_user_id' => $this->last_user_id,
+            'pi_system_name' => $this->piSystemName, 'from_system' => $this->fromSystem,
+            'to_system' => $this->toSystem, 'channel' => $this->channel, 'interface' => $this->interface,
+            'multi_interface' => (bool)$this->multi_interface, 'error_text' => $this->errText,
+            'error_mask' => $this->errTextMask, 'first_alert' => $this->firstAlert,
+            'last_alert' => $this->lastAlert, 'last_user_action' => $this->lastUserAction,
+            'maybe_needs_union' => (bool)$this->maybe_need_union, 'alert_link' => $this->alert_link,
+        ];
+    }
 
     public function saveToDatabase() : bool {
         if ( $this->group_id > 0 ) {

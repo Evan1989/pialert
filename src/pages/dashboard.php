@@ -101,7 +101,7 @@ if ( isset($_GET['id']) ) {
     $showOnlyNewAlerts = false;
     if (isset($_GET['showSameErrors'])) {
         $additionalHeader = ' <i>(GroupID='.$group_id.' and same alerts)</i>';
-        $query = "SELECT *  FROM alert_group WHERE errTextMainPart = (SELECT errTextMainPart FROM alert_group WHERE $sqlSystemFilter AND group_id = ?)";
+        $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter AND errTextMainPart = (SELECT errTextMainPart FROM alert_group WHERE group_id = ?)";
     } else {
         $additionalHeader = ' <i>(GroupID='.$group_id.')</i>';
         $query = "SELECT *  FROM alert_group WHERE $sqlSystemFilter AND group_id = ?";
@@ -257,7 +257,7 @@ function showDashboardPage(int $pageNum) : void {
 
     if ( isset($_GET['loadAlertsForGroup']) ) {
         $group_id = (int) $_GET['loadAlertsForGroup'];
-        $query = DB::prepare(" SELECT *  FROM alerts WHERE group_id = ? ORDER BY id desc LIMIT 300");
+        $query = DB::prepare(" SELECT *  FROM alerts WHERE group_id = ? ORDER BY timestamp desc LIMIT 300");
         $query->execute(array( $group_id ));
         echo $page->getAlertTable($query);
         exit();

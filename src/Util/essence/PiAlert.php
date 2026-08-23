@@ -7,6 +7,7 @@ use EvanPiAlert\Util\ManagePiSystem;
 
 class PiAlert {
 
+    public ?int $id = null;
     public int $group_id;
 
     public ?string $alertRuleId;
@@ -95,6 +96,7 @@ class PiAlert {
     }
 
     private function createFromRow(array $row ) : void {
+        $this->id = $row['id'];
         $this->group_id = $row['group_id'];
         $this->alertRuleId = $row['alertRuleId'];
         $this->piSystemName = $row['piSystemName'];
@@ -112,6 +114,20 @@ class PiAlert {
         $this->errCode = $row['errCode'];
         $this->errText = $row['errText'];
         $this->UDSAttributes = $row['UDSAttributes'];
+    }
+
+    /** Data representation for APIs. */
+    public function toArray(): array {
+        return [
+            'id' => $this->id, 'group_id' => $this->group_id,
+            'alert_rule_id' => $this->alertRuleId, 'pi_system_name' => $this->piSystemName,
+            'priority' => $this->priority, 'timestamp' => $this->timestamp, 'message_id' => $this->messageId,
+            'from_system' => $this->fromSystem, 'to_system' => $this->toSystem,
+            'adapter_type' => $this->adapterType, 'channel' => $this->channel, 'interface' => $this->interface,
+            'namespace' => $this->namespace, 'monitoring_url' => $this->monitoringUrl,
+            'error_category' => $this->errCategory, 'error_code' => $this->errCode,
+            'error_text' => $this->errText, 'uds_attributes' => $this->UDSAttributes,
+        ];
     }
 
     /**

@@ -78,7 +78,7 @@ class AuthorizationAdmin {
                 $user_id = $this->checkToken( $_GET['token'] );
                 $this->deleteToken( $_GET['token'] );
             } else {
-                $user_id = $this->loginByEmailAndPassword($_POST['email'] ?? '', $_POST['password'] ?? '');
+                $user_id = $this->getUserIdByEmailAndPassword($_POST['email'] ?? '', $_POST['password'] ?? '');
             }
             if ( $this->tryToStartSession($user_id, true) ) {
                 Header("Location: " . $_SERVER['REQUEST_URI']);
@@ -103,11 +103,15 @@ class AuthorizationAdmin {
 	}
 
     /**
-     * @param string $email
-     * @param string $password
-     * @return int Либо user_id, либо -1, если не нашли подходящего
+     * Starts a regular PiAlert session using explicit credentials.
+     * Suitable for non-form entry points, such as the MCP HTTP endpoint.
      */
-    private function loginByEmailAndPassword(string $email, string $password) : int {
+    public function loginByEmailAndPassword(string $email, string $password) : bool {
+        return $this->tryToStartSession($this->getUserIdByEmailAndPassword($email, $password));
+    }
+
+    /** @return int User ID or -1 when the credentials do not match. */
+    private function getUserIdByEmailAndPassword(string $email, string $password) : int {
         if (empty($email) or empty($password) ) {
             return -1;
         }
