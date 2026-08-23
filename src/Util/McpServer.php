@@ -176,15 +176,31 @@ class McpServer {
 
     protected function callTool(array $params, array $systems): array {
         $arguments = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
-        $data = match ($params['name'] ?? '') {
+        $name = $params['name'] ?? '';
+        $data = match ($name) {
             'list_alert_groups' => $this->listGroups($arguments, $systems),
             'get_alert_group' => $this->accessibleGroup($this->requiredId($arguments), $systems)->toArray(),
             'get_alerts_by_group' => $this->alertsByGroup($arguments, $systems),
             'get_alert_group_statistics' => $this->groupStatistics($arguments, $systems),
             'find_similar_alert_groups' => $this->similarGroups($arguments, $systems),
-            default => throw new InvalidArgumentException('Unknown tool: ' . ($params['name'] ?? '')),
+            default => throw new InvalidArgumentException('Unknown tool: ' . $name),
         };
-        return ['content' => [['type' => 'text', 'text' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]]];
+        return [
+            'content' => [['type' => 'text', 'text' => $this->toolSummary($name, $data)]],
+            'structuredContent' => $data,
+        ];
+    }
+
+    /** @param array<string, mixed>|array<int, array<string, mixed>> $data */
+    protected function toolSummary(string $name, array $data): string {
+        return match ($name) {
+            'list_alert_groups' => sprintf('Found %d alert group(s).', count($data)),
+            'get_alert_group' => sprintf('Retrieved alert group %s.', $data['group_id'] ?? 'unknown'),
+            'get_alerts_by_group' => sprintf('Found %d alert(s).', count($data)),
+            'get_alert_group_statistics' => sprintf('Retrieved statistics for alert group %s.', $data['group_id'] ?? 'unknown'),
+            'find_similar_alert_groups' => sprintf('Found %d similar alert group(s).', count($data)),
+            default => 'Tool call completed.',
+        };
     }
 
     protected function listGroups(array $args, array $systems): array {
@@ -279,11 +295,11 @@ class McpServer {
 
     protected function tools(): array {
         return [
-            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]]],
-            ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]]],
-            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]]],
-            ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]]],
-            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]]],
+            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
+            ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'object']],
+            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
+            ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'object']],
+            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
         ];
     }
 
