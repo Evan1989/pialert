@@ -308,13 +308,17 @@ class McpServer {
 
     /** JSON Schema for a PiAlert AlertGroup returned by this MCP server. */
     protected function alertGroupOutputSchema(): array {
+        $groupStatusesText = '';
+        foreach (PiAlertGroup::getStatusName() as $key => $value) {
+            $groupStatusesText .= $key.' '.$value.'. ';
+        }
         return [
             'type' => 'object',
             'description' => 'A PiAlert AlertGroup: related alerts that share the same error.',
             'required' => ['group_id', 'status', 'comment', 'comment_datetime', 'assigned_user_id', 'last_user_id', 'pi_system_name', 'from_system', 'to_system', 'channel', 'interface', 'multi_interface', 'error_text', 'error_mask', 'first_alert', 'last_alert', 'last_user_action', 'maybe_needs_union', 'alert_link'],
             'properties' => [
                 'group_id' => ['type' => 'integer', 'description' => 'Unique AlertGroup identifier.'],
-                'status' => ['type' => 'object', 'description' => 'Current group status.', 'required' => ['code', 'name'], 'properties' => ['code' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5, 'description' => 'PiAlert status code: '.http_build_query(PiAlertGroup::getStatusName(),'',', ').'.'], 'name' => ['type' => 'string', 'description' => 'Localized name of the status.']]],
+                'status' => ['type' => 'object', 'description' => 'Current group status.', 'required' => ['code', 'name'], 'properties' => ['code' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5, 'description' => 'PiAlert status code: '.$groupStatusesText], 'name' => ['type' => 'string', 'description' => 'Localized name of the status.']]],
                 'comment' => $this->nullableStringSchema('User comment on the group.'),
                 'comment_datetime' => $this->nullableStringSchema('MySQL DATETIME when the comment was last changed.'),
                 'assigned_user_id' => $this->nullableIntegerSchema('ID of the user currently assigned to the group.'),
@@ -331,7 +335,7 @@ class McpServer {
                 'last_alert' => ['type' => 'string', 'description' => 'MySQL DATETIME of the most recent alert in the group.'],
                 'last_user_action' => $this->nullableStringSchema('MySQL DATETIME of the last user action.'),
                 'maybe_needs_union' => ['type' => 'boolean', 'description' => 'Whether the group may need to be merged with another group.'],
-                'alert_link' => $this->nullableStringSchema('Optional links to the alert in an external systems.'),
+                'alert_link' => $this->nullableStringSchema('Optional links to the alert in an external systems like Jira SM or Jira Software.'),
             ],
         ];
     }
