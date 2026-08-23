@@ -244,7 +244,10 @@ class McpServer {
             'last_24_hours' => $group->getAlertCount(ONE_DAY),
             'last_7_days' => $group->getAlertCount(ONE_WEEK),
             'last_month' => $group->getAlertCount(ONE_MONTH),
-            'daily_last_31_days' => $group->getAlertCountForDiagram(31 * ONE_DAY)->fetchAll(),
+            'daily_last_31_days' => array_map(static fn(array $row): array => [
+                'date' => $row['date'],
+                'count' => (int) $row['count'],
+            ], $group->getAlertCountForDiagram(31 * ONE_DAY)->fetchAll()),
         ];
     }
 
@@ -295,12 +298,96 @@ class McpServer {
 
     protected function tools(): array {
         return [
-            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
-            ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'object']],
-            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
-            ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'object']],
-            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'array', 'items' => ['type' => 'object']]],
+            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'description' => 'Alert groups matching the supplied filters.', 'items' => $this->alertGroupOutputSchema()]],
+            ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->alertGroupOutputSchema()],
+            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => ['type' => 'array', 'description' => 'Source alerts in descending timestamp order.', 'items' => $this->alertOutputSchema()]],
+            ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->statisticsOutputSchema()],
+            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'array', 'description' => 'Accessible groups with the same normalized main error text.', 'items' => $this->alertGroupOutputSchema()]],
         ];
+    }
+
+    /** JSON Schema for a PiAlert AlertGroup returned by this MCP server. */
+    protected function alertGroupOutputSchema(): array {
+        return [
+            'type' => 'object',
+            'description' => 'A PiAlert AlertGroup: related alerts that share the same error.',
+            'required' => ['group_id', 'status', 'comment', 'comment_datetime', 'assigned_user_id', 'last_user_id', 'pi_system_name', 'from_system', 'to_system', 'channel', 'interface', 'multi_interface', 'error_text', 'error_mask', 'first_alert', 'last_alert', 'last_user_action', 'maybe_needs_union', 'alert_link'],
+            'properties' => [
+                'group_id' => ['type' => 'integer', 'description' => 'Unique AlertGroup identifier.'],
+                'status' => ['type' => 'object', 'description' => 'Current group status.', 'required' => ['code', 'name'], 'properties' => ['code' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5, 'description' => 'PiAlert status code: '.http_build_query(PiAlertGroup::getStatusName(),'',', ').'.'], 'name' => ['type' => 'string', 'description' => 'Localized name of the status.']]],
+                'comment' => $this->nullableStringSchema('User comment on the group.'),
+                'comment_datetime' => $this->nullableStringSchema('MySQL DATETIME when the comment was last changed.'),
+                'assigned_user_id' => $this->nullableIntegerSchema('ID of the user currently assigned to the group.'),
+                'last_user_id' => $this->nullableIntegerSchema('ID of the user who last changed the group.'),
+                'pi_system_name' => ['type' => 'string', 'description' => 'System that produced the alert.'],
+                'from_system' => ['type' => 'string', 'description' => 'Source system.'],
+                'to_system' => ['type' => 'string', 'description' => 'Target system.'],
+                'channel' => ['type' => 'string', 'description' => 'Integration channel name.'],
+                'interface' => ['type' => 'string', 'description' => 'Integration interface.'],
+                'multi_interface' => ['type' => 'boolean', 'description' => 'Whether alerts in the group have different interfaces.'],
+                'error_text' => ['type' => 'string', 'description' => 'Original error text.'],
+                'error_mask' => ['type' => 'string', 'description' => 'Error text after masking variable parts.'],
+                'first_alert' => ['type' => 'string', 'description' => 'MySQL DATETIME of the first alert in the group.'],
+                'last_alert' => ['type' => 'string', 'description' => 'MySQL DATETIME of the most recent alert in the group.'],
+                'last_user_action' => $this->nullableStringSchema('MySQL DATETIME of the last user action.'),
+                'maybe_needs_union' => ['type' => 'boolean', 'description' => 'Whether the group may need to be merged with another group.'],
+                'alert_link' => $this->nullableStringSchema('Optional links to the alert in an external systems.'),
+            ],
+        ];
+    }
+
+    /** JSON Schema for a source Alert returned by this MCP server. */
+    protected function alertOutputSchema(): array {
+        return [
+            'type' => 'object',
+            'description' => 'One source alert belonging to an AlertGroup.',
+            'required' => ['id', 'group_id', 'alert_rule_id', 'pi_system_name', 'priority', 'timestamp', 'message_id', 'from_system', 'to_system', 'adapter_type', 'channel', 'interface', 'namespace', 'monitoring_url', 'error_category', 'error_code', 'error_text', 'uds_attributes'],
+            'properties' => [
+                'id' => $this->nullableIntegerSchema('Unique source Alert identifier.'),
+                'group_id' => ['type' => 'integer', 'description' => 'Identifier of the parent AlertGroup.'],
+                'alert_rule_id' => $this->nullableStringSchema('Rule identifier reported by the source system.'),
+                'pi_system_name' => ['type' => 'string', 'description' => 'System that produced the alert.'],
+                'priority' => $this->nullableStringSchema('Severity or priority reported by the source system.'),
+                'timestamp' => ['type' => 'string', 'description' => 'MySQL DATETIME when the alert was produced.'],
+                'message_id' => $this->nullableStringSchema('Source system message identifier.'),
+                'from_system' => $this->nullableStringSchema('Source system.'),
+                'to_system' => $this->nullableStringSchema('Target system.'),
+                'adapter_type' => $this->nullableStringSchema('Source adapter type.'),
+                'channel' => $this->nullableStringSchema('Integration channel name.'),
+                'interface' => $this->nullableStringSchema('Integration interface.'),
+                'namespace' => $this->nullableStringSchema('Integration namespace.'),
+                'monitoring_url' => $this->nullableStringSchema('Optional URL in the source monitoring system.'),
+                'error_category' => $this->nullableStringSchema('Source error category.'),
+                'error_code' => $this->nullableStringSchema('Source error code.'),
+                'error_text' => ['type' => 'string', 'description' => 'Original error text.'],
+                'uds_attributes' => $this->nullableStringSchema('UDS attributes, serialized as a string when present.'),
+            ],
+        ];
+    }
+
+    /** JSON Schema for statistics returned for an AlertGroup. */
+    protected function statisticsOutputSchema(): array {
+        return [
+            'type' => 'object',
+            'description' => 'Alert counts for one AlertGroup.',
+            'required' => ['group_id', 'total', 'last_24_hours', 'last_7_days', 'last_month', 'daily_last_31_days'],
+            'properties' => [
+                'group_id' => ['type' => 'integer', 'description' => 'Identifier of the AlertGroup these statistics describe.'],
+                'total' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Total number of source alerts in the group.'],
+                'last_24_hours' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Number of source alerts from last 24 hours.'],
+                'last_7_days' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Number of source alerts from last 7 days.'],
+                'last_month' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Number of source alerts from last month.'],
+                'daily_last_31_days' => ['type' => 'array', 'description' => 'One entry for each day with at least one alert during the previous 31 days.', 'items' => ['type' => 'object', 'required' => ['date', 'count'], 'properties' => ['date' => ['type' => 'string', 'description' => 'Calendar date in YYYY-MM-DD format.'], 'count' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Number of source alerts on this date.']]]],
+            ],
+        ];
+    }
+
+    protected function nullableStringSchema(string $description): array {
+        return ['type' => ['string', 'null'], 'description' => $description];
+    }
+
+    protected function nullableIntegerSchema(string $description): array {
+        return ['type' => ['integer', 'null'], 'description' => $description];
     }
 
     protected function response(mixed $id, mixed $result): void {
