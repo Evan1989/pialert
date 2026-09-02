@@ -28,6 +28,13 @@ class McpServer {
             return;
         }
         $id = $request['id'] ?? null;
+        if ($request['method'] === 'initialize') {
+            // `initialize` belongs to the legacy, session-based protocol.
+            // Naming the modern version here is the prescribed migration hint
+            // for legacy clients, whose request otherwise lacks our headers.
+            $this->legacyInitializeError($id, $request['params'] ?? null);
+            return;
+        }
         if (!$this->validateRequestMetadata($request, $id)) {
             return;
         }
@@ -126,6 +133,17 @@ class McpServer {
         $this->error($id, -32020, 'Header mismatch: ' . $message, 400);
     }
 
+    protected function legacyInitializeError(mixed $id, mixed $params): void {
+        $requested = is_array($params) && is_string($params['protocolVersion'] ?? null)
+            ? $params['protocolVersion']
+            : 'legacy initialize';
+        $this->error($id, -32020,
+            'This is the official stateless MCP 2026-07-28 protocol. The legacy initialize/initialized handshake is not used; send each POST with MCP-Protocol-Version, Mcp-Method, and request _meta metadata. Specification: https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning',
+            400,
+            ['supported' => [self::PROTOCOL_VERSION], 'requested' => $requested]
+        );
+    }
+
     /** @return array{user_id: int, systems: array<int, string>} */
     protected function authenticate(): array {
         $this->readBasicAuthorizationHeader();
@@ -158,7 +176,7 @@ class McpServer {
         return match ($method) {
             'server/discover' => $this->discover(),
             'ping' => [],
-            'tools/list' => ['tools' => $this->tools()],
+            'tools/list' => ['tools' => $this->tools(), 'ttlMs' => 3600000, 'cacheScope' => 'public'],
             'tools/call' => $this->callTool($params, $systems),
             default => throw new LogicException('Method not found: ' . $method),
         };
@@ -171,6 +189,8 @@ class McpServer {
             'capabilities' => ['tools' => ['listChanged' => false]],
             '_meta' => ['io.modelcontextprotocol/serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()]],
             'instructions' => 'Read-only access to PiAlert AlertGroups and source Alerts.',
+            'ttlMs' => 3600000,
+            'cacheScope' => 'public',
         ];
     }
 
