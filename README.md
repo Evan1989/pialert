@@ -8,6 +8,9 @@ Language support:
 * English
 * Русский
 
+# ⚒️ For LLM
+1. MCP server in /src/api/mcp.php, more info in /src/api/mcp.md
+
 # 💻 Server requirements for PiAlert
 1. 1 CPU, 1 GB HDD, 1 GB RAM
 2. PHP 8.4
