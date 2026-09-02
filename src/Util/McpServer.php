@@ -20,7 +20,7 @@ class McpServer {
         $this->validateOrigin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Allow: POST');
-            $this->httpError(405, 'Only POST is supported by this stateless MCP endpoint.');
+            $this->httpError(405, 'Only POST is supported by this stateless MCP endpoint. Text description for people '.SERVER_HOST.'src/api/mcp.md');
         }
         $request = json_decode(file_get_contents('php://input'), true);
         if (!is_array($request) || ($request['jsonrpc'] ?? null) !== '2.0' || !isset($request['method'])) {
