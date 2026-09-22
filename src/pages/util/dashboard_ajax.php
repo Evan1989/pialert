@@ -55,8 +55,7 @@ function saveInputNewValueToAlertGroup(string $element_type, $group_id, ?string 
     }
     return $result;
 }
-function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, int $group_id) : string {
-    $alertGroup = new PiAlertGroup($group_id);
+function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, PiAlertGroup $alertGroup) : string {
     $user = new User($alertGroup->user_id);
     $first_alert = strtotime($alertGroup->firstAlert);
     $result = "<table class='table table-sm table-hover'>

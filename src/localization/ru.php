@@ -150,6 +150,7 @@ $texts = array(
     'dashboardLastAlert' => 'Последний алерт',
     'dashboardShowAlertButton' => 'Сами алерты',
     'dashboardShowStatisticButton' => 'Статистика по группе',
+    'dashboardCommentAIButton' => 'Автоматический анализ от ИИ',
     'dashboardUnionGroupButton' => 'Группу можно объединить с другой',
     'dashboardUnionGroupButtonStep2' => 'слить все алерты из группы ошибок в этой строке с',
     'dashboardFindSameErrors' => 'Найти похожие алерты в PiAlert',

@@ -204,6 +204,9 @@ function showDashboardPage(int $pageNum) : void {
         if ( $alertGroup->maybe_need_union ) {
             echo "      <a href=\"javascript:unionAlertGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardUnionGroupButton()."'>".$page->getIcon('boxes')."</a>";
         }
+        if ( $alertGroup->comment_ai ) {
+            echo "      <a href=\"javascript:loadAICommentForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardCommentAIButton()."'>".$page->getIcon('robot')."</a>";
+        }
         echo "      </td>
             </tr>";
     }
@@ -241,7 +244,10 @@ function showDashboardPage(int $pageNum) : void {
     }
 
     if ( isset($_GET['loadAlertGroupFullInfo']) ) {
-        echo getAlertGroupFullInfo($authorizationAdmin, (int) $_GET['loadAlertGroupFullInfo']);
+        $alertGroup = new PiAlertGroup((int) $_GET['loadAlertGroupFullInfo']);
+        if ( in_array($alertGroup->piSystemName, $authorizationAdmin->getAccessedSystemNames()) ) {
+            echo getAlertGroupFullInfo($authorizationAdmin, $alertGroup);
+        }
         exit();
     }
 
@@ -257,21 +263,36 @@ function showDashboardPage(int $pageNum) : void {
 
     if ( isset($_GET['loadAlertsForGroup']) ) {
         $group_id = (int) $_GET['loadAlertsForGroup'];
-        $query = DB::prepare(" SELECT *  FROM alerts WHERE group_id = ? ORDER BY timestamp desc LIMIT 300");
-        $query->execute(array( $group_id ));
+        $params = $authorizationAdmin->getAccessedSystemNames();
+        $params[] = $group_id;
+        $query = DB::prepare(" SELECT *  FROM alerts WHERE ".PiAlertGroup::getSqlSystemFilter($authorizationAdmin->getAccessedSystemNames())." AND group_id = ? ORDER BY timestamp desc LIMIT 300");
+        $query->execute($params);
         echo $page->getAlertTable($query);
+        exit();
+    }
+
+    if ( isset($_GET['loadAICommentForGroup']) ) {
+        $group_id = (int) $_GET['loadAICommentForGroup'];
+        $alertGroup = new PiAlertGroup($group_id);
+        if ( in_array($alertGroup->piSystemName, $authorizationAdmin->getAccessedSystemNames()) ) {
+            echo $alertGroup->getHTMLCommentAI();
+        }
         exit();
     }
 
     if ( isset($_GET['checkAlertGroupAsComplete']) ) {
         $group_id = (int) $_GET['checkAlertGroupAsComplete'];
         $alertGroup = new PiAlertGroup($group_id);
-        if ( ( $alertGroup->status == PiAlertGroup::NEW OR $alertGroup->status == PiAlertGroup::REOPEN ) AND is_null($alertGroup->user_id) ) {
-            echo Text::dashboardCheckAlertGroupAsCompleteFail();
+        if ( in_array($alertGroup->piSystemName, $authorizationAdmin->getAccessedSystemNames()) ) {
+            if ( ( $alertGroup->status == PiAlertGroup::NEW OR $alertGroup->status == PiAlertGroup::REOPEN ) AND is_null($alertGroup->user_id) ) {
+                echo Text::dashboardCheckAlertGroupAsCompleteFail();
+            } else {
+                $alertGroup->lastUserAction = date("Y-m-d H:i:s");
+                $alertGroup->saveToDatabase();
+                echo 'true';
+            }
         } else {
-            $alertGroup->lastUserAction = date("Y-m-d H:i:s");
-            $alertGroup->saveToDatabase();
-            echo 'true';
+            echo "Authorization error";
         }
         exit();
     }

@@ -426,6 +426,14 @@ function loadAlertsForGroup(group_id) {
     });
 }
 // noinspection JSUnusedGlobalSymbols
+function loadAICommentForGroup(group_id) {
+    $.get( 'dashboard.php?loadAICommentForGroup='+group_id, function( data ) {
+        $('#modal_piAlertDefault .modal-body').html( data );
+        $('#modal_piAlertDefault').modal('show');
+        $('#modal_piAlertDefault [data-toggle=\"tooltip\"]').tooltip();
+    });
+}
+// noinspection JSUnusedGlobalSymbols
 function checkAlertGroupAsComplete(group_id) {
     $.get( 'dashboard.php?checkAlertGroupAsComplete='+group_id, function( data ) {
         if ( data === 'true' ) {

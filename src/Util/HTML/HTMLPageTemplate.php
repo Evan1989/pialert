@@ -10,7 +10,7 @@ use EvanPiAlert\Util\Text;
 
 class HTMLPageTemplate {
 
-    const int CSS_JS_VERSION = 71;
+    const int CSS_JS_VERSION = 72;
 
     protected ?AuthorizationAdmin $authorizationAdmin;
 

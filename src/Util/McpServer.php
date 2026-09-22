@@ -6,15 +6,17 @@ use EvanPiAlert\Util\essence\PiAlert;
 use EvanPiAlert\Util\essence\PiAlertGroup;
 use InvalidArgumentException;
 use LogicException;
+use RuntimeException;
 use Throwable;
 
-/** Read-only MCP protocol adapter for PiAlert domain objects. */
+/** MCP adapter for reading PiAlert objects and writing AlertGroup AI comments. */
 class McpServer {
 
     protected const string PROTOCOL_VERSION = '2026-07-28';
     protected const int DASHBOARD_MENU_ID = 1;
     protected const int MAX_LIST_LIMIT = 100;
     protected const int MAX_ALERTS_LIMIT = 300;
+    protected const int MAX_COMMENT_AI_LENGTH = 2000;
 
     public function handle(): void {
         $this->validateOrigin();
@@ -188,7 +190,7 @@ class McpServer {
             'supportedVersions' => [self::PROTOCOL_VERSION],
             'capabilities' => ['tools' => ['listChanged' => false]],
             '_meta' => ['io.modelcontextprotocol/serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()]],
-            'instructions' => 'Read-only access to PiAlert AlertGroups and source Alerts.',
+            'instructions' => 'Read PiAlert AlertGroups and source Alerts. Use list_alert_groups with empty_comment_ai=true to find groups needing AI analysis, and set_alert_group_comment_ai to replace or clear an accessible group AI comment.',
             'ttlMs' => 3600000,
             'cacheScope' => 'public',
         ];
@@ -200,6 +202,7 @@ class McpServer {
         $data = match ($name) {
             'list_alert_groups' => $this->listGroups($arguments, $systems),
             'get_alert_group' => $this->accessibleGroup($this->requiredId($arguments), $systems)->toArray(),
+            'set_alert_group_comment_ai' => $this->setGroupCommentAi($arguments, $systems),
             'get_alerts_by_group' => $this->alertsByGroup($arguments, $systems),
             'get_alert_group_statistics' => $this->groupStatistics($arguments, $systems),
             'find_similar_alert_groups' => $this->similarGroups($arguments, $systems),
@@ -216,6 +219,7 @@ class McpServer {
         return match ($name) {
             'list_alert_groups' => sprintf('Found %d alert group(s).', count($data)),
             'get_alert_group' => sprintf('Retrieved alert group %s.', $data['group_id'] ?? 'unknown'),
+            'set_alert_group_comment_ai' => sprintf('Updated AI comment for alert group %s.', $data['group_id']),
             'get_alerts_by_group' => sprintf('Found %d alert(s).', count($data)),
             'get_alert_group_statistics' => sprintf('Retrieved statistics for alert group %s.', $data['group_id'] ?? 'unknown'),
             'find_similar_alert_groups' => sprintf('Found %d similar alert group(s).', count($data)),
@@ -226,6 +230,14 @@ class McpServer {
     protected function listGroups(array $args, array $systems): array {
         [$filter, $params] = $this->systemFilter($systems);
         $conditions = [$filter];
+        if (array_key_exists('empty_comment_ai', $args)) {
+            if (!is_bool($args['empty_comment_ai'])) {
+                throw new InvalidArgumentException('empty_comment_ai must be a boolean.');
+            }
+            if ($args['empty_comment_ai']) {
+                $conditions[] = "(comment_ai IS NULL OR comment_ai = '')";
+            }
+        }
         if (($args['pi_system_name'] ?? '') !== '') {
             $conditions[] = 'piSystemName = ?';
             $params[] = $args['pi_system_name'];
@@ -246,6 +258,25 @@ class McpServer {
         $query = DB::prepare('SELECT * FROM alert_group WHERE ' . implode(' AND ', $conditions) . ' ORDER BY last_alert DESC LIMIT ' . $this->limit($args['limit'] ?? null, 25, self::MAX_LIST_LIMIT) . ' OFFSET ' . $this->offset($args['offset'] ?? null));
         $query->execute($params);
         return array_map(static fn(array $row): array => new PiAlertGroup($row)->toArray(), $query->fetchAll());
+    }
+
+    protected function setGroupCommentAi(array $args, array $systems): array {
+        $groupId = $this->requiredId($args);
+        if (!array_key_exists('comment_ai', $args) || (!is_string($args['comment_ai']) && $args['comment_ai'] !== null)) {
+            throw new InvalidArgumentException('comment_ai is required and must be a string or null.');
+        }
+        $comment = $args['comment_ai'];
+        if ($comment !== null && (!mb_check_encoding($comment, 'UTF-8') || mb_strlen($comment, 'UTF-8') > self::MAX_COMMENT_AI_LENGTH)) {
+            throw new InvalidArgumentException('comment_ai must be valid UTF-8 and at most 2000 characters.');
+        }
+        $this->accessibleGroup($groupId, $systems);
+        [$filter, $params] = $this->systemFilter($systems);
+        // Update only this field so concurrent alert/user changes are preserved.
+        $query = DB::prepare("UPDATE alert_group SET comment_ai = ? WHERE group_id = ? AND $filter");
+        if (!$query->execute(array_merge([$comment, $groupId], $params))) {
+            throw new RuntimeException('Failed to update the AI comment.');
+        }
+        return $this->accessibleGroup($groupId, $systems)->toArray();
     }
 
     protected function alertsByGroup(array $args, array $systems): array {
@@ -318,8 +349,22 @@ class McpServer {
 
     protected function tools(): array {
         return [
-            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'description' => 'Alert groups matching the supplied filters.', 'items' => $this->alertGroupOutputSchema()]],
+            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'empty_comment_ai' => ['type' => 'boolean', 'default' => false, 'description' => 'Only groups whose AI comment is null, empty, or contains only spaces. False leaves the list unfiltered by AI comment.'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'description' => 'Alert groups matching the supplied filters.', 'items' => $this->alertGroupOutputSchema()]],
             ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->alertGroupOutputSchema()],
+            [
+                'name' => 'set_alert_group_comment_ai',
+                'description' => 'Replaces the AI comment of an accessible AlertGroup. Pass null or an empty string to clear it. Returns the updated group; other fields are unchanged.',
+                'inputSchema' => [
+                    'type' => 'object',
+                    'required' => ['group_id', 'comment_ai'],
+                    'properties' => [
+                        'group_id' => ['type' => 'integer', 'minimum' => 1],
+                        'comment_ai' => ['type' => ['string', 'null'], 'maxLength' => self::MAX_COMMENT_AI_LENGTH, 'description' => 'AI comment text; null or an empty string clears the comment.'],
+                    ],
+                ],
+                'outputSchema' => $this->alertGroupOutputSchema(),
+                'annotations' => ['readOnlyHint' => false, 'destructiveHint' => true, 'idempotentHint' => true, 'openWorldHint' => false],
+            ],
             ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => ['type' => 'array', 'description' => 'Source alerts in descending timestamp order.', 'items' => $this->alertOutputSchema()]],
             ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->statisticsOutputSchema()],
             ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'array', 'description' => 'Accessible groups with the same normalized main error text.', 'items' => $this->alertGroupOutputSchema()]],
@@ -335,11 +380,12 @@ class McpServer {
         return [
             'type' => 'object',
             'description' => 'A PiAlert AlertGroup: related alerts that share the same error.',
-            'required' => ['group_id', 'status', 'comment', 'comment_datetime', 'assigned_user_id', 'last_user_id', 'pi_system_name', 'from_system', 'to_system', 'channel', 'interface', 'multi_interface', 'error_text', 'error_mask', 'first_alert', 'last_alert', 'last_user_action', 'maybe_needs_union', 'alert_link'],
+            'required' => ['group_id', 'status', 'comment', 'comment_ai', 'comment_datetime', 'assigned_user_id', 'last_user_id', 'pi_system_name', 'from_system', 'to_system', 'channel', 'interface', 'multi_interface', 'error_text', 'error_mask', 'first_alert', 'last_alert', 'last_user_action', 'maybe_needs_union', 'alert_link'],
             'properties' => [
                 'group_id' => ['type' => 'integer', 'description' => 'Unique AlertGroup identifier.'],
                 'status' => ['type' => 'object', 'description' => 'Current group status.', 'required' => ['code', 'name'], 'properties' => ['code' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5, 'description' => 'PiAlert status code: '.$groupStatusesText], 'name' => ['type' => 'string', 'description' => 'Localized name of the status.']]],
                 'comment' => $this->nullableStringSchema('User comment on the group.'),
+                'comment_ai' => $this->nullableStringSchema('AI comment on the group; up to 2000 characters. Writable with set_alert_group_comment_ai.'),
                 'comment_datetime' => $this->nullableStringSchema('MySQL DATETIME when the comment was last changed.'),
                 'assigned_user_id' => $this->nullableIntegerSchema('ID of the user currently assigned to the group.'),
                 'last_user_id' => $this->nullableIntegerSchema('ID of the user who last changed the group.'),

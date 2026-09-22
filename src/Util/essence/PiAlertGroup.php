@@ -48,6 +48,7 @@ class PiAlertGroup {
     public int $group_id = -1;
     public int $status = self::NEW;
     public ?string $comment = null;
+    public ?string $comment_ai = null;
     public ?string $comment_datetime = null;
     public ?int $user_id = null;
     public ?int $last_user_id = null;
@@ -91,6 +92,7 @@ class PiAlertGroup {
         $this->status = $row['status'];
         $this->comment = $row['comment'];
         $this->comment_datetime = $row['comment_datetime'];
+        $this->comment_ai = $row['comment_ai'];
         $this->user_id = $row['user_id'];
         $this->last_user_id = $row['last_user_id'];
 
@@ -115,7 +117,7 @@ class PiAlertGroup {
         return [
             'group_id' => $this->group_id,
             'status' => ['code' => $this->status, 'name' => self::getStatusName($this->status)],
-            'comment' => $this->comment, 'comment_datetime' => $this->comment_datetime,
+            'comment' => $this->comment, 'comment_datetime' => $this->comment_datetime, 'comment_ai' => $this->comment_ai,
             'assigned_user_id' => $this->user_id, 'last_user_id' => $this->last_user_id,
             'pi_system_name' => $this->piSystemName, 'from_system' => $this->fromSystem,
             'to_system' => $this->toSystem, 'channel' => $this->channel, 'interface' => $this->interface,
@@ -129,7 +131,7 @@ class PiAlertGroup {
     public function saveToDatabase() : bool {
         if ( $this->group_id > 0 ) {
             $query = DB::prepare("UPDATE alert_group SET 
-                status=?, comment=?, comment_datetime=?, 
+                status=?, comment=?, comment_datetime=?, comment_ai=?, 
                 user_id=?, last_user_id=?, piSystemName=?, 
                 fromSystem=?, toSystem=?, channel=?, 
                 interface=?, errText=?, errTextMask=?,
@@ -137,7 +139,7 @@ class PiAlertGroup {
                 first_alert=?, last_alert=?, last_user_action=?, 
                 maybe_need_union=?, alert_link=? WHERE group_id = ?");
             return $query->execute(array(
-                $this->status, $this->comment, $this->comment_datetime,
+                $this->status, $this->comment, $this->comment_datetime, $this->comment_ai,
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
@@ -147,14 +149,14 @@ class PiAlertGroup {
             ));
         } else {
             $query = DB::prepare("INSERT INTO alert_group (
-                 status, comment, comment_datetime,
+                 status, comment, comment_datetime, comment_ai,
                  user_id, last_user_id, piSystemName,
                  fromSystem, toSystem, channel,
                  interface, errText, errTextMask,   
                  errTextMainPart, multi_interface,
                  first_alert, last_alert, last_user_action,
                  maybe_need_union, alert_link) VALUES (
-                       ?, ?, ?,
+                       ?, ?, ?, ?,
                        ?, ?, ?, 
                        ?, ?, ?, 
                        ?, ?, ?, 
@@ -163,7 +165,7 @@ class PiAlertGroup {
                        ?, ?
                  )");
             $query->execute(array(
-                $this->status, $this->comment, $this->comment_datetime,
+                $this->status, $this->comment, $this->comment_datetime, $this->comment_ai,
                 $this->user_id, $this->last_user_id, $this->piSystemName,
                 $this->fromSystem, $this->toSystem, $this->channel,
                 $this->interface, $this->errText, $this->errTextMask,
@@ -251,6 +253,9 @@ class PiAlertGroup {
 
     public function getHTMLComment() :string {
         return nl2br(replaceLinksWithATag($this->comment));
+    }
+    public function getHTMLCommentAI() :string {
+        return nl2br(replaceLinksWithATag(htmlspecialchars($this->comment_ai??'')));
     }
 
     public function getHTMLAlertLink() :string {

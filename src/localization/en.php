@@ -148,6 +148,7 @@ $texts = array(
     'dashboardLastAlert' => 'Last alert',
     'dashboardShowAlertButton' => 'Show alerts',
     'dashboardShowStatisticButton' => 'Alert group statistics',
+    'dashboardCommentAIButton' => 'Automatic AI analyze',
     'dashboardUnionGroupButton' => 'The alert group can be union with another one',
     'dashboardFindSameErrors' => 'Find similar errors in PiAlert',
     'dashboardUnionSuccess' => 'Alert groups merged successfully.',
