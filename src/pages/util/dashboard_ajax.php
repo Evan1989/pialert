@@ -126,8 +126,11 @@ function getAlertGroupFullInfo(AuthorizationAdmin $authorizationAdmin, PiAlertGr
                           <td>
                             <a href=\"javascript:loadAlertsForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='top' title='".Text::dashboardShowAlertButton()."'>".HTMLPageTemplate::getIcon('envelope')."</a>
                             <a href='dashboard.php?id=".$alertGroup->group_id."' data-toggle='tooltip' data-placement='top' title='".Text::dashboardShareLinkButton()."'>".HTMLPageTemplate::getIcon('share')."</a>
-                            <a href='dashboard.php?id=".$alertGroup->group_id."&showSameErrors' data-toggle='tooltip' data-placement='top' title='".Text::dashboardFindSameErrors()."'>".HTMLPageTemplate::getIcon('magic')."</a>
-                          </td>
+                            <a href='dashboard.php?id=".$alertGroup->group_id."&showSameErrors' data-toggle='tooltip' data-placement='top' title='".Text::dashboardFindSameErrors()."'>".HTMLPageTemplate::getIcon('magic')."</a>";
+    if ( $alertGroup->comment_ai ) {
+        $result.= "         <a href=\"javascript:loadAICommentForGroup(".$alertGroup->group_id.")\" data-toggle='tooltip' data-placement='left' title='".Text::dashboardCommentAIButton()."'>".HTMLPageTemplate::getIcon('robot')."</a>";
+    }
+    $result.= "           </td>
                       </tr>
                 </tbody>
               </table>";
