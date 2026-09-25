@@ -1,11 +1,8 @@
 # PiAlert MCP
 
-`mcp.php` is a stateless [MCP 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28) Streamable HTTP endpoint. It exposes AlertGroups and their source Alerts for reading and supports writing the AI comment (`comment_ai`) of an AlertGroup. Authentication also updates user statistics.
+`mcp.php` is a stateless [MCP 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25) Streamable HTTP endpoint. It exposes AlertGroups and their source Alerts for reading and supports writing the AI comment (`comment_ai`) of an AlertGroup. Authentication also updates user statistics.
 
-This is the current stateless MCP protocol, not a custom transport. It does
-**not** use the legacy `initialize` / `notifications/initialized` handshake or
-`MCP-Session-Id`. Each request is self-describing. `server/discover` is the
-standard optional discovery RPC; a client may also call `tools/list` directly.
+The endpoint uses the standard MCP `initialize` / `notifications/initialized` lifecycle. It does not create an `MCP-Session-Id`; every HTTP request is authenticated and handled independently. The endpoint supports JSON responses and does not open an SSE stream.
 
 ## Access
 
@@ -15,34 +12,51 @@ The same Dashboard and system permissions apply to reading groups and writing AI
 
 Endpoint: `https://<PiAlert-host>/src/api/mcp.php`
 
-The client must send `Content-Type: application/json`, an `Accept` header that
-includes `application/json` and `text/event-stream`, and HTTP Basic Auth. Each
-POST must include these standard MCP 2026-07-28 fields:
+Every POST must include:
 
 ```http
-MCP-Protocol-Version: 2026-07-28
-Mcp-Method: server/discover
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Basic <base64(email:password)>
 ```
+
+After initialization, every POST must also include the negotiated protocol version:
+
+```http
+MCP-Protocol-Version: 2025-11-25
+```
+
+The server does not use `Mcp-Method`, `Mcp-Name`, or protocol metadata in `params._meta`.
+
+## Initialization
+
+Send the standard initialization request without `MCP-Protocol-Version`:
 
 ```json
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "server/discover",
+  "method": "initialize",
   "params": {
-    "_meta": {
-      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
-      "io.modelcontextprotocol/clientInfo": {"name": "example", "version": "1.0"},
-      "io.modelcontextprotocol/clientCapabilities": {}
-    }
+    "protocolVersion": "2025-11-25",
+    "capabilities": {},
+    "clientInfo": {"name": "example", "version": "1.0"}
   }
 }
 ```
 
-For `tools/call`, `resources/read`, and `prompts/get`, also send the standard
-`Mcp-Name` header matching `params.name` or `params.uri`.
+The response advertises the `tools` capability and protocol version `2025-11-25`. The client must then send:
 
-Example configuration for an MCP client that supports HTTP headers:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+```
+
+The notification receives HTTP `202 Accepted` with no response body. The same applies to other accepted notifications.
+
+Example configuration for an MCP client:
 
 ```json
 {
@@ -68,11 +82,18 @@ Example configuration for an MCP client that supports HTTP headers:
 
 Status codes use the existing PiAlert values: `0` new, `1` ignore, `2` manual, `3` wait, `4` close, `5` reopen.
 
+Each successful tool result contains a short summary in `content` and machine-readable data in `structuredContent`. MCP requires `structuredContent` to be an object, so tools returning lists use these properties:
+
+- `list_alert_groups` and `find_similar_alert_groups`: `structuredContent.alert_groups`;
+- `get_alerts_by_group`: `structuredContent.alerts`.
+
+The other tools return their existing fields directly in `structuredContent`.
+
 ### Find groups without an AI comment
 
-`list_alert_groups` accepts the optional boolean `empty_comment_ai` (default `false`). When `true`, it returns only groups where `comment_ai` is `NULL`, an empty string. When omitted or `false`, there is no AI-comment filter. It combines with `pi_system_name`, `status`, `search`, and `active_only`; filtering happens before `limit` and `offset` pagination.
+`list_alert_groups` accepts the optional boolean `empty_comment_ai` (default `false`). When `true`, it returns only groups where `comment_ai` is `NULL` or an empty string. When omitted or `false`, there is no AI-comment filter. It combines with `pi_system_name`, `status`, `search`, and `active_only`; filtering happens before `limit` and `offset` pagination.
 
-Example `tools/call` request (send `Mcp-Method: tools/call` and `Mcp-Name: list_alert_groups` along with the common headers):
+Example `tools/call` request:
 
 ```json
 {
@@ -81,25 +102,38 @@ Example `tools/call` request (send `Mcp-Method: tools/call` and `Mcp-Name: list_
   "method": "tools/call",
   "params": {
     "name": "list_alert_groups",
-    "arguments": {"empty_comment_ai": true, "active_only": true, "limit": 25},
-    "_meta": {
-      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
-      "io.modelcontextprotocol/clientCapabilities": {}
+    "arguments": {"empty_comment_ai": true, "active_only": true, "limit": 25}
+  }
+}
+```
+
+Example result shape:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "content": [{"type": "text", "text": "Found 1 alert group(s)."}],
+    "structuredContent": {
+      "alert_groups": [{"group_id": 123, "comment_ai": null}]
     }
   }
 }
 ```
 
+The example abbreviates the AlertGroup object; `tools/list` provides its complete output schema.
+
 ### Write an AI comment
 
 `set_alert_group_comment_ai` requires:
 
-- `group_id`: a positive integer identifying an accessible group.
+- `group_id`: a positive integer identifying an accessible group;
 - `comment_ai`: a UTF-8 string of at most 2000 characters, or `null`. The value replaces the existing AI comment; `null` or `""` clears it. Omitting this argument is an error.
 
-The tool updates only `comment_ai`. The human comment, its timestamp, group status, assignment, and last-user-action fields remain unchanged. Repeating a write with the same arguments is idempotent. The tool advertises `readOnlyHint: false`, `destructiveHint: true` (it can overwrite an existing comment), `idempotentHint: true`, and `openWorldHint: false`.
+The tool updates only `comment_ai`. The human comment, its timestamp, group status, assignment, and last-user-action fields remain unchanged. Repeating a write with the same arguments is idempotent. The tool advertises `readOnlyHint: false`, `destructiveHint: true`, `idempotentHint: true`, and `openWorldHint: false`.
 
-Example request (send `Mcp-Method: tools/call` and `Mcp-Name: set_alert_group_comment_ai` along with the common headers):
+Example request:
 
 ```json
 {
@@ -111,15 +145,11 @@ Example request (send `Mcp-Method: tools/call` and `Mcp-Name: set_alert_group_co
     "arguments": {
       "group_id": 123,
       "comment_ai": "Likely connection timeout. Check the receiver availability and retry settings."
-    },
-    "_meta": {
-      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
-      "io.modelcontextprotocol/clientCapabilities": {}
     }
   }
 }
 ```
 
-The result contains a short text summary in `content` and the updated AlertGroup in `structuredContent`. All tools returning groups include the nullable `comment_ai` field. Invalid arguments (including comments over 2000 characters), missing groups, and inaccessible groups return JSON-RPC error `-32602` with HTTP 400.
+Invalid tool input, missing groups, inaccessible groups, and execution failures return a normal `tools/call` result with `isError: true` and a short explanation in `content`. An unknown tool or malformed `tools/call` request returns JSON-RPC error `-32602`.
 
 When processing a queue with `empty_comment_ai: true`, writing a nonempty comment removes that group from subsequent results. Fetch the next batch with `offset: 0` to avoid skipping groups as the queue shrinks.

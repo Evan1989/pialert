@@ -12,7 +12,7 @@ use Throwable;
 /** MCP adapter for reading PiAlert objects and writing AlertGroup AI comments. */
 class McpServer {
 
-    protected const string PROTOCOL_VERSION = '2026-07-28';
+    protected const string PROTOCOL_VERSION = '2025-11-25';
     protected const int DASHBOARD_MENU_ID = 1;
     protected const int MAX_LIST_LIMIT = 100;
     protected const int MAX_ALERTS_LIMIT = 300;
@@ -22,22 +22,44 @@ class McpServer {
         $this->validateOrigin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Allow: POST');
-            $this->httpError(405, 'Only POST is supported by this stateless MCP endpoint. Text description for people '.SERVER_HOST.'src/api/mcp.md');
+            $this->httpError(405, 'Only POST is supported by this MCP endpoint. Text description for people '.SERVER_HOST.'src/api/mcp.md');
         }
-        $request = json_decode(file_get_contents('php://input'), true);
-        if (!is_array($request) || ($request['jsonrpc'] ?? null) !== '2.0' || !isset($request['method'])) {
+        $this->validateTransportHeaders();
+
+        $body = file_get_contents('php://input');
+        $request = json_decode($body, true);
+        $requestDocument = json_decode($body);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->error(null, -32700, 'Parse error.', 400);
+            return;
+        }
+        if (!$this->isValidJsonRpcEnvelope($request, $requestDocument)) {
             $this->error(null, -32600, 'Invalid JSON-RPC request.', 400);
             return;
         }
         $id = $request['id'] ?? null;
-        if ($request['method'] === 'initialize') {
-            // `initialize` belongs to the legacy, session-based protocol.
-            // Naming the modern version here is the prescribed migration hint
-            // for legacy clients, whose request otherwise lacks our headers.
-            $this->legacyInitializeError($id, $request['params'] ?? null);
+        $params = is_array($request['params'] ?? null) ? $request['params'] : [];
+        if ($request['method'] === 'tools/call'
+            && isset($requestDocument->params)
+            && property_exists($requestDocument->params, 'arguments')
+            && !is_object($requestDocument->params->arguments)) {
+            $this->error($id, -32602, 'Tool arguments must be an object.', 400);
             return;
         }
-        if (!$this->validateRequestMetadata($request, $id)) {
+        if ($request['method'] === 'initialize') {
+            if (!array_key_exists('id', $request)) {
+                $this->error(null, -32600, 'initialize must be a JSON-RPC request.', 400);
+                return;
+            }
+            $this->authenticate();
+            try {
+                $this->response($id, $this->initialize($params));
+            } catch (InvalidArgumentException $exception) {
+                $this->error($id, -32602, $exception->getMessage(), 400);
+            }
+            return;
+        }
+        if (!$this->validateProtocolVersion($id)) {
             return;
         }
         $identity = $this->authenticate();
@@ -46,7 +68,6 @@ class McpServer {
             http_response_code(202);
             return;
         }
-        $params = is_array($request['params'] ?? null) ? $request['params'] : [];
         try {
             $result = $this->dispatch($request['method'], $params, $identity['systems']);
             $this->response($id, $result);
@@ -57,6 +78,20 @@ class McpServer {
         } catch (Throwable) {
             $this->error($id, -32603, 'Internal server error.');
         }
+    }
+
+    protected function isValidJsonRpcEnvelope(mixed $request, mixed $requestDocument): bool {
+        if (!is_object($requestDocument)
+            || !is_array($request)
+            || ($request['jsonrpc'] ?? null) !== '2.0'
+            || !is_string($request['method'] ?? null)
+            || (property_exists($requestDocument, 'params') && !is_object($requestDocument->params))) {
+            return false;
+        }
+        if (!array_key_exists('id', $request)) {
+            return true;
+        }
+        return is_string($request['id']) || is_int($request['id']);
     }
 
     /**
@@ -96,15 +131,30 @@ class McpServer {
         return isset($parts['port']) ? (int) $parts['port'] : ($scheme === 'https' ? 443 : 80);
     }
 
-    /** @param array<string, mixed> $request */
-    protected function validateRequestMetadata(array $request, mixed $id): bool {
-        $params = $request['params'] ?? null;
-        $meta = is_array($params) ? ($params['_meta'] ?? null) : null;
-        $headerVersion = $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] ?? '';
-        if ($headerVersion === '' || ($_SERVER['HTTP_MCP_METHOD'] ?? '') !== $request['method']) {
-            $this->headerMismatch($id, 'MCP-Protocol-Version or Mcp-Method header is missing or does not match the request body.');
-            return false;
+    protected function validateTransportHeaders(): void {
+        $contentType = strtolower(trim(explode(';', $_SERVER['CONTENT_TYPE'] ?? '')[0]));
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        if ($contentType !== 'application/json') {
+            $this->httpError(415, 'Content-Type must be application/json.');
         }
+        if (!$this->acceptsMediaType($accept, 'application/json') || !$this->acceptsMediaType($accept, 'text/event-stream')) {
+            $this->httpError(406, 'Accept must include application/json and text/event-stream.');
+        }
+    }
+
+    protected function acceptsMediaType(string $accept, string $expected): bool {
+        foreach (explode(',', strtolower($accept)) as $mediaRange) {
+            if (trim(explode(';', $mediaRange)[0]) === $expected) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function validateProtocolVersion(mixed $id): bool {
+        // The transport specification defines 2025-03-26 as the fallback
+        // when this header is absent and no negotiated version is available.
+        $headerVersion = $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] ?? '2025-03-26';
         if ($headerVersion !== self::PROTOCOL_VERSION) {
             $this->error($id, -32022, 'Unsupported protocol version', 400, [
                 'supported' => [self::PROTOCOL_VERSION],
@@ -112,38 +162,23 @@ class McpServer {
             ]);
             return false;
         }
-        if (is_array($meta) && ($meta['io.modelcontextprotocol/protocolVersion'] ?? null) !== $headerVersion) {
-            $this->headerMismatch($id, 'MCP-Protocol-Version header does not match the request metadata.');
-            return false;
-        }
-        if (!is_array($meta)
-            || !array_key_exists('io.modelcontextprotocol/protocolVersion', $meta)
-            || !array_key_exists('io.modelcontextprotocol/clientCapabilities', $meta)
-            || !is_array($meta['io.modelcontextprotocol/clientCapabilities'])) {
-            $this->error($id, -32602, 'Missing or invalid required MCP request metadata.', 400);
-            return false;
-        }
-        if (in_array($request['method'], ['tools/call', 'resources/read', 'prompts/get'], true)
-            && ($_SERVER['HTTP_MCP_NAME'] ?? '') !== ($params['name'] ?? $params['uri'] ?? null)) {
-            $this->headerMismatch($id, 'Mcp-Name header is missing or does not match the request body.');
-            return false;
-        }
         return true;
     }
 
-    protected function headerMismatch(mixed $id, string $message): void {
-        $this->error($id, -32020, 'Header mismatch: ' . $message, 400);
-    }
-
-    protected function legacyInitializeError(mixed $id, mixed $params): void {
-        $requested = is_array($params) && is_string($params['protocolVersion'] ?? null)
-            ? $params['protocolVersion']
-            : 'legacy initialize';
-        $this->error($id, -32020,
-            'This is the official stateless MCP 2026-07-28 protocol. The legacy initialize/initialized handshake is not used; send each POST with MCP-Protocol-Version, Mcp-Method, and request _meta metadata. Specification: https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning',
-            400,
-            ['supported' => [self::PROTOCOL_VERSION], 'requested' => $requested]
-        );
+    protected function initialize(array $params): array {
+        if (!is_string($params['protocolVersion'] ?? null)
+            || !is_array($params['capabilities'] ?? null)
+            || !is_array($params['clientInfo'] ?? null)
+            || !is_string($params['clientInfo']['name'] ?? null)
+            || !is_string($params['clientInfo']['version'] ?? null)) {
+            throw new InvalidArgumentException('initialize requires protocolVersion, capabilities, and clientInfo.');
+        }
+        return [
+            'protocolVersion' => self::PROTOCOL_VERSION,
+            'capabilities' => ['tools' => ['listChanged' => false]],
+            'serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()],
+            'instructions' => 'Read PiAlert AlertGroups and source Alerts. Use list_alert_groups with empty_comment_ai=true to find groups needing AI analysis, and set_alert_group_comment_ai to replace or clear an accessible group AI comment.',
+        ];
     }
 
     /** @return array{user_id: int, systems: array<int, string>} */
@@ -174,43 +209,63 @@ class McpServer {
         }
     }
 
-    protected function dispatch(string $method, array $params, array $systems): array|null {
+    protected function dispatch(string $method, array $params, array $systems): array|object|null {
         return match ($method) {
-            'server/discover' => $this->discover(),
-            'ping' => [],
-            'tools/list' => ['tools' => $this->tools(), 'ttlMs' => 3600000, 'cacheScope' => 'public'],
+            'ping' => (object) [],
+            'tools/list' => ['tools' => $this->tools()],
             'tools/call' => $this->callTool($params, $systems),
             default => throw new LogicException('Method not found: ' . $method),
         };
     }
 
-    protected function discover(): array {
+    protected function callTool(array $params, array $systems): array {
+        $name = $params['name'] ?? null;
+        if (!is_string($name) || !in_array($name, [
+            'list_alert_groups',
+            'get_alert_group',
+            'set_alert_group_comment_ai',
+            'get_alerts_by_group',
+            'get_alert_group_statistics',
+            'find_similar_alert_groups',
+        ], true)) {
+            throw new InvalidArgumentException('Unknown tool: ' . (is_scalar($name) ? (string) $name : ''));
+        }
+        if (array_key_exists('arguments', $params) && !is_array($params['arguments'])) {
+            throw new InvalidArgumentException('Tool arguments must be an object.');
+        }
+        $arguments = $params['arguments'] ?? [];
+        try {
+            $data = match ($name) {
+                'list_alert_groups' => $this->listGroups($arguments, $systems),
+                'get_alert_group' => $this->accessibleGroup($this->requiredId($arguments), $systems)->toArray(),
+                'set_alert_group_comment_ai' => $this->setGroupCommentAi($arguments, $systems),
+                'get_alerts_by_group' => $this->alertsByGroup($arguments, $systems),
+                'get_alert_group_statistics' => $this->groupStatistics($arguments, $systems),
+                'find_similar_alert_groups' => $this->similarGroups($arguments, $systems),
+            };
+        } catch (InvalidArgumentException|RuntimeException $exception) {
+            return $this->toolError($exception->getMessage());
+        } catch (Throwable) {
+            return $this->toolError('Tool execution failed.');
+        }
         return [
-            'resultType' => 'complete',
-            'supportedVersions' => [self::PROTOCOL_VERSION],
-            'capabilities' => ['tools' => ['listChanged' => false]],
-            '_meta' => ['io.modelcontextprotocol/serverInfo' => ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()]],
-            'instructions' => 'Read PiAlert AlertGroups and source Alerts. Use list_alert_groups with empty_comment_ai=true to find groups needing AI analysis, and set_alert_group_comment_ai to replace or clear an accessible group AI comment.',
-            'ttlMs' => 3600000,
-            'cacheScope' => 'public',
+            'content' => [['type' => 'text', 'text' => $this->toolSummary($name, $data)]],
+            'structuredContent' => $this->structuredToolContent($name, $data),
         ];
     }
 
-    protected function callTool(array $params, array $systems): array {
-        $arguments = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
-        $name = $params['name'] ?? '';
-        $data = match ($name) {
-            'list_alert_groups' => $this->listGroups($arguments, $systems),
-            'get_alert_group' => $this->accessibleGroup($this->requiredId($arguments), $systems)->toArray(),
-            'set_alert_group_comment_ai' => $this->setGroupCommentAi($arguments, $systems),
-            'get_alerts_by_group' => $this->alertsByGroup($arguments, $systems),
-            'get_alert_group_statistics' => $this->groupStatistics($arguments, $systems),
-            'find_similar_alert_groups' => $this->similarGroups($arguments, $systems),
-            default => throw new InvalidArgumentException('Unknown tool: ' . $name),
+    protected function structuredToolContent(string $name, array $data): array {
+        return match ($name) {
+            'list_alert_groups', 'find_similar_alert_groups' => ['alert_groups' => $data],
+            'get_alerts_by_group' => ['alerts' => $data],
+            default => $data,
         };
+    }
+
+    protected function toolError(string $message): array {
         return [
-            'content' => [['type' => 'text', 'text' => $this->toolSummary($name, $data)]],
-            'structuredContent' => $data,
+            'content' => [['type' => 'text', 'text' => $message]],
+            'isError' => true,
         ];
     }
 
@@ -349,7 +404,7 @@ class McpServer {
 
     protected function tools(): array {
         return [
-            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'empty_comment_ai' => ['type' => 'boolean', 'default' => false, 'description' => 'Only groups whose AI comment is null, empty, or contains only spaces. False leaves the list unfiltered by AI comment.'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => ['type' => 'array', 'description' => 'Alert groups matching the supplied filters.', 'items' => $this->alertGroupOutputSchema()]],
+            ['name' => 'list_alert_groups', 'description' => 'Lists visible AlertGroups, newest first.', 'inputSchema' => ['type' => 'object', 'properties' => ['pi_system_name' => ['type' => 'string'], 'status' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5], 'search' => ['type' => 'string'], 'active_only' => ['type' => 'boolean'], 'empty_comment_ai' => ['type' => 'boolean', 'default' => false, 'description' => 'Only groups whose AI comment is null or empty. False leaves the list unfiltered by AI comment.'], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_LIST_LIMIT], 'offset' => ['type' => 'integer', 'minimum' => 0]]], 'outputSchema' => $this->arrayOutputSchema('alert_groups', 'Alert groups matching the supplied filters.', $this->alertGroupOutputSchema())],
             ['name' => 'get_alert_group', 'description' => 'Returns one AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->alertGroupOutputSchema()],
             [
                 'name' => 'set_alert_group_comment_ai',
@@ -365,9 +420,19 @@ class McpServer {
                 'outputSchema' => $this->alertGroupOutputSchema(),
                 'annotations' => ['readOnlyHint' => false, 'destructiveHint' => true, 'idempotentHint' => true, 'openWorldHint' => false],
             ],
-            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => ['type' => 'array', 'description' => 'Source alerts in descending timestamp order.', 'items' => $this->alertOutputSchema()]],
+            ['name' => 'get_alerts_by_group', 'description' => 'Returns recent source Alerts in an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1], 'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_ALERTS_LIMIT]]], 'outputSchema' => $this->arrayOutputSchema('alerts', 'Source alerts in descending timestamp order.', $this->alertOutputSchema())],
             ['name' => 'get_alert_group_statistics', 'description' => 'Returns aggregate and daily counts for an AlertGroup.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->statisticsOutputSchema()],
-            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => ['type' => 'array', 'description' => 'Accessible groups with the same normalized main error text.', 'items' => $this->alertGroupOutputSchema()]],
+            ['name' => 'find_similar_alert_groups', 'description' => 'Returns groups with the same main error part, as Dashboard showSameErrors.', 'inputSchema' => ['type' => 'object', 'required' => ['group_id'], 'properties' => ['group_id' => ['type' => 'integer', 'minimum' => 1]]], 'outputSchema' => $this->arrayOutputSchema('alert_groups', 'Accessible groups with the same normalized main error text.', $this->alertGroupOutputSchema())],
+        ];
+    }
+
+    protected function arrayOutputSchema(string $property, string $description, array $itemSchema): array {
+        return [
+            'type' => 'object',
+            'required' => [$property],
+            'properties' => [
+                $property => ['type' => 'array', 'description' => $description, 'items' => $itemSchema],
+            ],
         ];
     }
 
@@ -461,10 +526,6 @@ class McpServer {
     }
 
     protected function response(mixed $id, mixed $result): void {
-        if (is_array($result)) {
-            $result['resultType'] ??= 'complete';
-            $result['_meta']['io.modelcontextprotocol/serverInfo'] ??= ['name' => 'pialert', 'version' => SystemVersion::getCodeVersion()];
-        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['jsonrpc' => '2.0', 'id' => $id, 'result' => $result], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
@@ -476,7 +537,11 @@ class McpServer {
         if ($data !== null) {
             $error['data'] = $data;
         }
-        echo json_encode(['jsonrpc' => '2.0', 'id' => $id, 'error' => $error], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $response = ['jsonrpc' => '2.0', 'error' => $error];
+        if ($id !== null) {
+            $response['id'] = $id;
+        }
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     protected function unauthorized(): never {
