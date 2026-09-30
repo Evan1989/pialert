@@ -255,7 +255,7 @@ class PiAlertGroup {
         return nl2br(replaceLinksWithATag($this->comment));
     }
     public function getHTMLCommentAI() :string {
-        return nl2br(TextAnalysisUtil::markdownToHtml(htmlspecialchars($this->comment_ai??'')));
+        return TextAnalysisUtil::markdownToHtml(htmlspecialchars($this->comment_ai??''));
     }
 
     public function getHTMLAlertLink() :string {
