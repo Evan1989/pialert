@@ -16,7 +16,7 @@ class McpServer {
     protected const int DASHBOARD_MENU_ID = 1;
     protected const int MAX_LIST_LIMIT = 100;
     protected const int MAX_ALERTS_LIMIT = 300;
-    protected const int MAX_COMMENT_AI_LENGTH = 2000;
+    protected const int MAX_COMMENT_AI_LENGTH = 10000;
 
     public function handle(): void {
         $this->validateOrigin();
@@ -322,7 +322,7 @@ class McpServer {
         }
         $comment = $args['comment_ai'];
         if ($comment !== null && (!mb_check_encoding($comment, 'UTF-8') || mb_strlen($comment, 'UTF-8') > self::MAX_COMMENT_AI_LENGTH)) {
-            throw new InvalidArgumentException('comment_ai must be valid UTF-8 and at most 2000 characters.');
+            throw new InvalidArgumentException('comment_ai must be valid UTF-8 and at most '.static::MAX_COMMENT_AI_LENGTH.' characters.');
         }
         $this->accessibleGroup($groupId, $systems);
         [$filter, $params] = $this->systemFilter($systems);
@@ -414,7 +414,7 @@ class McpServer {
                     'required' => ['group_id', 'comment_ai'],
                     'properties' => [
                         'group_id' => ['type' => 'integer', 'minimum' => 1],
-                        'comment_ai' => ['type' => ['string', 'null'], 'maxLength' => self::MAX_COMMENT_AI_LENGTH, 'description' => 'AI comment text; null or an empty string clears the comment.'],
+                        'comment_ai' => ['type' => ['string', 'null'], 'maxLength' => static::MAX_COMMENT_AI_LENGTH, 'description' => 'AI comment text; null or an empty string clears the comment.'],
                     ],
                 ],
                 'outputSchema' => $this->alertGroupOutputSchema(),
@@ -450,7 +450,7 @@ class McpServer {
                 'group_id' => ['type' => 'integer', 'description' => 'Unique AlertGroup identifier.'],
                 'status' => ['type' => 'object', 'description' => 'Current group status.', 'required' => ['code', 'name'], 'properties' => ['code' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 5, 'description' => 'PiAlert status code: '.$groupStatusesText], 'name' => ['type' => 'string', 'description' => 'Localized name of the status.']]],
                 'comment' => $this->nullableStringSchema('User comment on the group.'),
-                'comment_ai' => $this->nullableStringSchema('AI comment on the group; up to 2000 characters. Writable with set_alert_group_comment_ai.'),
+                'comment_ai' => $this->nullableStringSchema('AI comment on the group; up to '.static::MAX_COMMENT_AI_LENGTH.' characters. Writable with set_alert_group_comment_ai.'),
                 'comment_datetime' => $this->nullableStringSchema('MySQL DATETIME when the comment was last changed.'),
                 'assigned_user_id' => $this->nullableIntegerSchema('ID of the user currently assigned to the group.'),
                 'last_user_id' => $this->nullableIntegerSchema('ID of the user who last changed the group.'),

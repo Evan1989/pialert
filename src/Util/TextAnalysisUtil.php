@@ -2,7 +2,26 @@
 
 namespace EvanPiAlert\Util;
 
+use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Exception\CommonMarkException;
+
 class TextAnalysisUtil {
+
+    /**
+     * Преобразует текст в формате Markdown в безопасный HTML.
+     *
+     * @param string $markdown
+     * @return string
+     */
+    public static function markdownToHtml(string $markdown) : string {
+        $converter = new CommonMarkConverter(['html_input' => 'escape']);
+
+        try {
+            return $converter->convert($markdown)->getContent();
+        } catch (CommonMarkException) {
+            return $markdown;
+        }
+    }
 
     /**
      * Получить из текста ошибки основную смысловую часть

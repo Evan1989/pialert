@@ -9,6 +9,15 @@ require_once(__DIR__ . "/../src/autoload.php");
 
 class TextAnalysisUtilTest extends TestCase {
 
+    public function testMarkdownToHtmlConvertsCommonMarkdownAndEscapesRawHtml() {
+        $markdown = "# Заголовок\n\n**Жирный** [ссылка](https://example.com)\n\n<script>alert('xss')</script>";
+
+        $this->assertSame(
+            "<h1>Заголовок</h1>\n<p><strong>Жирный</strong> <a href=\"https://example.com\">ссылка</a></p>\n&lt;script&gt;alert('xss')&lt;/script&gt;\n",
+            TextAnalysisUtil::markdownToHtml($markdown)
+        );
+    }
+
     public function testIsTextFitToMask() {
         $mask = 'проверочный текст со * и точкой. ага$ угу';
         $this->assertFalse(TextAnalysisUtil::isTextFitToMask('проверочный текст со * и точкой) ага$ угу', $mask), 'Сломалось экранирование регулярных символов 1');
